@@ -1,0 +1,17 @@
+*{
+  padding: 0;
+  margin: 0;
+}
+html, boby {
+  background: white;
+}
+.app {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  font-size: 1.4rem;
+}
+a {
+  text-decoration: none;
+  color: black;
+}
