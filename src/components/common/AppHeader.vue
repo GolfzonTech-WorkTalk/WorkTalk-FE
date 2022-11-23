@@ -2,10 +2,17 @@
   <header>
     <div v-if="MenuTabView" class="background" @click="menuTabBtn" />
     <div class="LogoAndSearch">
-      <router-link to="/">
-        <img src="@/assets/worktalk.png" alt="logo" class="logo">
-      </router-link>
-      <FormSearch v-if="searchBoxValid" />
+      <template v-if="searchBoxValid">
+        <router-link to="/">
+          <img src="@/assets/worktalk.png" alt="logo" class="logo">
+        </router-link>
+        <FormSearch />
+      </template>
+      <template v-else>
+        <router-link to="/host">
+          <img src="@/assets/worktalk.png" alt="logo" class="logo">
+        </router-link>
+      </template>
     </div>
     <div>
       <i class="fa-solid fa-bars fa-2x" @click="menuTabBtn" />

@@ -30,6 +30,7 @@
 
 <script>
 import {emailCheck} from '@/utils/emailCheck'
+import jwt_decode from 'jwt-decode'
 export default {
   data(){
     return {
@@ -51,13 +52,11 @@ export default {
       this.pwClear()
       console.log('loginData')
       console.log(loginData)
-
       const responce = await this.$store.dispatch('LOGIN', loginData)
-      console.log('responce')
-      console.log(responce.userType)
-      const userTypeVerify = responce.userType
-      if (userTypeVerify === 'host'){
-        return this.$router.push('/host')
+      const decode = jwt_decode(responce.token)
+      console.log(decode)
+      if (decode.auth == 'ROLE_HOST'){
+        this.$router.push('/host')
       } else {
         this.$router.push('/')
       }

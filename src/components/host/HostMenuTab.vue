@@ -4,12 +4,12 @@
       <i class="fa-solid fa-xmark menuTabClose fa-lg" @click="menuTabBtn" />
       <template v-if="loginOK">
         <i class="fa-solid fa-right-from-bracket fa-lg logout" @click="logout" />
-        <router-link to="/host/profile">
-          <span>admin</span>
+        <router-link to="/user/profile">
+          <span>{{ nickName }}</span>
         </router-link>
       </template>
       <template v-else>
-        <router-link to="/host/login">
+        <router-link to="/user/login">
           <span>로그인/회원가입</span>
         </router-link>
       </template>
@@ -63,9 +63,14 @@
 import { deleteCookie } from '@/utils/cookies'
 export default {
   emits: {'menu-tab-btn': null},
+  data(){
+    return {
+      nickName: this.$store.state.nickName,
+    }
+  },
   computed: {
     loginOK(){
-      return this.$store.state.email
+      return this.$store.state.token
     },
   },
   methods: {
