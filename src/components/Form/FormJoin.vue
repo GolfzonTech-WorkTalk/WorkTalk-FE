@@ -89,6 +89,7 @@ export default {
     // 이메일 변경시도
     emailChange(){
       this.emailVeificaion = true
+      this.emailVerificationCode = ''
     },
     // 도메인 선택
     domainCheck(){

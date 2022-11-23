@@ -14,9 +14,16 @@
     </div>
     <div>
       <span>워크토크 회원이 아니십니까?</span>
-      <router-link to="/user/join">
-        <span>회원가입</span>
-      </router-link>
+      <template v-if="$store.state.userType === 'user'">
+        <router-link to="/user/join">
+          <span>회원가입</span>
+        </router-link>
+      </template>
+      <template v-else>
+        <router-link to="/host/join">
+          <span>회원가입</span>
+        </router-link>
+      </template>
     </div>
   </form>
 </template>
