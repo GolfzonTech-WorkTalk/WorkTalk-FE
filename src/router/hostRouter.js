@@ -21,4 +21,16 @@ export default [
     component: () => import('@/views/ProfilePage.vue'),
     meta: {auth:true},
   },
+  {
+    path: '/host/spaceCreate',
+    name: 'hostSpaceCreate',
+    component: () => import('@/views/hostView/SpaceCreatePage.vue'),
+    meta: {auth:true},
+  },
+  {
+    path: '/host/spaceDetail/:id',
+    name: 'hostSpaceDetail',
+    component: () => import('@/views/SpaceDetail.vue'),
+    meta: {auth:true},
+  },
 ]

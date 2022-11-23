@@ -5,7 +5,7 @@
       <template v-if="loginOK">
         <i class="fa-solid fa-right-from-bracket fa-lg logout" @click="logout" />
         <router-link to="/user/profile">
-          <span>admin</span>
+          <span>{{ nickName }}</span>
         </router-link>
       </template>
       <template v-else>
@@ -65,13 +65,12 @@ export default {
   emits: {'menu-tab-btn': null},
   data(){
     return {
-      isLogin: '',
-      email: '',
+      nickName: this.$store.state.nickName,
     }
   },
   computed: {
     loginOK(){
-      return this.$store.state.email
+      return this.$store.state.token
     },
   },
   methods: {
