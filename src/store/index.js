@@ -85,7 +85,8 @@ export default createStore({
       return data
       */
       // 토큰 및 유저타입 탭에서 받기
-      const dumyToken = 'tokentoken'
+      // const dumyToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoidXNlciIsImVtYWlsIjoiYUBhLmNpbSIsInVzZXJUeXBlIjoidXNlciJ9.sye5pUWmTexRwqjghJaiJOBxdN2r8TbrvfawBqqD7b4'
+      const dumyToken = 'eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoidXNlciIsImVtYWlsIjoiYUBhLmNpbSIsImVtYWlsMTIzMTQxMjMxMjQxMjMiOiJhIiwidXNlclR5cGUiOiJ1c2VyIn0.cJUvgR93zvNWUjZbjCWlhZzfz3VuI_rtlL2hh-hywRXB83PfVcqWpQ32xtjlGNVLwpj3XqGpcpDPWTtq6srgvw'
       const dumyUserType = 'user'
       context.commit('setEmail', loginData.email)
       context.commit('setToken', dumyToken)

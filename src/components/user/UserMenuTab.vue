@@ -87,6 +87,7 @@ export default {
       deleteCookie('token')
       deleteCookie('email')
       deleteCookie('userType')
+      this.$store.dispatch('MENUTABCLOSE', false)
       this.$router.push('/')
     },
   },
@@ -135,7 +136,7 @@ export default {
   font-size: 1.2rem;
 }
 .menuTabUserService ul li {
-  padding-top: 5vh;
+  padding-top: 2vh;
 }
 .menuTabServicecenter {
   display:flex;

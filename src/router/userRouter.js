@@ -5,6 +5,11 @@ export default [
     component: () => import('@/views/MainPage.vue'),
   },
   {
+    path: '/map',
+    name: 'userMAP',
+    component: () => import('@/views/MapPage.vue'),
+  },
+  {
     path: '/user/login',
     name: 'userLogin',
     component: () => import('@/views/LoginPage.vue'),

@@ -80,6 +80,7 @@ export default {
       deleteCookie('token')
       deleteCookie('email')
       deleteCookie('userType')
+      this.$store.dispatch('MENUTABCLOSE', false)
       this.$router.push('/host/login')
     },
   },
