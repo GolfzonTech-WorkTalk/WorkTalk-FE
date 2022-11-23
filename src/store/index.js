@@ -1,6 +1,7 @@
 import { createStore } from 'vuex'
-import { getEmailFromCookie, getTokenFromCookie, getUserTypeFromCookie, saveTokenToCookie, saveEmailToCookie, saveUserTypeToCookie } from '@/utils/cookies'
-// import { loginMember } from '@/api/auth'
+import { getEmailFromCookie, getTokenFromCookie, getUserTypeFromCookie, saveTokenToCookie } from '@/utils/cookies'
+// saveEmailToCookie, saveUserTypeToCookie
+import { loginMember } from '@/api/auth'
 
 export default createStore({
   state: {
@@ -73,32 +74,29 @@ export default createStore({
     },
     // 로그인 처리
     // async LOGIN(context, loginData){
-    LOGIN(context, loginData){
-      /*
+    async LOGIN(context, loginData){
+      
       const { data } = await loginMember(loginData) // api
-      console.log(data.user.username)
-      console.log(data.token)
-      context.commit('setUser', data.user.username)
+      console.log(data)
+      // context.commit('setUser', data.user.username)
       context.commit('setToken', data.token)
-      saveAuthToCookie(data.token)
-      saveUserToCookie(data.user.username)
+      saveTokenToCookie(data.token)
       return data
-      */
+      
       // 토큰 및 유저타입 탭에서 받기
       // const dumyToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoidXNlciIsImVtYWlsIjoiYUBhLmNpbSIsInVzZXJUeXBlIjoidXNlciJ9.sye5pUWmTexRwqjghJaiJOBxdN2r8TbrvfawBqqD7b4'
-      const dumyToken = 'eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoidXNlciIsImVtYWlsIjoiYUBhLmNpbSIsImVtYWlsMTIzMTQxMjMxMjQxMjMiOiJhIiwidXNlclR5cGUiOiJ1c2VyIn0.cJUvgR93zvNWUjZbjCWlhZzfz3VuI_rtlL2hh-hywRXB83PfVcqWpQ32xtjlGNVLwpj3XqGpcpDPWTtq6srgvw'
-      const dumyUserType = 'user'
-      context.commit('setEmail', loginData.email)
-      context.commit('setToken', dumyToken)
-      context.commit('setUserType', dumyUserType)
-      saveEmailToCookie(loginData.email)
-      saveTokenToCookie(dumyToken)
-      saveUserTypeToCookie(dumyUserType)
-      const data = {
-        email: loginData.email,
-        userType: dumyUserType,
-      }
-      return data
+      // const dumyToken = 'eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoidXNlciIsImVtYWlsIjoiYUBhLmNpbSIsImVtYWlsMTIzMTQxMjMxMjQxMjMiOiJhIiwidXNlclR5cGUiOiJ1c2VyIn0.cJUvgR93zvNWUjZbjCWlhZzfz3VuI_rtlL2hh-hywRXB83PfVcqWpQ32xtjlGNVLwpj3XqGpcpDPWTtq6srgvw'
+      // const dumyUserType = 'user'
+      // context.commit('setEmail', loginData.email)
+      // context.commit('setToken', dumyToken)
+      // context.commit('setUserType', dumyUserType)
+      // saveEmailToCookie(loginData.email)
+      // saveTokenToCookie(dumyToken)
+      // saveUserTypeToCookie(dumyUserType)
+      // const data = {
+      //   email: loginData.email,
+      //   userType: dumyUserType,
+      // }
     },
     // 모달찰 끄기
     MODALVIEWCLICK(context, click){

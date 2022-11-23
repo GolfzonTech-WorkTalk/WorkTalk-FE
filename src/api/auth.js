@@ -1,9 +1,19 @@
 // auth : 로그인, 회원가입, 탈퇴가 들어가는 api 구성
 import { instance } from "./index"
 
+// 이메일체크
+function mailCheck(email){
+  return instance.post('mailCheck', email)
+}
+
+// 닉네임체크
+function nickCheck(nickcheck){
+  return instance.post('user/nameCheck', nickcheck)
+}
+
 // 회원가입
 function registerMember(memberData){
-  return instance.post('singup', memberData)
+  return instance.post('user/join', memberData)
 }
 
 // 로그인
@@ -12,6 +22,8 @@ function loginMember(memberData){
 }
 
 export {
+  mailCheck,
   registerMember,
   loginMember,
+  nickCheck,
 }

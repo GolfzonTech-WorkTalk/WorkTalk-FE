@@ -12,10 +12,10 @@
       <input v-if="ETCview" v-model="emailDomainETC" class="emailDomainETC joinFormItem" type="text" placeholder="기타주소"><br>
       <input v-model="emailVerificationCode" class="emailVerificationCode joinFormItem" type="text" placeholder="인증번호(6자리)" :disabled="emailVeificaion">
       <template v-if="emailVerificationCode">
-        <p v-if="emailVerificationCode !== emailVerificationCodeCheck" class="warning">
+        <p v-if="emailVerificationCode != emailVerificationCodeCheck" class="warning">
           인증번호가 일치하지 않습니다.
         </p>
-        <p v-if="emailVerificationCode === emailVerificationCodeCheck" class="available">
+        <p v-if="emailVerificationCode == emailVerificationCodeCheck" class="available">
           인증번호가 일치합니다.
         </p>
       </template>
@@ -54,6 +54,7 @@
 </template>
 
 <script>
+import { mailCheck, nickCheck, registerMember } from '@/api/auth.js'
 import { autoHypenPhone } from '@/utils/phoneCheck.js'
 // import { registerUser } from '@/api/auth'
 export default {
@@ -64,11 +65,11 @@ export default {
       emailDomain:'',
       emailDomains: [
         {name:'이메일주소',value:''},
-        {name:'naver.com',value:'네이버'},
-        {name:'daum.net',value:'다음'},
-        {name:'gmail.com',value:'구글'},
-        {name:'kakao.com',value:'카카오'},
-        {name:'nate.com',value:'네이트'},
+        {name:'naver.com',value:'naver.com'},
+        {name:'daum.net',value:'daum.net'},
+        {name:'gmail.com',value:'gmail.com'},
+        {name:'kakao.com',value:'kakao.com'},
+        {name:'nate.com',value:'nate.com'},
         {name:'기타',value:'기타'},
       ],
       emailDomainETC:'',
@@ -89,6 +90,7 @@ export default {
     // 이메일 변경시도
     emailChange(){
       this.emailVeificaion = true
+      this.emailVerificationCode = ''
     },
     // 도메인 선택
     domainCheck(){
@@ -101,7 +103,7 @@ export default {
       }
     },
     // 이메일 인증
-    emailVeificaionSend(){
+    async emailVeificaionSend(){
       if (!this.email || !this.emailDomain || this.emailDomain === '기타' && !this.emailDomainETC){
         let message = '이메일을 입력해주세요'
         this.$store.dispatch('MODALVIEWCLICK', true)
@@ -109,14 +111,21 @@ export default {
       } else {
         let sendEmail = ''
         if (this.emailDomainETC === ''){
-          sendEmail = this.email +'@'+this.emailDomain
+          sendEmail = {
+            email : this.email +'@'+this.emailDomain,
+          }
         } else {
-          sendEmail = this.email +'@'+this.emailDomainETC
+          sendEmail = {
+            email : this.email +'@'+this.emailDomainETC,
+          }
         }
         console.log(sendEmail)
+        let responce = await mailCheck(sendEmail)
+        console.log(responce)
         this.emailVeificaion = false
-        this.emailVerificationCodeCheck = '123456'
+        this.emailVerificationCodeCheck = responce.data
         console.log(this.emailVerificationCodeCheck)
+        console.log(typeof(responce.data))
       }
     },
     // 비밀번호 일치여부 확인
@@ -132,10 +141,19 @@ export default {
       this.nicknameMessage = ''
     },
     // 닉네임체크
-    nicknameCheck(){
+    async nicknameCheck(){
       console.log(this.nickname)
-      // const dataMSG = '사용중인 닉네임입니다.'
-      const dataMSG = '사용가능한 닉네임입니다.'
+      let name = {
+        name: this.nickname,
+      }
+      let responce = await nickCheck(name)
+      console.log(responce)
+      let dataMSG = ''
+      if (responce.data == '1'){
+        dataMSG = '사용중인 닉네임입니다.'
+      } else {
+        dataMSG = '사용가능한 닉네임입니다.'
+      }
       this.nicknameMessage = dataMSG
     },
     // 전화번호 '-' 자동 부여
@@ -154,11 +172,13 @@ export default {
       const joinData = {
         email: email,
         pw: this.pw,
-        nickname: this.nickname,
+        name: this.nickname,
+        tel: this.tel,
       }
       console.log(joinData)
-      // const { data } = await registerUser(joinData)
-      // console.log(data)
+      const { data } = await registerMember(joinData)
+      console.log(data)
+      this.$route.push('/user/login')
       // const userTypeVerify = data.userType
       // if (userTypeVerify === 'host'){
       //   return this.$router.push('/host/login')
@@ -173,7 +193,7 @@ export default {
         let message = '이메일을 확인해주세요'
         this.$store.dispatch('MODALVIEWCLICK', true)
         this.$store.dispatch('MODALMESSAGE', message)
-      } else if (this.emailVerificationCode !== this.emailVerificationCodeCheck){
+      } else if (this.emailVerificationCode != this.emailVerificationCodeCheck){
         message = '이메일 인증을 완료해주세요.'
         this.$store.dispatch('MODALVIEWCLICK', true)
         this.$store.dispatch('MODALMESSAGE', message)
