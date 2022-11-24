@@ -20,22 +20,21 @@ const router = createRouter({
   routes,
 })
 
-// 토큰이 있을 경우
-let auth
-let sub
-if (store.state.token){
-  const token = store.state.token
-  const decode = jwt_decode(token)
-  auth = decode.auth
-  sub = decode.sub
-  // console.log(token)
-  // console.log(decode)
-  console.log('권한 : ', auth)
-  console.log('닉네임 : ', sub)
-  store.dispatch('NICKNAME', sub)
-}
-
 router.beforeEach((to, from, next) => {
+  // 토큰이 있을 경우
+  let auth
+  let sub
+  if (store.state.token){
+    const token = store.state.token
+    const decode = jwt_decode(token)
+    auth = decode.auth
+    sub = decode.sub
+    // console.log(token)
+    // console.log(decode)
+    console.log('권한 : ', auth)
+    console.log('닉네임 : ', sub)
+    store.dispatch('NICKNAME', sub)
+  }
   // 페이지 타입 검증
   const pageType = to.name.slice(0,4)
   console.log('pageType : ', pageType)
@@ -65,13 +64,13 @@ router.beforeEach((to, from, next) => {
     if (pageType != roleCheck){
       alert('권한이 다름, 토큰 초기화')
       if (roleCheck == 'user'){
-        store.dispatch('setlogoutUser')
+        store.commit('setlogoutUser')
         deleteCookie('token')
-        router.push('/user/login')
+        next('/user/login')
       } else {
-        store.dispatch('setlogoutUser')
+        store.commit('setlogoutUser')
         deleteCookie('token')
-        router.push('/host/login')
+        next('/host/login')
       }
     }
   }
