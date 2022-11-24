@@ -35,13 +35,19 @@ router.beforeEach((to, from, next) => {
     console.log('닉네임 : ', sub)
     store.dispatch('NICKNAME', sub)
   }
+<<<<<<< HEAD
+=======
+
+>>>>>>> d98f64e5482615db8606919c0ce340e5d1f3140d
   // 페이지 타입 검증
   const pageType = to.name.slice(0,4)
   console.log('pageType : ', pageType)
   // console.log(to.name.slice(0,4))
   store.dispatch('PAGETYPE', pageType)
+  
   // 페이지 넘어갈시 메뉴탭 닫기
   store.dispatch('MENUTABCLOSE', false)
+  
   // 로그인 여부 확인
   if (to.meta.auth && !store.getters.isLogin){
     console.log('로그인이 필요합니다.')
@@ -53,6 +59,7 @@ router.beforeEach((to, from, next) => {
     }
     return
   }
+  
   // 로그인 검증 후 권한확인
   if (to.meta.auth && store.getters.isLogin){
     let roleCheck
