@@ -22,6 +22,7 @@ module.exports = {
     'space-before-function-paren': ['error', 'never'],
     'space-before-blocks': ['error', 'never'],
     'keyword-spacing': ['error', { before: true, after: true}],
+    'vue/no-use-v-if-with-v-for':'off',
     'vue/max-attributes-per-line' :  ["error", {
       "singleline": {
         "max": 100,
