@@ -21,7 +21,7 @@ export default createStore({
   getters: {
     // 로그인여부 확인
     isLogin(state){
-      return state.email !== ''
+      return state.token !== ''
     },
   },
   mutations: {

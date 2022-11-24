@@ -35,7 +35,6 @@ router.beforeEach((to, from, next) => {
     console.log('닉네임 : ', sub)
     store.dispatch('NICKNAME', sub)
   }
-
   // 페이지 타입 검증
   const pageType = to.name.slice(0,4)
   console.log('pageType : ', pageType)
@@ -68,13 +67,13 @@ router.beforeEach((to, from, next) => {
     if (pageType != roleCheck){
       alert('권한이 다름, 토큰 초기화')
       if (roleCheck == 'user'){
-        store.dispatch('setlogoutUser')
+        store.commit('setlogoutUser')
         deleteCookie('token')
-        router.push('/user/login')
+        next('/user/login')
       } else {
-        store.dispatch('setlogoutUser')
+        store.commit('setlogoutUser')
         deleteCookie('token')
-        router.push('/host/login')
+        next('/host/login')
       }
     }
   }

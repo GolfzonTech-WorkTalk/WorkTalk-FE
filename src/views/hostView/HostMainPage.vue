@@ -10,7 +10,7 @@
         <div class="spaceImg">
           <img src="@/assets/dummy1.jpg" alt="">
         </div>
-        <router-link :to="{path: '/host/spaceDetail/' + item.title}" :class="(item.spaceStatus == 'waiting') ? 'waitingBox' : 'approvedBox'">
+        <router-link :to="itemLink(item.spaceStatus, item.title, item.spaceType)" :class="(item.spaceStatus == 'waiting') ? 'waitingBox' : 'approvedBox'">
           <div class="spaceTitle">
             <span>{{ item.title }}</span>
           </div>
@@ -26,10 +26,22 @@
               <span>검수중</span>
             </div>
           </template>
-          <template v-else>
+          <template v-else-if="item.spaceStatus == 'approved'">
             <div class="spaceStatus approved">
               <span>운영중</span>
             </div>
+          </template>
+          <template v-else>
+            <template v-if="item.spaceType == '3'">
+              <div class="spaceStatus spaceNoCreate">
+                <span>오피스 설정필요</span>
+              </div>
+            </template>
+            <template v-else>
+              <div class="spaceStatus spaceNoCreate">
+                <span>방 생성필요</span>
+              </div>
+            </template>
           </template>
         </router-link>
       </div>
@@ -39,20 +51,31 @@
 
 <script>
 // import { spaceAll } from '@/api/auth.js'
-import { dumy } from '@/utils/dummy'
+import { spaceDumy } from '@/utils/dummy'
 // import jwt_decode from 'jwt-decode'
 export default {
   data(){
     return {
-      spaceItems: dumy,
+      spaceItems: spaceDumy,
     }
   },
   // async
   created(){
     // const responce =  await spaceAll(this.$store.state.nickName)
     // this.spaceItems = jwt_decode(responce)
-    const responce = dumy
+    const responce = spaceDumy
     console.log(responce)
+  },
+  methods: {
+    itemLink(spaceStatus, title, spaceType){
+      if (spaceStatus == 'waiting'){
+        return '/host/roomCreate/'+title
+      } else if (spaceStatus == 'approvedBox'){
+        return '/host/spaceDetail'
+      } else {
+        return '/host/roomCreate/'+title+'/'+spaceType
+      }
+    },
   },
 }
 </script>
@@ -118,6 +141,10 @@ export default {
 }
 .approved{
   background: rgba(0, 0, 255, 0.479);
+  color: white;
+}
+.spaceNoCreate{
+  background: rgba(26, 105, 10, 0.479);
   color: white;
 }
 </style>

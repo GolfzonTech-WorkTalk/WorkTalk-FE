@@ -3,9 +3,9 @@
     <div class="createBox">
       <form class="createFrom" @submit.prevent="spaceCreate">
         <div class="spaceType">
-          <span>공간종류</span>
+          <span>공간생성</span>
           <div class="spaceTypeItems">
-            <div v-for="(item, index) in spaceTypeItems" :key="index" class="spaceTypeItem" @click="spaceTypeSelect(item)">
+            <div v-for="(item, index) in spaceTypeItems" :key="index" class="spaceTypeItem" :class="(spaceTypeSelectData == item.name)?'selectType':'noSelectType'" @click="spaceTypeSelect(item)">
               <img class="spaceTypeIcon" :src="require(`@/assets/${item.img}`)" alt="icon">
               <p>{{ item.name }}</p>
             </div>
@@ -53,7 +53,7 @@
 
 <script>
 import { regCodeCheck } from '@/utils/regCodeCheck'
-import { spaceCreate } from '@/api/host'
+// import { spaceCreate } from '@/api/host'
 export default {
   data(){
     return {
@@ -74,7 +74,8 @@ export default {
         {'name':'데스크', 'img':'table.png', 'value':'2'},
         {'name':'회의실', 'img':'meeting.png', 'value':'3'},
       ],
-      // 이미지 미리보기
+      // 공간 타입 선택
+      spaceTypeSelectData: '',
     }
   },
   computed: {
@@ -86,8 +87,16 @@ export default {
     },
     //타입 선택
     spaceTypeSelect(item){
-      console.log(item.value)
+      // console.log(item.value)
+      const itemValue = item.value
       this.spaceType = item.value
+      if (itemValue == '1'){
+        this.spaceTypeSelectData = '오피스'  
+      } else if (itemValue == '2'){
+        this.spaceTypeSelectData = '데스크'
+      } else {
+        this.spaceTypeSelectData = '회의실'
+      }
     },
     // 제목, 설명 글자수 관리
     spaceNameCountCheck(){
@@ -146,7 +155,8 @@ export default {
     // 검증
 
     //공간생성
-    async spaceCreate(){
+    // async 
+    spaceCreate(){
       let formData = new FormData()
       formData.append('spaceType', this.spaceType)
       formData.append('spaceName', this.spaceName)
@@ -158,8 +168,8 @@ export default {
       if (!this.spaceImg){
         formData.append('spaceImg', this.spaceImg)
       }
-      const response = await spaceCreate(formData)
-      console.log(response)
+      // const response = await spaceCreate(formData)
+      // console.log(response)
       // 데이터 확인
       const createData = {
         'spaceType': this.spaceType,
@@ -171,8 +181,10 @@ export default {
         'regCode': this.regCode,
         'spaceImg': this.spaceImg,
       }
+      console.log(formData)
       console.log(createData)
-      this.$route.push('/host')
+      // alert('공간이 생성되었습니다. 방을 생성해 주세요.')
+      this.$router.push('/host/roomCreate/:name/:spaceType')
     },
   },
 }
@@ -201,6 +213,7 @@ export default {
 }
 /* 타입 박스 */
 .spaceType {
+  letter-spacing: 1rem;
   font-size: 1.5rem;
   text-align: center;
 }
@@ -218,6 +231,10 @@ export default {
 }
 .spaceTypeIcon{
   width: 5vw;
+}
+.selectType{
+  background: rgba(0, 0, 255, 0.144);
+  color: white;
 }
 /* 공간명 */
 .spaceName {
@@ -250,7 +267,7 @@ export default {
   border: 1px solid gray;
   border-radius: 5px;
   background: white;
-  height: 4vh;
+  height: 3vh;
   width: 10vw;
   cursor: pointer;
 }
