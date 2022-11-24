@@ -35,10 +35,6 @@ router.beforeEach((to, from, next) => {
     console.log('닉네임 : ', sub)
     store.dispatch('NICKNAME', sub)
   }
-<<<<<<< HEAD
-=======
-
->>>>>>> d98f64e5482615db8606919c0ce340e5d1f3140d
   // 페이지 타입 검증
   const pageType = to.name.slice(0,4)
   console.log('pageType : ', pageType)

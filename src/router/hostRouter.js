@@ -28,7 +28,13 @@ export default [
     meta: {auth:true},
   },
   {
-    path: '/host/spaceDetail/:id',
+    path: '/host/roomCreate/:name/:spaceType',
+    name: 'hostRoomCreate',
+    component: () => import('@/views/hostView/RoomCreatePage.vue'),
+    meta: {auth:true},
+  },
+  {
+    path: '/host/spaceDetail/:name',
     name: 'hostSpaceDetail',
     component: () => import('@/views/SpaceDetail.vue'),
     meta: {auth:true},
