@@ -62,7 +62,7 @@
         </div>
         <div>
           <p>방사진</p>
-          <input type="file">
+          <input type="file" multiple accept="image/*" @change="fileUpload">
         </div>
       </div>
       <button v-if="roomCreate.length >= 1" class="addSubmitBtn">
@@ -73,6 +73,7 @@
 </template>
 
 <script>
+import {roomCreate} from '@/api/host'
 export default {
   data(){
     return {
@@ -90,10 +91,10 @@ export default {
       startTimeData: '',
       endTimeData: '',
       roomTypeData: [
-        {'name':'회의실 4인','price':'20000', 'value':'2'},
-        {'name':'회의실 6인','price':'30000', 'value':'3'},
-        {'name':'회의실 8~10인','price':'50000', 'value':'5'},
-        {'name':'회의실 20인','price':'100000', 'value':'10'},
+        {'name':'회의실 4인','price':'20000', 'value':'MEETING4'},
+        {'name':'회의실 6인','price':'30000', 'value':'MEETING6'},
+        {'name':'회의실 8~10인','price':'50000', 'value':'MEETING8'},
+        {'name':'회의실 20인','price':'100000', 'value':'MEETING20'},
       ],
     }
   },
@@ -128,13 +129,13 @@ export default {
     },
     // 가격 출력 및 반영
     priceSetting(item){
-      if (item.roomType == '회의실 4인'){
+      if (item.roomType == 'MEETING4'){
         item.roomPrice = 20000
-      } else if (item.roomType == '회의실 6인'){
+      } else if (item.roomType == 'MEETING6'){
         item.roomPrice = 30000
-      } else if (item.roomType == '회의실 8~10인'){
+      } else if (item.roomType == 'MEETING8'){
         item.roomPrice = 50000
-      } else if (item.roomType == '회의실 20인'){
+      } else if (item.roomType == 'MEETING20'){
         item.roomPrice = 100000
       }
       // console.log(item.roomType, item.roomPrice)
@@ -170,40 +171,44 @@ export default {
       console.log(this.roomCreate[index])
       this.roomCreate.splice(index, 1)
     },
-    // 방생성
-    roomCreateSubmit(){
-      this.roomCreate
-
-      let formData = new FormData()
-      formData.append('spaceType', this.spaceType)
-      formData.append('spaceName', this.spaceName)
-      formData.append('spaceDetail', this.spaceDetail)
-      formData.append('postcode', this.postcode)
-      formData.append('address', this.address)
-      formData.append('detailAddress', this.detailAddress)
-      formData.append('regCode', this.regCode)
-      if (!this.spaceImg){
-        formData.append('spaceImg', this.spaceImg)
-      }
-      // const response = await spaceCreate(formData)
-      // console.log(response)
-      // 데이터 확인
-      const createData = {
-        'spaceType': this.spaceType,
-        'spaceName': this.spaceName,
-        'spaceDetail': this.spaceDetail,
-        'postcode': this.postcode,
-        'address': this.address,
-        'detailAddress': this.detailAddress,
-        'regCode': this.regCode,
-        'spaceImg': this.spaceImg,
-      }
-      console.log(createData)
-      alert('공간이 생성되었습니다. 방을 생성해 주세요.')
-      this.$router.push('/host/roomCreate')
-      
+    // 사진 내용추가
+    fileUpload(e){
+      console.log(e.target.files)
+      this.roomImg = e.target.files
     },
+    // 방생성
+    async roomCreateSubmit(){
+      // 이미지제외한 룸정보 배열생성
+      const roomCreateData = this.roomCreate
+      // 이미지 배열생성
+      let fileInput = document.querySelectorAll('.files')
+      console.log(fileInput)
+      // 전송할 데이터 생성
+      // for await (const item of roomCreateData){
 
+      // 대기!!!!!!
+      for (let i = 0; i < roomCreateData.length; i++){
+        try {
+          let formData = new FormData()
+          formData.append('roomType', roomCreateData[i].roomType)
+          formData.append('roomName', roomCreateData[i].roomName)
+          if (!roomCreateData[i].roomImg){
+            formData.append('roomImg', fileInput[i].files[0])
+          }
+          formData.append('roomPrice', roomCreateData[i].roomPrice)
+          formData.append('workStart', roomCreateData[i].workStart)
+          formData.append('workEnd', roomCreateData[i].workEnd)
+          formData.append('roomDetail', roomCreateData[i].roomDetail)
+          console.log(roomCreateData[i].roomType)
+          const responce = await roomCreate(formData)
+          console.log(responce)
+          // alert('방이 생성되었습니다.')
+          // this.$router.push('/host')
+        } catch (error){
+          console.log(error)
+        }
+      }
+    },
   },
 }
 </script>
@@ -212,27 +217,14 @@ export default {
 .roomContainer{
   position: relative;
   overflow: auto;
-  height: 80vh;
+  height: 90vh;
 }
 .roomContainer::-webkit-scrollbar{
   display: none;
 }
-.addCreateBtn{
+.addCreateBtn, .addSubmitBtn{
   margin: 2ch 17vw;
-  height: 3vh;
-  font-size: 1.3rem;
-  letter-spacing: 1rem;
-  right: 0vw;
-  width: 20vw;
-  border: 0;
-  border-radius: 5px;
-  background: rgb(65, 97, 201);
-  color: white;
-  cursor: pointer;
-}
-.addSubmitBtn{
-  margin: 2ch 17vw;
-  height: 3vh;
+  height: 5vh;
   font-size: 1.3rem;
   letter-spacing: 1rem;
   right: 0vw;

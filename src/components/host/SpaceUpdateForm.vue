@@ -1,53 +1,51 @@
 <template>
-  <div class="backgound">
-    <div class="createBox">
-      <form class="createFrom" @submit.prevent="spaceCreate">
-        <div class="spaceType">
-          <span>공간생성</span>
-          <div class="spaceTypeItems">
-            <div v-for="(item, index) in spaceTypeItems" :key="index" class="spaceTypeItem" :class="(spaceTypeSelectData == item.name)?'selectType':'noSelectType'" @click="spaceTypeSelect(item)">
-              <img class="spaceTypeIcon" :src="require(`@/assets/${item.img}`)" alt="icon">
-              <p>{{ item.name }}</p>
-            </div>
+  <div class="createBox">
+    <form class="createFrom" @submit.prevent="spaceCreate">
+      <div class="spaceType">
+        <span>공간생성</span>
+        <div class="spaceTypeItems">
+          <div v-for="(item, index) in spaceTypeItems" :key="index" class="spaceTypeItem" :class="(spaceTypeSelectData == item.name)?'selectType':'noSelectType'" @click="spaceTypeSelect(item)">
+            <img class="spaceTypeIcon" :src="require(`@/assets/${item.img}`)" alt="icon">
+            <p>{{ item.name }}</p>
           </div>
         </div>
-        <div class="spaceName boxName">
-          공간명
-          <span class="textCount" :class="{warning:spaceName.length >= 20}">{{ spaceNameCount }}/20자</span><br>
-          <input v-model="spaceName" class="inputBox" type="text" placeholder="공간의 이름을 작성해주세요." @keyup="spaceNameCountCheck">
-          <p v-if="spaceName.length >= 20" class="warning">
-            제목은 20자까지 가능합니다.
-          </p>
-        </div>
-        <div class="spaceDetail boxName">
-          <span>공간소개</span>
-          <span class="textCount" :class="{warning:spaceDetail.length >= 100}">{{ spaceDetailCount }}/100자</span><br>
-          <textarea v-model="spaceDetail" class="inputBox spaceDetailBox" name="" rows="5" placeholder="공간을 소개해 주세요." @keypress="spaceDetailCountCheck" />
-          <p v-if="spaceDetail.length >= 100" class="warning">
-            설명은 100자까지 가능합니다.
-          </p>
-        </div>
-        <div class="spaceAddress boxName">
-          <span>공간주소</span><br>
-          <input v-model="postcode" class="inputBox postCodeBox" type="text" placeholder="우편번호">
-          <input class="postCodeBtn" type="button" value="우편번호 찾기" @click="execDaumPostcode"><br>
-          <input v-model="address" class="inputBox addressBox" type="text" name="address" placeholder="주소">
-          <input v-model="detailAddress" class="inputBox detailAddressBox" type="text" placeholder="상세주소">
-        </div>
-        <div class="regCode boxName">
-          <span>사업자번호</span><br>
-          <input v-model="regCode" class="inputBox" maxlength="12" type="text" placeholder="사업자번호" @keypress="regCodeKeypress">
-        </div>
-        <div class="spaceImg boxName">
-          <span>공간대표사진</span>
-          <label for="imgBtn" class="imgBtn">사진등록</label>
-          <input id="imgBtn" ref="spaceImg" type="file" multiple accept="image/*" hidden @change="fileUpload">
-        </div>
-        <button class="submit">
-          공간생성
-        </button>
-      </form>
-    </div>
+      </div>
+      <div class="spaceName boxName">
+        공간명
+        <span class="textCount" :class="{warning:spaceName.length >= 20}">{{ spaceNameCount }}/20자</span><br>
+        <input v-model="spaceName" class="inputBox" type="text" placeholder="공간의 이름을 작성해주세요." @keyup="spaceNameCountCheck">
+        <p v-if="spaceName.length >= 20" class="warning">
+          제목은 20자까지 가능합니다.
+        </p>
+      </div>
+      <div class="spaceDetail boxName">
+        <span>공간소개</span>
+        <span class="textCount" :class="{warning:spaceDetail.length >= 100}">{{ spaceDetailCount }}/100자</span><br>
+        <textarea v-model="spaceDetail" class="inputBox spaceDetailBox" name="" rows="5" placeholder="공간을 소개해 주세요." @keypress="spaceDetailCountCheck" />
+        <p v-if="spaceDetail.length >= 100" class="warning">
+          설명은 100자까지 가능합니다.
+        </p>
+      </div>
+      <div class="spaceAddress boxName">
+        <span>공간주소</span><br>
+        <input v-model="postcode" class="inputBox postCodeBox" type="text" placeholder="우편번호">
+        <input class="postCodeBtn" type="button" value="우편번호 찾기" @click="execDaumPostcode"><br>
+        <input v-model="address" class="inputBox addressBox" type="text" name="address" placeholder="주소">
+        <input v-model="detailAddress" class="inputBox detailAddressBox" type="text" placeholder="상세주소">
+      </div>
+      <div class="regCode boxName">
+        <span>사업자번호</span><br>
+        <input v-model="regCode" class="inputBox" maxlength="12" type="text" placeholder="사업자번호" @keypress="regCodeKeypress">
+      </div>
+      <div class="spaceImg boxName">
+        <span>공간대표사진</span>
+        <label for="imgBtn" class="imgBtn">사진등록</label>
+        <input id="imgBtn" ref="spaceImg" type="file" multiple accept="image/*" hidden @change="fileUpload">
+      </div>
+      <button class="submit">
+        공간생성
+      </button>
+    </form>
   </div>
 </template>
 
@@ -183,24 +181,25 @@ export default {
       }
       console.log(formData)
       console.log(createData)
-      // alert('공간이 생성되었습니다. 방을 생성해 주세요.')
-      this.$router.push('/host/roomCreate/:name/:spaceType')
+      alert('공간이 생성되었습니다. 방을 생성해 주세요.')
+      this.$router.push(`/host/roomCreate/${this.spaceName}/${this.spaceType}`)
     },
   },
 }
 </script>
 
 <style scoped>
-.backgound {
-  background: rgb(230, 230, 230);
-}
 .createBox {
   background: white;
   margin: auto;
   width: 55vw;
-  height: 95vh;
+  height: 100vh;
   padding: 2.5vw;
   font-weight: bold;
+  overflow: scroll;
+}
+.createBox::-webkit-scrollbar{
+  display: none;
 }
 /* 박스 기본틀 */
 .inputBox {

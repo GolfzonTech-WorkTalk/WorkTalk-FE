@@ -146,15 +146,13 @@ export default {
       let name = {
         name: this.nickname,
       }
-      let responce = await nickCheck(name)
-      console.log(responce)
-      let dataMSG = ''
-      if (responce.data == '1'){
-        dataMSG = '사용중인 닉네임입니다.'
-      } else {
-        dataMSG = '사용가능한 닉네임입니다.'
+      try {
+        let responce = await nickCheck(name)
+        console.log(responce)
+        this.nicknameMessage = responce.msg
+      } catch (error){
+        this.nicknameMessage = error.msg
       }
-      this.nicknameMessage = dataMSG
     },
     // 전화번호 '-' 자동 부여
     telKeypress(){
@@ -221,7 +219,7 @@ export default {
 .joinForm {
   background: white;
   border-radius: 15px;
-  height: 35vh;
+  height: 50vh;
   width: 50vw;
   padding: 3vw;
   text-align: left;
@@ -230,7 +228,7 @@ export default {
   font-weight: bold;
   font-size: 1em;
   width: 38vw;
-  height: 3vh;
+  height: 5vh;
   border: 2px solid gray;
   border-radius: 10px;
   margin-bottom: 1vh;

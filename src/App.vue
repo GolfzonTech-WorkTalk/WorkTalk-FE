@@ -22,6 +22,6 @@ export default {
 <style>
 @import './css/common.css';
 .AppContent {
-  height: 100vh;
+  height: 110vh;
 }
 </style>

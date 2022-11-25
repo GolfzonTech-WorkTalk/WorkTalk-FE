@@ -24,7 +24,13 @@ export default [
   {
     path: '/host/spaceCreate',
     name: 'hostSpaceCreate',
-    component: () => import('@/views/hostView/SpaceCreatePage.vue'),
+    component: () => import('@/views/hostView/SpaceCreate.vue'),
+    meta: {auth:true},
+  },
+  {
+    path: '/host/spaceUpdate',
+    name: 'hostSpaceUpdate',
+    component: () => import('@/views/hostView/SpaceCreate.vue'),
     meta: {auth:true},
   },
   {
