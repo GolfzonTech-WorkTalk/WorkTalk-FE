@@ -6,19 +6,11 @@ function spaceAll(formData){
 }
 
 function spaceCreate(formData){
-  return instance.post('spaceCreate', formData, {
-    headers: {
-      'Content-Type':'multipart/from-data',
-    },
-  })
+  return instance.post('spaceCreate', formData)
 }
 
 function roomCreate(formData){
-  return instance.post('roomCreate', formData, {
-    headers: {
-      'Content-Type':'multipart/from-data',
-    },
-  })
+  return instance.post('roomCreate', formData)
 }
 
 export {

@@ -1,7 +1,7 @@
 import { createStore } from 'vuex'
 import { getTokenFromCookie, saveTokenToCookie } from '@/utils/cookies'
 import jwt_decode from 'jwt-decode'
-// import { loginMember } from '@/api/auth'
+import { loginMember } from '@/api/auth'
 
 export default createStore({
   state: {
@@ -81,28 +81,30 @@ export default createStore({
       context.commit('setPageType', pageType)
     },
     // 로그인 처리
-    // async LOGIN(context, loginData){
-    LOGIN(context, loginData){
+    async LOGIN(context, loginData){
+    // LOGIN(context, loginData){
       console.log(loginData)
-      // const { data } = await loginMember(loginData) // api
-      // console.log(data)
-      // context.commit('setToken', data.token)
-      // saveTokenToCookie(data.token)
-      // return data
+      const { data } = await loginMember(loginData) // api
+      console.log(data)
+      const decode = jwt_decode(data.token)
+      context.commit('setToken', data.token)
+      context.commit('setNickName', decode.sub)
+      saveTokenToCookie(data.token)
+      return data
       
       // 유저더미
       // const dumydata = {
       //   "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiLsgqzsmqnsnpAiLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNjY5Mjg5MDc5fQ.6TrAQK1Ts5XFtwrwjTsFTrgdUk4BcwT8WNCt8GUaOrQJTRFzBy01ttkwJC0JbO2IZxr1eKh590bZbgeU151_-Q",
       // }
       // 호스트더미
-      const dumydata = {
-        "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiLsgqzsmqnsnpAiLCJhdXRoIjoiUk9MRV9IT1NUIiwiZXhwIjoxNjY5Mjg5MDc5fQ.sVyrbk8A9lkSh_RCxWPKfBPtts3wrw6jaDZwyGy6UnPEcinXpPeQtJoDr5qq-0pY1SxDHTQ1EG3VIyNhZjRvEg",
-      }
-      const decode = jwt_decode(dumydata.token)
-      context.commit('setToken', dumydata.token)
-      context.commit('setNickName', decode.sub)
-      saveTokenToCookie(dumydata.token)
-      return dumydata
+      // const dumydata = {
+      //   "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiLsgqzsmqnsnpAiLCJhdXRoIjoiUk9MRV9IT1NUIiwiZXhwIjoxNjY5Mjg5MDc5fQ.sVyrbk8A9lkSh_RCxWPKfBPtts3wrw6jaDZwyGy6UnPEcinXpPeQtJoDr5qq-0pY1SxDHTQ1EG3VIyNhZjRvEg",
+      // }
+      // const decode = jwt_decode(dumydata.token)
+      // context.commit('setToken', dumydata.token)
+      // context.commit('setNickName', decode.sub)
+      // saveTokenToCookie(dumydata.token)
+      // return dumydata
     },
     // 모달찰 끄기
     MODALVIEWCLICK(context, click){

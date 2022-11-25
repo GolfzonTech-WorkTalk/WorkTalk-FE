@@ -28,7 +28,7 @@ export default {
 .loginPage {
   background: rgb(230, 230, 230);
   width: 100vw;
-  height: 100vh;
+  height: 110vh;
   display: flex;
   flex-direction: column;
   align-items: center;
