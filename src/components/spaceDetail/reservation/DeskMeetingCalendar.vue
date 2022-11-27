@@ -171,7 +171,7 @@ export default {
       date = this.dataFormChage(date)
       let reserveDay = this.year+'-'+month+'-'+date
       // console.log(reserveDay)
-      this.$emit('selectDay',reserveDay)
+      this.$emit('select-day:date-click',reserveDay)
     },
   },
 }

@@ -119,14 +119,15 @@ export default {
     addCreateFrom(){
       console.log('클릭')
       this.roomCreate.push({
-          roomType: '방종류 선택',
-          roomName: '',
-          roomImg: '',
-          roomPrice: '',
-          workStart: '시작시간',
-          workEnd:'종료시간',
-          roomDetail:'',
-        })
+        spaceId: this.$route.params.spaceId,
+        roomType: '방종류 선택',
+        roomName: '',
+        roomImg: '',
+        roomPrice: '',
+        workStart: '시작시간',
+        workEnd:'종료시간',
+        roomDetail:'',
+      })
     },
     // 가격 출력 및 반영
     priceSetting(item){
@@ -186,7 +187,6 @@ export default {
       console.log(fileInput)
       // 전송할 데이터 생성
       // for await (const item of roomCreateData){
-
       try {
         for (let i = 0; i < roomCreateData.length; i++){
           const createData = {
@@ -200,10 +200,10 @@ export default {
             'roomDetail': roomCreateData[i].roomDetail,
           }
           console.log(createData)
-          const responce = await roomCreate(createData, 52)
+          const responce = await roomCreate(createData, roomCreateData[i].spaceId)
           console.log(responce)
-          alert('방이 생성되었습니다.')
         }
+        alert('방이 생성되었습니다.')
         this.$router.push('/host')
       } catch (error){
         console.log(error)
@@ -224,7 +224,7 @@ export default {
 }
 .addCreateBtn, .addSubmitBtn{
   margin: 2ch 17vw;
-  height: 3vh;
+  height: 5vh;
   font-size: 1.3rem;
   letter-spacing: 1rem;
   right: 0vw;

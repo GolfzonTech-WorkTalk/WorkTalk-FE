@@ -76,8 +76,8 @@ export default {
         }
         const responce = await roomCreate(createData, officeRoom.spaceId)
         console.log(responce)
-        // alert('방이 생성되었습니다.')
-        // this.$router.push('/host')
+        alert('방이 생성되었습니다.')
+        this.$router.push('/host')
       } catch (error){
         console.log(error)
       }
@@ -114,7 +114,7 @@ export default {
 }
 .submitBtn{
   margin: 2ch 17vw;
-  height: 3vh;
+  height: 5vh;
   font-size: 1.3rem;
   letter-spacing: 1rem;
   right: 0vw;

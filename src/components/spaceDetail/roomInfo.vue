@@ -27,7 +27,7 @@
         <p class="roomDetail">
           {{ item.roomDetail }}
         </p>
-        <desk-meeting-calendar-vue :select-day="reservationDay" @selectDay="lookupReservation" />
+        <desk-meeting-calendar-vue :select-day="reservationDay" @select-day:date-click="lookupReservation" />
         <div class="reservationResult">
           {{ reservationDay }}
         </div>

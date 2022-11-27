@@ -99,14 +99,15 @@ export default {
     addCreateFrom(){
       console.log('클릭')
       this.roomCreate.push({
-          roomType: 'DESK',
-          roomName: '',
-          roomImg: '',
-          roomPrice: '',
-          workStart: '시작시간',
-          workEnd:'종료시간',
-          roomDetail:'',
-        })
+        spaceId: this.$route.params.spaceId,
+        roomType: 'DESK',
+        roomName: '',
+        roomImg: '',
+        roomPrice: '',
+        workStart: '시작시간',
+        workEnd:'종료시간',
+        roomDetail:'',
+      })
     },
     // 날짜 필터
     endTimeDataCheck(startTime){
@@ -153,8 +154,8 @@ export default {
       let fileInput = document.querySelectorAll('.files')
       console.log(fileInput)
       // 전송할 데이터 생성
-      for (let i = 0; i < roomCreateData.length; i++){
-        try {
+      try {
+        for (let i = 0; i < roomCreateData.length; i++){
           const createData = {
             'spaceId': roomCreateData[i].spaceId,
             'roomType': roomCreateData[i].roomType,
@@ -165,14 +166,15 @@ export default {
             'workEnd': roomCreateData[i].workEnd,
             'roomDetail': roomCreateData[i].roomDetail,
           }
-          const responce = await roomCreate(createData, 52)
+          console.log(createData)
+          const responce = await roomCreate(createData, roomCreateData[i].spaceId)
           console.log(responce)
-          alert('방이 생성되었습니다.')
-        } catch (error){
-          console.log(error)
         }
+        alert('방이 생성되었습니다.')
+        this.$router.push('/host')
+      } catch (error){
+        console.log(error)
       }
-      this.$router.push('/host')
     },
   },
 }
@@ -189,7 +191,6 @@ export default {
 }
 .addCreateBtn, .addSubmitBtn{
   margin: 2ch 17vw;
-  height: 3vh;
   height: 5vh;
   font-size: 1.3rem;
   letter-spacing: 1rem;
@@ -197,7 +198,7 @@ export default {
   width: 20vw;
   border: 0;
   border-radius: 5px;
-  background: rgb(65, 97, 201);
+  background: rgba(139, 98, 9, 0.527);
   color: white;
   cursor: pointer;
 }
