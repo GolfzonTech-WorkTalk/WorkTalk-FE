@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { deleteCookie } from '@/utils/cookies'
 import userRouter from './userRouter'
 import hostRouter from './hostRouter'
 import store from '@/store'
@@ -8,6 +7,37 @@ import jwt_decode from 'jwt-decode'
 const routes = [
   ...userRouter,
   ...hostRouter,
+  {
+    path: '/testPage',
+    name: 'testPage',
+    component: () => import('@/views/testPage.vue'),
+  },
+  {
+    path: '/',
+    name: 'home',
+    component: () => import('@/views/MainPage.vue'),
+  },
+  {
+    path: '/login',
+    name: 'login',
+    component: () => import('@/views/LoginPage.vue'),
+  },
+  {
+    path: '/join',
+    name: 'join',
+    component: () => import('@/views/JoinPage.vue'),
+  },
+  {
+    path: '/map',
+    name: 'userMAP',
+    component: () => import('@/views/MapPage.vue'),
+  },
+  {
+    path: '/profile',
+    name: 'profile',
+    component: () => import('@/views/ProfilePage.vue'),
+    meta: {auth:true},
+  },
   {
     path: "/:catchAll(.*)",
     name: "404Name",
@@ -34,12 +64,8 @@ router.beforeEach((to, from, next) => {
     console.log('권한 : ', auth)
     console.log('닉네임 : ', sub)
     store.dispatch('NICKNAME', sub)
+    store.dispatch('ROLETYPE', auth)
   }
-  // 페이지 타입 검증
-  const pageType = to.name.slice(0,4)
-  console.log('pageType : ', pageType)
-  // console.log(to.name.slice(0,4))
-  store.dispatch('PAGETYPE', pageType)
   
   // 페이지 넘어갈시 메뉴탭 닫기
   store.dispatch('MENUTABCLOSE', false)
@@ -48,33 +74,16 @@ router.beforeEach((to, from, next) => {
   if (to.meta.auth && !store.getters.isLogin){
     console.log('로그인이 필요합니다.')
     alert('로그인이 필요합니다.')
-    if (pageType === 'user'){
-      next('/user/login')
-    } else {
-      next('/host/login')
-    }
-    return
+    return next('/login')
   }
   
   // 로그인 검증 후 권한확인
-  if (to.meta.auth && store.getters.isLogin){
-    let roleCheck
-    if (auth == 'ROLE_HOST'){
-      roleCheck = 'host'
-    } else {
-      roleCheck = 'user'
-    }
-    if (pageType != roleCheck){
-      alert('권한이 다름, 토큰 초기화')
-      if (roleCheck == 'user'){
-        store.commit('setlogoutUser')
-        deleteCookie('token')
-        next('/user/login')
-      } else {
-        store.commit('setlogoutUser')
-        deleteCookie('token')
-        next('/host/login')
-      }
+  const pageRole = to.path.slice(1,5)
+  console.log(pageRole)
+  if (pageRole == 'host'){
+    if ((auth != 'ROLE_HOST')){
+      alert('권한이 없습니다.')
+      return this.$router.go(-1)
     }
   }
   next()

@@ -25,6 +25,7 @@ export default {
 <style scoped>
 .modalView{
   position: absolute;
+  z-index: 1;
 }
 .modalMassegeBox{
   font-weight: bold;

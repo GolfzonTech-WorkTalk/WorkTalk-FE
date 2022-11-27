@@ -1,5 +1,11 @@
 <template>
   <form class="joinForm" @submit.prevent="joinCheck">
+    <div class="roleSelectBox" :class="(role=='ROLE_USER')?'selectRole':'noSelectRole'">
+      <span @click="roleSelect('ROLE_USER')">이용자</span>
+    </div>
+    <div class="roleSelectBox" :class="(role=='ROLE_HOST')?'selectRole':'noSelectRole'">
+      <span class="roleHost" @click="roleSelect('ROLE_HOST')">공급자</span>
+    </div>
     <div>
       <input v-model="email" class="emailBox joinFormItem" type="text" placeholder="이메일" @keyup="emailChange">
       @
@@ -30,14 +36,14 @@
     <div>
       <input id="nickname" v-model="nickname" class="nickname joinFormItem" type="text" placeholder="닉네임" @keyup="nicknameChage">
       <input type="button" value="중복체크" class="nicknameCheck" @click="nicknameCheck">
-      <template v-if="nicknameMessage === '사용중인 닉네임입니다.'">
-        <p class="warning">
-          {{ nicknameMessage }}
+      <template v-if="nicknameMessage == '200'">
+        <p class="available">
+          사용가능한 닉네임입니다.
         </p>
       </template>
-      <template v-if="nicknameMessage === '사용가능한 닉네임입니다.'">
-        <p class="available">
-          {{ nicknameMessage }}
+      <template v-if="nicknameMessage == '500'">
+        <p class="warning">
+          사용중인 닉네임입니다.
         </p>
       </template>
     </div>
@@ -46,7 +52,6 @@
     </div>
     <div>
       <button id="submit" class="submit joinFormItem">
-        <!-- :disabled="!userEmailValid || !pw || !email" -->
         회원가입
       </button>
     </div>
@@ -61,6 +66,7 @@ export default {
   data(){
     return {
       // 로그인 데이터
+      role: '',
       email: '',
       emailDomain:'',
       emailDomains: [
@@ -87,6 +93,10 @@ export default {
     }
   },
   methods: {
+    // 권한 선택
+    roleSelect(role){
+      this.role = role
+    },
     // 이메일 변경시도
     emailChange(){
       this.emailVeificaion = true
@@ -146,15 +156,14 @@ export default {
       let name = {
         name: this.nickname,
       }
-      let responce = await nickCheck(name)
-      console.log(responce)
-      let dataMSG = ''
-      if (responce.data == '1'){
-        dataMSG = '사용중인 닉네임입니다.'
-      } else {
-        dataMSG = '사용가능한 닉네임입니다.'
+      try {
+        let responce = await nickCheck(name)
+        // console.log(responce)
+        console.log(responce.status)
+        this.nicknameMessage = responce.status
+      } catch (error){
+        this.nicknameMessage = error.status
       }
-      this.nicknameMessage = dataMSG
     },
     // 전화번호 '-' 자동 부여
     telKeypress(){
@@ -170,26 +179,29 @@ export default {
         email = this.email +'@'+ this.emailDomain
       }
       const joinData = {
-        email: email,
-        pw: this.pw,
-        name: this.nickname,
-        tel: this.tel,
+        'email': email,
+        'pw': this.pw,
+        'name': this.nickname,
+        'tel': this.tel,
+        'role': this.role,
       }
       console.log(joinData)
       const { data } = await registerMember(joinData)
       console.log(data)
-      this.$route.push('/user/login')
-      // const userTypeVerify = data.userType
-      // if (userTypeVerify === 'host'){
-      //   return this.$router.push('/host/login')
-      // } else {
-      //   this.$router.push('/user/login')
-      // }
+      if (this.$store.state.role == 'ROLE_HOST'){
+        return this.$router.push('/host')
+      } else {
+        return this.$router.push('/')
+      }
     },
     // 회원가입 검증
     joinCheck(){
       let message = ''
-      if (!this.email || !this.emailDomain || this.emailDomain === '기타' && !this.emailDomainETC){
+      if (!this.role){
+        let message = '가입유형을 선택해주세요.'
+        this.$store.dispatch('MODALVIEWCLICK', true)
+        this.$store.dispatch('MODALMESSAGE', message)
+      } else if (!this.email || !this.emailDomain || this.emailDomain === '기타' && !this.emailDomainETC){
         let message = '이메일을 확인해주세요'
         this.$store.dispatch('MODALVIEWCLICK', true)
         this.$store.dispatch('MODALMESSAGE', message)
@@ -201,7 +213,7 @@ export default {
         message = '비밀번호를 확인해주세요.'
         this.$store.dispatch('MODALVIEWCLICK', true)
         this.$store.dispatch('MODALMESSAGE', message)
-      } else if (this.nicknameMessage !== '사용가능한 닉네임입니다.'){
+      } else if (this.nicknameMessage != '200'){
         message = '닉네임 중복체크를 완료해주세요.'
         this.$store.dispatch('MODALVIEWCLICK', true)
         this.$store.dispatch('MODALMESSAGE', message)
@@ -221,16 +233,37 @@ export default {
 .joinForm {
   background: white;
   border-radius: 15px;
-  height: 35vh;
+  height: 50vh;
   width: 50vw;
   padding: 3vw;
   text-align: left;
+}
+.roleSelectBox span {
+  position: absolute;
+  top: 19vh;
+  border: 1px solid gray;
+  border-radius: 10px;
+  padding: 0.1vw 1vw;
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-align: center;
+  width: 20vw;
+}
+.roleHost{
+  margin-left: 25vw;
+}
+.selectRole span{
+  color: white;
+  background: rgba(42, 75, 165, 0.473);
+}
+.noSelectRole span{
+  background: white;
 }
 .joinFormItem{
   font-weight: bold;
   font-size: 1em;
   width: 38vw;
-  height: 3vh;
+  height: 5vh;
   border: 2px solid gray;
   border-radius: 10px;
   margin-bottom: 1vh;

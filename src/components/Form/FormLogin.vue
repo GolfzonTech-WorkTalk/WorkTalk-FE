@@ -5,7 +5,7 @@
       <span v-if="!userEmailValid && email" class="warning">이메일 형식이 아닙니다.</span>
     </div>
     <div class="loginFromItems">
-      <input id="pw" v-model="pw" type="text" placeholder="비밀번호">
+      <input id="pw" v-model="pw" type="password" placeholder="비밀번호">
     </div>
     <div class="loginFromItems">
       <button id="submit" :disabled="!userEmailValid || !pw || !email">
@@ -13,17 +13,10 @@
       </button>
     </div>
     <div>
-      <span>워크토크 회원이 아니십니까?</span>
-      <template v-if="$store.state.userType === 'user'">
-        <router-link to="/user/join">
-          <span>회원가입</span>
-        </router-link>
-      </template>
-      <template v-else>
-        <router-link to="/host/join">
-          <span>회원가입</span>
-        </router-link>
-      </template>
+      <span>워크토크 이용자/공급자가 아니십니까?</span>
+      <router-link to="/join">
+        <span>회원가입</span>
+      </router-link>
     </div>
   </form>
 </template>

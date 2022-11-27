@@ -1,10 +1,8 @@
 <template>
   <div class="backgound">
     <div class="createBox">
-      <div :class="spaceTypeClass">
-        <span>{{ spaceType }}</span>
-      </div>
       <div class="spaceName">
+        <span :class="spaceTypeClass">{{ spaceType }}</span>
         <span>공간명 : {{ name }}</span>
       </div>
       <template v-if="spaceType == '데스크'">
@@ -39,10 +37,10 @@ export default {
     // console.log(this.$route.params.name)
     // console.log(this.$route.params.spaceType)
     const spaceType = this.$route.params.spaceType
-    if (spaceType == '1'){
+    if (spaceType == '2'){
       this.spaceType = '데스크'
       this.spaceTypeClass = 'deskLabel LabelDesign'
-    } else if (spaceType == '2'){
+    } else if (spaceType == '3'){
       this.spaceType = '회의실'
       this.spaceTypeClass = 'meetingRoomLabel LabelDesign'
     } else {
@@ -63,7 +61,7 @@ export default {
   background: white;
   margin: auto;
   width: 55vw;
-  height: 100vh;
+  height: 110vh;
   padding: 2.5vw;
   font-weight: bold;
 }
@@ -73,9 +71,8 @@ export default {
 }
 .LabelDesign {
   border-radius: 5px;
-  padding: 5px;
-  width: 10vw;
-  text-align: center;
+  padding: 3px 10px;
+  margin-right: 10px;
   font-size: 0.9rem;
   font-weight: bold;
   letter-spacing: 0.3rem;

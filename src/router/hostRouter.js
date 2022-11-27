@@ -10,33 +10,33 @@ export default [
     component: () => import('@/views/JoinPage.vue'),
   },
   {
-    path: '/host',
+    path: '/host',  // selectAll
     name: 'hostMain',
     component: () => import('@/views/hostView/HostMainPage.vue'),
     meta: {auth:true},
   },
   {
-    path: '/host/profile',
-    name: 'hostProfile',
-    component: () => import('@/views/ProfilePage.vue'),
+    path: '/host/spaceOne/:spaceName/:spaceId',
+    name: 'hostSpaceOne',
+    component: () => import('@/views/SpaceDetail.vue'),
     meta: {auth:true},
   },
   {
     path: '/host/spaceCreate',
     name: 'hostSpaceCreate',
-    component: () => import('@/views/hostView/SpaceCreatePage.vue'),
+    component: () => import('@/views/hostView/SpaceCreate.vue'),
     meta: {auth:true},
   },
   {
-    path: '/host/roomCreate/:name/:spaceType',
+    path: '/host/spaceUpdate',
+    name: 'hostSpaceUpdate',
+    component: () => import('@/views/hostView/SpaceCreate.vue'),
+    meta: {auth:true},
+  },
+  {
+    path: '/host/roomCreate/:name/:spaceType/:spaceId',
     name: 'hostRoomCreate',
     component: () => import('@/views/hostView/RoomCreatePage.vue'),
-    meta: {auth:true},
-  },
-  {
-    path: '/host/spaceDetail/:name',
-    name: 'hostSpaceDetail',
-    component: () => import('@/views/SpaceDetail.vue'),
     meta: {auth:true},
   },
 ]

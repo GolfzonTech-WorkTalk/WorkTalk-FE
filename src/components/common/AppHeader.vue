@@ -2,21 +2,14 @@
   <header>
     <div v-if="MenuTabView" class="background" @click="menuTabBtn" />
     <div class="LogoAndSearch">
-      <template v-if="searchBoxValid">
-        <router-link to="/">
-          <img src="@/assets/worktalk.png" alt="logo" class="logo">
-        </router-link>
-        <FormSearch />
-      </template>
-      <template v-else>
-        <router-link to="/host">
-          <img src="@/assets/worktalk.png" alt="logo" class="logo">
-        </router-link>
-      </template>
+      <router-link to="/">
+        <img src="@/assets/worktalk.png" alt="logo" class="logo">
+      </router-link>
+      <FormSearch />
     </div>
     <div>
       <i class="fa-solid fa-bars fa-2x" @click="menuTabBtn" />
-      <template v-if="searchBoxValid">
+      <template v-if="searchBoxMenuTabValid()">
         <UserMenuTab v-if="MenuTabView" @menu-tab-btn="menuTabBtn" />
       </template>
       <template v-else>
@@ -37,28 +30,28 @@ export default {
     HostMenuTab,
   },
   computed: {
-    // 메뉴탭 관리
+    // 메뉴탭 상태변수
     MenuTabView(){
       return this.$store.state.MenuTabView
     },
     // 로고 이동 링크
     logoLink(){
-      const userType = this.$store.state.userType
-      if (userType === 'user'){
-        return '/'
-      } else {
+      const userRole = this.$store.state.role
+      if (userRole == 'ROLE_HOST'){
         return '/host'
+      } else {
+        return '/'
       }
-    },
-    // 검색창 출력
-    searchBoxValid(){
-      return this.$store.state.pageType === 'user' ? true : false
     },
   },
   methods: {
-    // 메뉴탭 관리
+    // 메뉴탭 버튼
     menuTabBtn(){
       this.$store.dispatch('MENUTABVIEW')
+    },
+    searchBoxMenuTabValid(){
+      // console.log(this.$store.state.role != 'ROLE_HOST')
+      return this.$store.state.role != 'ROLE_HOST'
     },
   },
 }

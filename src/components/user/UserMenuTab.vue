@@ -4,12 +4,12 @@
       <i class="fa-solid fa-xmark menuTabClose fa-lg" @click="menuTabBtn" />
       <template v-if="loginOK">
         <i class="fa-solid fa-right-from-bracket fa-lg logout" @click="logout" />
-        <router-link to="/user/profile">
+        <router-link to="/profile">
           <span>{{ nickName }}</span>
         </router-link>
       </template>
       <template v-else>
-        <router-link to="/user/login">
+        <router-link to="/login">
           <span>로그인/회원가입</span>
         </router-link>
       </template>
@@ -52,7 +52,7 @@
     </div>
     <div class="menuTabHostpagemove">
       <span @click="hostPageMove">
-        공급자 페이지로 이동
+        공급자로 로그인
         <i class="fa-solid fa-arrow-right" />
       </span>
     </div>
@@ -79,13 +79,14 @@ export default {
       this.$emit('menu-tab-btn')
     },
     hostPageMove(){
-      window.open('/host/login')
+      this.$store.commit('setlogoutUser')
+      deleteCookie('token')
+      this.$store.dispatch('MENUTABCLOSE', false)
+      this.$router.push('/login')
     },
     logout(){
       this.$store.commit('setlogoutUser')
       deleteCookie('token')
-      deleteCookie('email')
-      deleteCookie('userType')
       this.$store.dispatch('MENUTABCLOSE', false)
       this.$router.push('/')
     },
