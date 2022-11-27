@@ -75,8 +75,8 @@ export default createStore({
       context.commit('setRole', role)
     },
     // 로그인 처리
-    // async LOGIN(context, loginData){
-    LOGIN(context, loginData){
+    async LOGIN(context, loginData){
+    // LOGIN(context, loginData){
       console.log(loginData)
       // try {
       //   const { data } = await loginMember(loginData) // api

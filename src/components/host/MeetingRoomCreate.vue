@@ -187,7 +187,6 @@ export default {
       // 전송할 데이터 생성
       // for await (const item of roomCreateData){
 
-      // 대기!!!!!!
       try {
         for (let i = 0; i < roomCreateData.length; i++){
           const createData = {
