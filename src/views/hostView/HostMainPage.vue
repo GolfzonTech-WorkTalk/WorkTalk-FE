@@ -8,15 +8,15 @@
     <div class="spaceAllContainer">
       <div v-for="item in spaceItems" :key="item.title" class="spaceItem">
         <div class="spaceImg">
-          <img src="@/assets/dummy1.jpg" alt="">
+          <img :src="item.spaceImg" alt="공간이미지">
         </div>
-        <router-link :to="itemLink(item.spaceStatus, item.title, item.spaceType)" :class="(item.spaceStatus == 'waiting') ? 'waitingBox' : 'approvedBox'">
+        <router-link :to="itemLink(item.spaceStatus, item.spaceName, item.spaceType, item.spaceName, item.spaceId)" :class="(item.spaceStatus == 'waiting') ? 'waitingBox' : 'approvedBox'">
           <div class="spaceTitle">
-            <span>{{ item.title }}</span>
+            <span>{{ item.spaceName }}</span>
           </div>
           <div class="spaceLocation">
             <i class="fa-solid fa-map-pin" />
-            <span>{{ item.location }}</span>
+            <span>{{ item.address }}</span>
           </div>
           <div class="spaceGradeReview">
             <i class="fa-regular fa-star" /> {{ item.grade }} <i class="fa-regular fa-comments" /> {{ item.review }}
@@ -50,30 +50,30 @@
 </template>
 
 <script>
-// import { spaceAll } from '@/api/auth.js'
-import { spaceDumy } from '@/utils/dummy'
+import { spaceAll } from '@/api/host.js'
+// import { spaceDumy } from '@/utils/dummy'
 // import jwt_decode from 'jwt-decode'
 export default {
   data(){
     return {
-      spaceItems: spaceDumy,
+      spaceItems: '',
     }
   },
-  // async
-  created(){
-    // const responce =  await spaceAll(this.$store.state.nickName)
-    // this.spaceItems = jwt_decode(responce)
-    const responce = spaceDumy
+  async created(){
+    const responce =  await spaceAll(this.$store.state.nickName)
     console.log(responce)
+    this.spaceItems = responce.data
+    // const responce = spaceDumy
+    // console.log(responce)
   },
   methods: {
-    itemLink(spaceStatus, title, spaceType){
+    itemLink(spaceStatus, title, spaceType, spaceName, spaceId){
       if (spaceStatus == 'waiting'){
         return '/host/roomCreate/'+title
-      } else if (spaceStatus == 'approvedBox'){
-        return '/host/spaceDetail'
+      } else if (spaceStatus == 'approved'){
+        return 'host/spaceOne/'+spaceName+'/'+ spaceId
       } else {
-        return '/host/roomCreate/'+title+'/'+spaceType
+        return '/host/roomCreate/'+title+'/'+spaceType+'/'+spaceId
       }
     },
   },

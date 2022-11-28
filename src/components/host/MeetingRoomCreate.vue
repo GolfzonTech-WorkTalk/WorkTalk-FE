@@ -1,6 +1,6 @@
 <template>
   <div class="roomContainer">
-    <p>가격 : 4인(2만원/시간) 6인(3만원/시간) 8인~10인이하(5만원/시간) 20인(10만원/시간)</p>
+    <p>가격기준 : 4인(2만원/시간) 6인(3만원/시간) 8인~10인이하(5만원/시간) 20인(10만원/시간)</p>
     <button class="addCreateBtn" @click="addCreateFrom">
       공간추가
     </button>
@@ -13,7 +13,7 @@
             <option hidden>
               방종류 선택
             </option>
-            <option v-for="roomTypeItem in roomTypeData" :key="roomTypeItem" :value="roomTypeItem.name">
+            <option v-for="roomTypeItem in roomTypeData" :key="roomTypeItem" :value="roomTypeItem.value">
               {{ roomTypeItem.name }}
             </option>
           </select>
@@ -79,6 +79,7 @@ export default {
     return {
       roomCreate: [
         {
+          spaceId: this.$route.params.spaceId,
           roomType: '방종류 선택',
           roomName: '',
           roomImg: '',
@@ -118,14 +119,15 @@ export default {
     addCreateFrom(){
       console.log('클릭')
       this.roomCreate.push({
-          roomType: '방종류 선택',
-          roomName: '',
-          roomImg: '',
-          roomPrice: '',
-          workStart: '시작시간',
-          workEnd:'종료시간',
-          roomDetail:'',
-        })
+        spaceId: this.$route.params.spaceId,
+        roomType: '방종류 선택',
+        roomName: '',
+        roomImg: '',
+        roomPrice: '',
+        workStart: '시작시간',
+        workEnd:'종료시간',
+        roomDetail:'',
+      })
     },
     // 가격 출력 및 반영
     priceSetting(item){
@@ -185,28 +187,26 @@ export default {
       console.log(fileInput)
       // 전송할 데이터 생성
       // for await (const item of roomCreateData){
-
-      // 대기!!!!!!
-      for (let i = 0; i < roomCreateData.length; i++){
-        try {
-          let formData = new FormData()
-          formData.append('roomType', roomCreateData[i].roomType)
-          formData.append('roomName', roomCreateData[i].roomName)
-          if (!roomCreateData[i].roomImg){
-            formData.append('roomImg', fileInput[i].files[0])
+      try {
+        for (let i = 0; i < roomCreateData.length; i++){
+          const createData = {
+            'spaceId': roomCreateData[i].spaceId,
+            'roomType': roomCreateData[i].roomType,
+            'roomName': roomCreateData[i].roomName,
+            'roomImg': roomCreateData[i].roomImg,
+            'roomPrice': roomCreateData[i].roomPrice,
+            'workStart': roomCreateData[i].workStart,
+            'workEnd': roomCreateData[i].workEnd,
+            'roomDetail': roomCreateData[i].roomDetail,
           }
-          formData.append('roomPrice', roomCreateData[i].roomPrice)
-          formData.append('workStart', roomCreateData[i].workStart)
-          formData.append('workEnd', roomCreateData[i].workEnd)
-          formData.append('roomDetail', roomCreateData[i].roomDetail)
-          console.log(roomCreateData[i].roomType)
-          const responce = await roomCreate(formData)
+          console.log(createData)
+          const responce = await roomCreate(createData, roomCreateData[i].spaceId)
           console.log(responce)
-          // alert('방이 생성되었습니다.')
-          // this.$router.push('/host')
-        } catch (error){
-          console.log(error)
         }
+        alert('방이 생성되었습니다.')
+        this.$router.push('/host')
+      } catch (error){
+        console.log(error)
       }
     },
   },
@@ -231,7 +231,7 @@ export default {
   width: 20vw;
   border: 0;
   border-radius: 5px;
-  background: rgb(65, 97, 201);
+  background: rgba(9, 44, 139, 0.527);
   color: white;
   cursor: pointer;
 }

@@ -8,12 +8,12 @@ function mailCheck(email){
 
 // 닉네임체크
 function nickCheck(nickcheck){
-  return instance.post('user/nameCheck', nickcheck)
+  return instance.post('nameCheck', nickcheck)
 }
 
 // 회원가입
 function registerMember(memberData){
-  return instance.post('user/join', memberData)
+  return instance.post('join', memberData)
 }
 
 // 로그인

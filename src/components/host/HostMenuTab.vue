@@ -2,17 +2,10 @@
   <div class="menuTab">
     <div class="menuTabUserInfo">
       <i class="fa-solid fa-xmark menuTabClose fa-lg" @click="menuTabBtn" />
-      <template v-if="loginOK">
-        <i class="fa-solid fa-right-from-bracket fa-lg logout" @click="logout" />
-        <router-link to="/user/profile">
-          <span>{{ nickName }}</span>
-        </router-link>
-      </template>
-      <template v-else>
-        <router-link to="/user/login">
-          <span>로그인/회원가입</span>
-        </router-link>
-      </template>
+      <i class="fa-solid fa-right-from-bracket fa-lg logout" @click="logout" />
+      <router-link to="/profile">
+        <span>{{ nickName }}</span>
+      </router-link>
     </div>
     <div class="menuTabUserService">
       <ul>
@@ -52,7 +45,7 @@
     </div>
     <div class="menuTabHostpagemove">
       <span @click="userPageMove">
-        이용자 페이지로 이동
+        공간 관리페이지로 이동
         <i class="fa-solid fa-arrow-right" />
       </span>
     </div>
@@ -68,17 +61,12 @@ export default {
       nickName: this.$store.state.nickName,
     }
   },
-  computed: {
-    loginOK(){
-      return this.$store.state.token
-    },
-  },
   methods: {
     menuTabBtn(){
       this.$emit('menu-tab-btn')
     },
     userPageMove(){
-      window.open('/')
+      this.$router.push('/host')
     },
     logout(){
       this.$store.commit('setlogoutUser')
@@ -86,7 +74,7 @@ export default {
       deleteCookie('email')
       deleteCookie('userType')
       this.$store.dispatch('MENUTABCLOSE', false)
-      this.$router.push('/host/login')
+      this.$router.push('/')
     },
   },
 }

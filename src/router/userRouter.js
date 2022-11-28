@@ -1,29 +1,8 @@
 export default [
   {
-    path: '/',
-    name: 'userMain',
-    component: () => import('@/views/MainPage.vue'),
-  },
-  {
-    path: '/map',
-    name: 'userMAP',
-    component: () => import('@/views/MapPage.vue'),
-  },
-  {
-    path: '/user/login',
-    name: 'userLogin',
-    component: () => import('@/views/LoginPage.vue'),
-  },
-  {
-    path: '/user/join',
-    name: 'userJoin',
-    component: () => import('@/views/JoinPage.vue'),
-  },
-  {
-    path: '/user/profile',
-    name: 'userProfile',
-    component: () => import('@/views/ProfilePage.vue'),
-    meta: {auth:true},
+    path: '/spaceOne/:spaceName/:spaceId/:spaceType',
+    name: 'spaceOne',
+    component: () => import('@/views/SpaceDetail.vue'),
   },
   {
     path: '/user/reservation',

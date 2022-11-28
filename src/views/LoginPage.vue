@@ -1,11 +1,6 @@
 <template>
   <div class="loginPage">
-    <template v-if="userTypeVerify">
-      <h1>이용자 로그인</h1>
-    </template>
-    <template v-else>
-      <h1>공급자 로그인</h1>
-    </template>
+    <h1>워크토크 로그인</h1>
     <form-login />
   </div>
 </template>
@@ -15,11 +10,6 @@ import FormLogin from '@/components/Form/FormLogin.vue'
 export default {
   components: {
     FormLogin,
-  },
-  computed: {
-    userTypeVerify(){
-      return this.$store.state.pageType === 'user' ? true : false
-    },
   },
 }
 </script>

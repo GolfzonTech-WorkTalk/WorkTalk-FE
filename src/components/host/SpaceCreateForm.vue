@@ -62,7 +62,7 @@ export default {
       address:'',
       detailAddress:'',
       regCode:'',
-      spaceImg:'',
+      spaceImg:null,
       // 텍스트 관리
       spaceNameCount: '0',
       spaceDetailCount: '0',
@@ -157,21 +157,21 @@ export default {
     // async 
     async spaceCreate(){
       try {
-        let formData = new FormData()
-        formData.append('spaceType', this.spaceType)
-        formData.append('spaceName', this.spaceName)
-        formData.append('spaceDetail', this.spaceDetail)
-        formData.append('postcode', this.postcode)
-        formData.append('address', this.address)
-        formData.append('detailAddress', this.detailAddress)
-        formData.append('regCode', this.regCode)
-        if (!this.spaceImg){
-          formData.append('spaceImg', this.spaceImg)
-        }
-        const response = await spaceCreate(formData)
-        console.log(response)
+        // let formData = new FormData()
+        // formData.append('name', this.$store.state.nickName)
+        // formData.append('spaceType', this.spaceType)
+        // formData.append('spaceName', this.spaceName)
+        // formData.append('spaceDetail', this.spaceDetail)
+        // formData.append('postcode', this.postcode)
+        // formData.append('address', this.address)
+        // formData.append('detailAddress', this.detailAddress)
+        // formData.append('regCode', this.regCode)
+        // if (this.spaceImg != null){
+        //   formData.append('spaceImg', this.spaceImg)
+        // }
         // 데이터 확인
         const createData = {
+          'name': this.$store.state.nickName,
           'spaceType': this.spaceType,
           'spaceName': this.spaceName,
           'spaceDetail': this.spaceDetail,
@@ -181,8 +181,11 @@ export default {
           'regCode': this.regCode,
           'spaceImg': this.spaceImg,
         }
-        console.log(formData)
+        // console.log(formData)
         console.log(createData)
+        const response = await spaceCreate(createData)
+        console.log(response)
+        this.$router.push('/host')
         // alert('공간이 생성되었습니다. 방을 생성해 주세요.')
         // this.$router.push(`/host/roomCreate/${this.spaceName}/${this.spaceType}`)  
       } catch (error){
