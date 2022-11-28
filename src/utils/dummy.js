@@ -6,7 +6,7 @@ const spaceDumy = [
     spaceId:"1",
     grade:"4",
     review:"100",
-    spaceStatus: "roomSetting",
+    spaceStatus: "NoSetting",
     spaceType:'1',
   },
   {
@@ -26,7 +26,7 @@ const spaceDumy = [
     spaceId:"3",
     grade:"1",
     review:"100",
-    spaceStatus: "roomSetting",
+    spaceStatus: "NoSetting",
     spaceType:'1',
   },
   {
