@@ -36,12 +36,7 @@
 
 <script>
 export default {
-  props: {
-    selectDay: {
-      type: String,
-      required: true,
-    },
-  },
+emits: ['select-day:date-click'],
   data(){
     return {
       // 요일
@@ -54,6 +49,7 @@ export default {
       // 데이터
       dates: [],
       week: [],
+      clickDay:'',
     }
   },
   created(){
@@ -65,12 +61,14 @@ export default {
   methods: {
     // 달력출력
     getDates(value){
+      // console.log(this.clickDay)
       // 달력초기화
       this.dates = []
       this.week = []
       // 달력 이전달, 다음달 이동
       if (value == 1){
         this.month++
+        this.clickDay = ''
         if (this.month === 12){
           this.month = 0
           this.year++
@@ -78,6 +76,7 @@ export default {
       }
       if (value == -1){
         this.month--
+        this.clickDay = ''
         if (this.month === -1){
           this.month = 11
           this.year--
@@ -123,17 +122,29 @@ export default {
     getTodayMonth(todayMonthLastDate){
       for (let date = 1; date<=todayMonthLastDate; date++){
         if (this.year > this.today.getFullYear() || this.month > this.today.getMonth()){
-          this.week.push({'date':date, 'class':'clickOK'})
+          if (this.clickDay == date){
+            this.week.push({'date':date, 'class':'clickOK clickDay'})
+          } else {
+            this.week.push({'date':date, 'class':'clickOK'})
+          }
           this.checkLength()
         } else if (this.year == this.today.getFullYear() && this.month == this.today.getMonth() && date == this.today.getDate()){
-          this.week.push({'date':date, 'class':'clickOK today'})
+          if (this.clickDay == date){
+            this.week.push({'date':date, 'class':'clickOK clickDay'})
+          } else {
+            this.week.push({'date':date, 'class':'clickOK today'})
+          }
           this.checkLength()
         } else {
           if (date < this.date){
             this.week.push({'date':date, 'class':'clickNone'})
             this.checkLength()
           } else {
-            this.week.push({'date':date, 'class':'clickOK'})
+            if (this.clickDay == date){
+            this.week.push({'date':date, 'class':'clickOK clickDay'})
+            } else {
+              this.week.push({'date':date, 'class':'clickOK'})
+            }
             this.checkLength()
           }
         }
@@ -166,12 +177,14 @@ export default {
     },
     // 날짜정보가져오기
     clickDate(date){
+      this.clickDay = date
+      this.getDates()
       let month = this.month+1
       month = this.dataFormChage(month)
       date = this.dataFormChage(date)
       let reserveDay = this.year+'-'+month+'-'+date
       // console.log(reserveDay)
-      this.$emit('select-day:date-click',reserveDay)
+      this.$emits('select-day:date-click', reserveDay)
     },
   },
 }
@@ -212,10 +225,14 @@ export default {
 }
 .clickNone{
   color: rgba(0, 0, 0, 0.514);
+  pointer-events: none;
 }
 .today{
   color: rgb(79, 79, 235);
   font-weight: bold;
+}
+.clickDay {
+  color:rgb(235, 140, 85);
 }
 /* 설명 */
 .statusExplanation{

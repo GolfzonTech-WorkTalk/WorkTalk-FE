@@ -1,55 +1,56 @@
 <template>
-  <div v-for="item in spaceItems" :key="item" class="spaceInfo">
-    <p class="spaceName">
-      {{ item.spaceName }}
-    </p>
-    <img class="spaceImg" :src="require(`@/assets/${item.spaceImg}`)" alt="공간이미지">
-    <div class="navVar">
-      <ul>
-        <li v-for="nav in navItems" :key="nav" onclick="navMove('{{nav.nav}}')">
-          {{ nav.name }}
-        </li>
-      </ul>
-    </div>
-    <div class="contentBox">
-      <p class="contentTitle">
-        공간소개
+  <div class="spaceInfo">
+    <div v-for="item in spaceItems" :key="item">
+      <p class="spaceName">
+        {{ item.spaceName }}
       </p>
-      <p class="contentItem">
-        {{ item.spaceDetail }}
-      </p>
-    </div>
-    <div class="contentBox">
-      <p class="contentTitle">
-        유의사항
-      </p>
-      <p class="contentItem">
-        {{ notice }}
-      </p>
-    </div>
-    <div class="contentBox">
-      <p class="contentTitle">
-        환불정책
-      </p>
-      <p class="contentItem">
-        {{ refundPolicy }}
-      </p>
-    </div>
-    <div class="contentBox">
-      <p class="contentTitle">
-        Q&A
-      </p>
-      <p class="contentItem">
-        Q&A
-      </p>
-    </div>
-    <div class="contentBox">
-      <p class="contentTitle">
-        이용후기
-      </p>
-      <p class="contentItem">
-        이용후기
-      </p>
+      <img class="spaceImg" :src="require(`@/assets/${item.spaceImg}`)" alt="공간이미지">
+      <div class="navVar">
+        <ul>
+          <li v-for="nav in navItems" :key="nav" @click="navMove(nav.nav)">
+            {{ nav.name }}
+          </li>
+        </ul>
+      </div>
+      <div class="contentBox">
+        <p id="spaceItro" class="contentTitle">
+          [ 공간소개 ]
+        </p>
+        <p class="contentItem">
+          {{ item.spaceDetail }}
+        </p>
+      </div>
+      <div class="contentBox">
+        <p id="spaceNote" class="contentTitle">
+          [ 유의사항 ]
+        </p>
+        <p class="contentItem">
+          {{ notice }}
+        </p>
+      </div>
+      <div class="contentBox">
+        <p id="spaceRefund" class="contentTitle">
+          [ 환불규정 ]
+        </p>
+        <p class="contentItem">
+          {{ refundPolicy }}
+        </p>
+      </div>
+      <div class="contentBox">
+        <p id="spaceQNA" class="contentTitle">
+          [ Q & A ]
+        </p>
+        <qn-a-vue />
+        <form-qn-a-vue v-if="QnAFormView" />
+      </div>
+      <div class="contentBox">
+        <p id="spaceReview" class="contentTitle">
+          [ 이용후기 ]
+        </p>
+        <p class="contentItem">
+          이용후기
+        </p>
+      </div>
     </div>
   </div>
 </template>
@@ -58,19 +59,26 @@
 // import { spaceOne } from '@/api/user.js'
 import { selectOneSpaceDumy } from '@/utils/dummy.js'
 import { refundPolicy, notice } from '@/utils/textFile.js'
+import FormQnAVue from '@/components/Form/FormQnA.vue'
+import QnAVue from './QnAReview/QnA.vue'
 export default {
+  components: {
+    QnAVue,
+    FormQnAVue,
+  },
   data(){
     return {
       spaceItems:[],
       navItems: [
         {'name':'공간소개','nav':'spaceItro'},
         {'name':'유의사항','nav':'spaceNote'},
-        {'name':'환불정책','nav':'spaceRefund'},
+        {'name':'환불규정','nav':'spaceRefund'},
         {'name':'Q&A','nav':'spaceQNA'},
         {'name':'이용후기','nav':'spaceReview'},
       ],
       refundPolicy: refundPolicy,
       notice: notice,
+      QnAFormView: true,
     }
   },
   // 공간정보 출력 async
@@ -87,10 +95,12 @@ export default {
   },
   methods: {
     // 테스트 대기...
-    navMove(x){
-      let menuHeight = document.querySelector('#navVar').offsetHeight
-      let location = document.querySelector(`#${x}`).offsetTop
-      window.scrollTo({top:location - menuHeight, behavior:'smooth'})
+    navMove(value){
+      console.log(value)
+      window.location.href = `#${value}`
+      // let menuHeight = document.querySelector('#navVar').offsetHeight
+      // let location = document.querySelector(`#${x}`).offsetTop
+      // window.scrollTo({top:location - menuHeight, behavior:'smooth'})
     },
   },
 }
@@ -137,13 +147,13 @@ export default {
   padding: 1vw;
 }
 .contentTitle{
-  font-size: 1.3rem;
+  font-size: 1.2rem;
   font-weight: bold;
 }
 .contentItem{
   color: rgb(165, 165, 165);
-  font-size: 1rem;
-  line-height: 2vh;
+  font-size: 0.8rem;
+  line-height: 3vh;
   margin-top: 1vh;
   margin-left: 1vw;
   white-space: pre-line;

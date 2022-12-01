@@ -92,8 +92,10 @@ export default {
 
 <style scoped>
 #mapContainer {
+  position: relative;
   display: flex;
   flex-direction: column;
+  z-index: 0;
 }
 #map{
   margin: 6vh 1vw 1vh 1vw;

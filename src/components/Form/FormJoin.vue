@@ -231,20 +231,22 @@ export default {
 
 <style scoped>
 .joinForm {
+  position: relative;
   background: white;
   border-radius: 15px;
   height: 50vh;
   width: 50vw;
-  padding: 3vw;
+  padding: 5vw 3vw;
   text-align: left;
 }
 .roleSelectBox span {
   position: absolute;
-  top: 19vh;
+  top: 3vh;
   border: 1px solid gray;
   border-radius: 10px;
-  padding: 0.1vw 1vw;
-  font-size: 1.2rem;
+  padding: 0.3vw 1vw;
+  font-size: 1.3rem;
+  letter-spacing: 1rem;
   font-weight: bold;
   text-align: center;
   width: 20vw;

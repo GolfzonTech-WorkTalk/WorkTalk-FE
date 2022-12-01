@@ -10,21 +10,21 @@
     <div class="menuTabUserService">
       <ul>
         <li>
-          <router-link to="/user/mypage/reservation">
+          <router-link to="/host/reservation">
             <i class="fa-regular fa-calendar-check fa-2x" />
-            <p>예약리스트</p>
+            <p>예약관리</p>
           </router-link>
         </li>
         <li>
-          <router-link to="/user/mypage/review">
+          <router-link to="/host/review">
             <i class="fa-regular fa-comments fa-2x" />
-            <p>이용후기<br>QnA</p>
+            <p>후기 QnA 관리</p>
           </router-link>
         </li>
         <li>
-          <router-link to="/user/mypage/payment">
+          <router-link to="/host/payment">
             <i class="fa-solid fa-credit-card fa-2x" />
-            <p>결제내역<br>마일리지</p>
+            <p>정산관리</p>
           </router-link>
         </li>
       </ul>
@@ -91,7 +91,7 @@ export default {
   font-weight: bold;
   font-size: 1.5rem;
   border-left: 1px solid gray;
-  z-index: 2;
+  z-index: 3;
 }
 .menuTabClose {
   position: absolute;

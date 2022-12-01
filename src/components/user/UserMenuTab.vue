@@ -105,7 +105,7 @@ export default {
   font-weight: bold;
   font-size: 1.5rem;
   border-left: 1px solid gray;
-  z-index: 2;
+  z-index: 3;
 }
 .menuTabClose {
   position: absolute;
