@@ -91,13 +91,13 @@ export default createStore({
       //   console.log(error)
       // }
       // 유저더미
-      // const dumydata = {
-      //   "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiLsgqzsmqnsnpAiLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNjY5Mjg5MDc5fQ.6TrAQK1Ts5XFtwrwjTsFTrgdUk4BcwT8WNCt8GUaOrQJTRFzBy01ttkwJC0JbO2IZxr1eKh590bZbgeU151_-Q",
-      // }
-      // 호스트더미
       const dumydata = {
-        "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiLsgqzsmqnsnpAiLCJhdXRoIjoiUk9MRV9IT1NUIiwiZXhwIjoxNjY5Mjg5MDc5fQ.sVyrbk8A9lkSh_RCxWPKfBPtts3wrw6jaDZwyGy6UnPEcinXpPeQtJoDr5qq-0pY1SxDHTQ1EG3VIyNhZjRvEg",
+        "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiLsgqzsmqnsnpAiLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNjY5Mjg5MDc5fQ.6TrAQK1Ts5XFtwrwjTsFTrgdUk4BcwT8WNCt8GUaOrQJTRFzBy01ttkwJC0JbO2IZxr1eKh590bZbgeU151_-Q",
       }
+      // 호스트더미
+      // const dumydata = {
+      //   "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiLsgqzsmqnsnpAiLCJhdXRoIjoiUk9MRV9IT1NUIiwiZXhwIjoxNjY5Mjg5MDc5fQ.sVyrbk8A9lkSh_RCxWPKfBPtts3wrw6jaDZwyGy6UnPEcinXpPeQtJoDr5qq-0pY1SxDHTQ1EG3VIyNhZjRvEg",
+      // }
       const decode = jwt_decode(dumydata.token)
       context.commit('setToken', dumydata.token)
       context.commit('setNickName', decode.sub)

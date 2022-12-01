@@ -7,7 +7,7 @@ export default [
   {
     path: '/user/reservation',
     name: 'userReservation',
-    component: () => import('@/views/userView/ReservationPage.vue'),
+    component: () => import('@/views/ReservationPage.vue'),
     meta: {auth:true},
   },
   {

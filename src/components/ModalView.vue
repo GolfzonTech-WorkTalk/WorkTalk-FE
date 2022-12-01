@@ -25,13 +25,13 @@ export default {
 <style scoped>
 .modalView{
   position: absolute;
-  z-index: 1;
+  z-index: 3;
 }
 .modalMassegeBox{
   font-weight: bold;
   letter-spacing: 0.3rem;
   text-align: center;
-  position: absolute;
+  position: fixed;
   background: white;
   border-radius: 20px;
   top: 20%;
@@ -52,7 +52,8 @@ export default {
 }
 .background {
   background: rgba(0, 0, 0, 0.514);
-  height: 100vh;
+  height: 150vh;
   width: 100vw;
+  z-index: 2;
 }
 </style>

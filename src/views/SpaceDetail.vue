@@ -8,7 +8,12 @@
         <space-map />
       </div>
       <div>
-        <room-info />  
+        <template v-if="spaceType == 1">
+          <office-info />
+        </template>
+        <template v-else>
+          <deskmeeting-room />
+        </template>
       </div>
     </div>
   </div>
@@ -16,13 +21,20 @@
 
 <script>
 import spaceInfo from '@/components/spaceDetail/spaceInfo.vue'
-import roomInfo from '@/components/spaceDetail/roomInfo.vue'
+import deskmeetingRoom from '@/components/spaceDetail/deskmeetingRoom.vue'
+import officeInfo from '@/components/spaceDetail/officeInfo.vue'
 import spaceMap from '@/components/spaceDetail/spaceMap.vue'
 export default {
   components: {
     spaceInfo,
-    roomInfo,
+    deskmeetingRoom,
+    officeInfo,
     spaceMap,
+  },
+  data(){
+    return {
+      spaceType: this.$route.params.spaceType,
+    }
   },
 }
 </script>
@@ -46,5 +58,9 @@ export default {
 .RoomAndMap{
   width: 20vw;
   background: white;
+  overflow-y: scroll;
+}
+.RoomAndMap::-webkit-scrollbar {
+  display: none;
 }
 </style>

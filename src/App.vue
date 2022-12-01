@@ -35,6 +35,11 @@ export default {
 <style>
 @import './css/common.css';
 .AppContent {
+  position: relative;
   height: 110vh;
+}
+.modalView {
+  position: fixed;
+  top: 0;
 }
 </style>

@@ -45,4 +45,10 @@ export default [
     component: () => import('@/views/hostView/RoomCreatePage.vue'),
     meta: {auth:true},
   },
+  {
+    path: '/host/reservation',
+    name: 'hostReservation',
+    component: () => import('@/views/ReservationPage.vue'),
+    meta: {auth:true},
+  },
 ]

@@ -12,7 +12,7 @@ function spaceOne(spaceId){
 
 // 룸조회
 function roomOne(spaceId){
-    return instance.get('spaceOne/'+spaceId+'/rooms')
+    return instance.get('roomOne/'+spaceId+'/rooms')
 }
 
 export {
