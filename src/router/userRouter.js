@@ -11,9 +11,9 @@ export default [
     meta: {auth:true},
   },
   {
-    path: '/user/review',
+    path: '/user/QnAReview',
     name: 'userReview',
-    component: () => import('@/views/userView/ReviewPage.vue'),
+    component: () => import('@/views/userView/QnAReview.vue'),
     meta: {auth:true},
   },
   {

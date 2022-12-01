@@ -22,7 +22,7 @@
             <p>예약리스트</p>
           </li>
         </router-link>
-        <router-link to="/user/review">
+        <router-link to="/user/QnAReview">
           <li>
             <i class="fa-regular fa-comments fa-2x" />
             <p>이용후기<br>QnA</p>
