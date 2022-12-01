@@ -40,8 +40,8 @@
         <p id="spaceQNA" class="contentTitle">
           [ Q & A ]
         </p>
-        <qn-a-vue />
-        <form-qn-a-vue v-if="QnAFormView" />
+        <qn-a-vue @qna:open="QnAFormOpenClose" />
+        <form-qn-a-vue v-if="QnAFormView" @qna:open="QnAFormOpenClose" />
       </div>
       <div class="contentBox">
         <p id="spaceReview" class="contentTitle">
@@ -78,7 +78,7 @@ export default {
       ],
       refundPolicy: refundPolicy,
       notice: notice,
-      QnAFormView: true,
+      QnAFormView: false,
     }
   },
   // 공간정보 출력 async
@@ -101,6 +101,10 @@ export default {
       // let menuHeight = document.querySelector('#navVar').offsetHeight
       // let location = document.querySelector(`#${x}`).offsetTop
       // window.scrollTo({top:location - menuHeight, behavior:'smooth'})
+    },
+    QnAFormOpenClose(value){
+      // console.log(value)
+      this.QnAFormView = value
     },
   },
 }

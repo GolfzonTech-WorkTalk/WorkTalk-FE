@@ -1,8 +1,7 @@
 <template>
-  <div class="QnAcontainer">
-    <div class="QnAcreate">
-      <i class="fa-solid fa-pen-to-square" />
-      <span @click="emitOpen">문의작성</span>
+  <div>
+    <div>
+      정렬
     </div>
     <div v-for="item in QnAList" :key="item" class="QnAitem">
       <div>
@@ -26,7 +25,6 @@
 <script>
 import { QnAdummy } from '@/utils/QnAReviewdummy.js'
 export default {
-  emits: [ 'qna:open' ],
   data(){
     return {
       QnAList: [],
@@ -50,19 +48,11 @@ export default {
       let time = value.slice(11,16)
       return `${date} ${time}`
     },
-    emitOpen(){
-      let value = true
-      this.$emit('qna:open', value)
-    },
   },
 }
 </script>
 
 <style scoped>
-.QnAcontainer{
-  position: relative;
-  margin-left: 1vw;
-}
 /* 문의리스트 출력 */
 .QnAitem{
   border-bottom: 2px solid gray;
@@ -104,21 +94,5 @@ export default {
   font-size: 0.9rem;
   font-weight: bold;
   color: rgb(43, 43, 185);
-}
-/* 문의작성 */
-.QnAcreate{
-  position: absolute;
-  top: -2vh;
-  right: 5vw;
-  border: 1px solid gray;
-  border-radius: 10px;
-  font-size: 0.8rem;
-  padding: 0 0.5vw;
-  background: rgb(134, 134, 224);
-  color: white;
-  cursor: pointer;
-}
-.QnAcreate span {
-  margin-left: 0.5vw;
 }
 </style>

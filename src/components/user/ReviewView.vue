@@ -1,6 +1,6 @@
 <template>
   <div>
-    리뷰페이지
+    리뷰관리
   </div>
 </template>
 
