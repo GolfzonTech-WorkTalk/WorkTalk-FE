@@ -7,7 +7,7 @@ export default createStore({
   state: {
     // 메뉴탭 관리 변수
     MenuTabView: false,
-    token: getTokenFromCookie() || '',
+    token: '' || getTokenFromCookie(),
     // 닉네임
     nickName:'',
     // 접속한 사용자의 권한

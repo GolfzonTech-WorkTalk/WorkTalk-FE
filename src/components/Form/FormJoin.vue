@@ -1,10 +1,10 @@
 <template>
   <form class="joinForm" @submit.prevent="joinCheck">
-    <div class="roleSelectBox" :class="(role=='ROLE_USER')?'selectRole':'noSelectRole'">
-      <span @click="roleSelect('ROLE_USER')">이용자</span>
+    <div class="roleSelectBox" :class="(role=='0')?'selectRole':'noSelectRole'">
+      <span @click="roleSelect('0')">이용자</span>
     </div>
-    <div class="roleSelectBox" :class="(role=='ROLE_HOST')?'selectRole':'noSelectRole'">
-      <span class="roleHost" @click="roleSelect('ROLE_HOST')">공급자</span>
+    <div class="roleSelectBox" :class="(role=='1')?'selectRole':'noSelectRole'">
+      <span class="roleHost" @click="roleSelect('1')">공급자</span>
     </div>
     <div>
       <input v-model="email" class="emailBox joinFormItem" type="text" placeholder="이메일" @keyup="emailChange">
