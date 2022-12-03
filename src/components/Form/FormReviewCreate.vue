@@ -8,7 +8,7 @@
       </div>
       <textarea v-model="reviewContent" class="reviewContent" cols="30" rows="5" placeholder="후기내용 작성" />
       <!-- <input type="file" multiple> -->
-      <span class="reviewBtn" @click="$emits('box-close:box-close-click')">닫 기</span>
+      <span class="reviewBtn" @click="$emit('box-close:box-close-click')">닫 기</span>
       <label for="submitButton" class="reviewBtn">작 성</label>
       <button id="submitButton" hidden />
     </form>
@@ -24,6 +24,7 @@ export default {
       required: true,
     },
   },
+  emits: ['box-close:box-close-click'],
   data(){
     return {
       reviewContent:'',

@@ -38,7 +38,9 @@
     </div>
     <div class="menuTabServicecenter">
       <div>
-        <span>1:1문의</span>
+        <router-link to="/customercenter">
+          <span>1:1문의</span>
+        </router-link>
       </div>
       <div>
         <span>공지사항</span>

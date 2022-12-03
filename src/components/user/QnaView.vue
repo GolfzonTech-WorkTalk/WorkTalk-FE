@@ -1,15 +1,39 @@
 <template>
-  <div>
-    <div>
-      정렬
+  <div class="QnAContainer">
+    <div v-if="deleteQnANum != '문의삭제' || updateQnANum != '문의수정'" class="backgroundQnA" @click="deleteQnACancel" />
+    <div class="SortQnAtypeBox">
+      <select v-model="QnAtype" class="SortQnAtype">
+        <option value="문의종류" hidden>
+          문의종류
+        </option>
+        <option v-for="item in QnAtypeData" :key="item" :value="item.value">
+          {{ item.name }}
+        </option>
+      </select>
     </div>
     <div v-for="item in QnAList" :key="item" class="QnAitem">
       <div>
-        <span class="QnAtype" :class="item.type">{{ typeCheck(item.type) }}</span>
-        <span class="date">{{ dateCheck(item.lastModifiedDate) }}</span>
+        <span class="QnAtypelabel" :class="item.type">{{ typeCheck(item.type) }}</span>
         <p class="QnAcontent">
           {{ item.content }}
         </p>
+        <div class="UpdateDeleteBtn">
+          <i class="fa-solid fa-pen-to-square" @click="updateQnA(item)" />
+          <i class="fa-solid fa-trash" @click="deleteQnA(item)" />
+          <template v-if="deleteQnANum == item.qnaId">
+            <div class="deleteBox">
+              <p>해당 문의를 삭제하시겠습니까?</p>
+              <span class="deleteBtn deleteQnADo" @click="deleteQnASubmit(item)">삭 제</span>
+              <span class="deleteBtn deleteQnACancel" @click="deleteQnACancel">취 소</span>
+            </div>
+          </template>
+          <template v-if="updateQnANum == item.qnaId">
+            <FormQnAupdate :item="item" @qnaupdate:close="deleteQnACancel" />
+          </template>
+          <p class="date">
+            {{ dateCheck(item.lastModifiedDate) }}
+          </p>
+        </div>
       </div>
       <div v-if="item.qnacomment" class="hostAnswer">
         <span class="answerTitle">호스트의 답글</span>
@@ -23,11 +47,24 @@
 </template>
 
 <script>
+import {qnaDelete} from '@/api/QnA.js'
+import FormQnAupdate from '@/components/Form/FormQnAupdate.vue'
 import { QnAdummy } from '@/utils/QnAReviewdummy.js'
 export default {
+  components: {
+    FormQnAupdate,
+  },
   data(){
     return {
       QnAList: [],
+      QnAtype:'문의종류',
+      QnAtypeData: [
+        {'name':'예약','value':'RESERVE'},
+        {'name':'결제','value':'PAY'},
+        {'name':'이용','value':'USING'},
+      ],
+      deleteQnANum:'문의삭제',
+      updateQnANum:'문의수정',
     }
   },
   created(){
@@ -48,18 +85,54 @@ export default {
       let time = value.slice(11,16)
       return `${date} ${time}`
     },
+    deleteQnA(item){
+      this.deleteQnANum = item.qnaId
+    },
+    updateQnA(item){
+      this.updateQnANum = item.qnaId
+    },
+    deleteQnACancel(){
+      this.deleteQnANum = '문의삭제'
+      this.updateQnANum = '문의수정'
+    },
+    async deleteQnASubmit(item){
+      try {
+        let response = await qnaDelete(item.qnaId)
+        console.log(response)
+      } catch (error){
+        console.log(error)
+      }
+    },
   },
 }
 </script>
 
 <style scoped>
+.QnAContainer{
+  position: relative;
+  padding: 2vw;
+  width: 36vw;
+  height: 84vh;
+  background: white;
+}
+/* 정렬 */
+.SortQnAtypeBox{
+  margin-bottom: 5vh;
+}
+.SortQnAtype{
+  width: 6vw;
+  float: right;
+}
 /* 문의리스트 출력 */
 .QnAitem{
-  border-bottom: 2px solid gray;
-  width: 33vw;
+  position: relative;
+  border: 2px solid gray;
+  border-radius: 10px;
+  width: 35vw;
   padding: 2vh 0.5vw;
+  margin-bottom: 1vh;
 }
-.QnAtype{
+.QnAtypelabel{
   border-radius: 10px;
   padding: 0 0.5vw;
   font-size: 0.8rem;
@@ -76,7 +149,6 @@ export default {
   background: rgb(224, 182, 135);
 }
 .date{
-  float: right;
   font-size: 0.7rem;
   font-weight: bold;
   color: rgb(97, 97, 97);
@@ -94,5 +166,62 @@ export default {
   font-size: 0.9rem;
   font-weight: bold;
   color: rgb(43, 43, 185);
+}
+.UpdateDeleteBtn{
+  top: 2vh;
+  right: 0.5vw;
+  position: absolute;
+  text-align: right;
+}
+.UpdateDeleteBtn i {
+  margin-left: 0.5vw;
+  margin-bottom: 0.5vh;
+}
+.fa-pen-to-square:hover{
+  color: blue
+}
+.fa-trash:hover{
+  color: red;
+}
+/* 삭제 창 */
+.deleteBox{
+  position: absolute;
+  text-align: center;
+  top: 0;
+  left: -22vw;
+  background: white;
+  width: 20vw;
+  border-radius: 10px;
+  padding: 1vh 1vw;
+  z-index: 2;
+}
+.backgroundQnA{
+  position: absolute;
+  background: rgba(0, 0, 0, 0.212);
+  top: 0;
+  left: 0;
+  width: 40vw;
+  height: 92.5vh;
+  z-index: 1;
+}
+.deleteBtn{
+  border: 1px solid gray;
+  border-radius: 10px;
+  font-size: 0.8rem;
+  padding: 0 0.5vw;
+}
+.deleteBox p{
+  margin-bottom: 1vh;
+}
+.deleteQnADo:hover{
+  background: rgb(223, 69, 69);
+  color: white;
+}
+.deleteQnACancel{
+  margin-left: 0.5vw;
+}
+.deleteQnACancel:hover{
+  background: rgb(165, 165, 165);
+  color: white;
 }
 </style>

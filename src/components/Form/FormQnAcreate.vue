@@ -14,7 +14,7 @@
       </p>
       <textarea v-model="content" class="QnAcontent" placeholder="문의내용을 작성해주세요." />
       <span class="QnAbtn" @click="emitClose(false)">닫기</span>
-      <span class="QnAbtn">작성</span>
+      <span class="QnAbtn" @click="QnACreate">작성</span>
     </div>
     <div class="background" @click="emitClose(false)" />
   </div>
@@ -41,12 +41,13 @@ export default {
     emitClose(value){
       this.$emit('qna:open', value)
     },
-    async QnASubmint(){
+    async QnACreate(){
       const qnaData = {
         'spaceId': this.spaceId,
         'type': this.type,
         'content': this.content,
       }
+      console.log(qnaData)
       try {
         let response = await qnaCreate(qnaData)
         console.log(response)
