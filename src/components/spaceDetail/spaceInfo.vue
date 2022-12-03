@@ -59,7 +59,7 @@
 // import { spaceOne } from '@/api/user.js'
 import { selectOneSpaceDumy } from '@/utils/dummy.js'
 import { refundPolicy, notice } from '@/utils/textFile.js'
-import FormQnAVue from '@/components/Form/FormQnA.vue'
+import FormQnAVue from '@/components/Form/FormQnAcreate.vue'
 import QnAVue from './QnAReview/QnA.vue'
 export default {
   components: {

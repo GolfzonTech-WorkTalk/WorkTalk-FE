@@ -39,6 +39,12 @@ const routes = [
     meta: {auth:true},
   },
   {
+    path: '/customercenter',
+    name: 'customercenter',
+    component: () => import('@/views/CustomerCenter.vue'),
+    meta: {auth:true},
+  },
+  {
     path: "/:catchAll(.*)",
     name: "404Name",
     component: () => import("@/views/NotFoundPage.vue"),

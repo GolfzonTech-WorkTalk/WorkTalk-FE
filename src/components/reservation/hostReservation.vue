@@ -1,7 +1,6 @@
 <template>
   <div class="reservationContainer">
     <div class="reservationTitle">
-      <p>예 약 리 스 트</p>
       <select v-model="sortPayment" class="sortBox" @change="reservationDataCall()">
         <option value="" hidden>
           결제상태
@@ -283,13 +282,12 @@ export default {
 
 <style scoped>
 .reservationTitle{
+  width: 70vw;
   font-size: 2rem;
   font-weight: bold;
-  text-align: center;
-  margin: 5vh 0;
+  text-align: right;
 }
 .sortBox{
-  float: right;
   width: 8vw;
   letter-spacing: 0.3rem;
   font-size: 1.1rem;
@@ -299,7 +297,7 @@ export default {
 /* 예약리스트 출력 */
 .reservationItems{
   position: relative;
-  margin: 5vh 2vw;
+  margin: 3vh 2vw;
   margin-bottom: 3vh;
 }
 .reservationItem{
@@ -307,7 +305,7 @@ export default {
   border: 1px solid gray;
   border-left: 0;
   border-right: 0;
-  padding: 2vh 0vw;
+  padding: 1.5vh 0vw;
   width: 66vw;
 }
 .reservationItem span{

@@ -2,10 +2,10 @@
   <div class="QnaReviewBox">
     <div>
       <div class="QnaReviewTitle">
-        <span :class="(pageView)?'NowView':'NoView'" @click="pageViewChange">리뷰관리</span>
+        <span :class="(pageView)?'NowView':'NoView'" @click="pageViewChange">후기관리</span>
         <span :class="(pageView)?'NoView':'NowView'" @click="pageViewChange">QnA</span>
       </div>
-      <div class="QnaReview">
+      <div>
         <template v-if="pageView">
           <review-view-vue />
         </template>
@@ -27,7 +27,7 @@ export default {
   },
   data(){
     return {
-      pageView: false,
+      pageView: true,
     }
   },
   methods: {
@@ -66,11 +66,5 @@ export default {
 .NoView{
   color: gray;
   cursor: pointer;
-}
-.QnaReview{
-  position: relative;
-  width: 60vw;
-  height: 90vh;
-  background: white;
 }
 </style>

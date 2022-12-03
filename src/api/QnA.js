@@ -6,8 +6,8 @@ function qnaCreate(qnaData){
 }
 
 // QnA수정
-function qnaUpdata(qnaId, qnaUpdata){
-  return posts.get('qnaUpdate/'+{qnaId}, qnaUpdata)
+function qnaUpdata(qnaId, qnaUpdataData){
+  return posts.get('qnaUpdate/'+{qnaId}, qnaUpdataData)
 }
 
 // QnA삭제

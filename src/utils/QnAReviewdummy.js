@@ -31,6 +31,37 @@ const QnAdummy = [
   },
 ]
 
+const ReviewDummy = [
+  {
+    "spacetype":'DESK',
+    "reviewId": 1,
+    "reservationId": 1,
+    "memberId": 4,
+    "content": "춫ㄴ합니다",
+    "lastModifiedDate": "2022-11-30T12:35:52.247",
+    "grade": 4,
+  },
+  {
+    "spacetype":'OFFICE',
+    "reviewId": 2,
+    "reservationId": 1,
+    "memberId": 4,
+    "content": "춫ㄴ합니다",
+    "lastModifiedDate": "2022-11-30T13:29:01.177478",
+    "grade": 3,
+  },
+  {
+    "spacetype":'MEETING8',
+    "reviewId": 3,
+    "reservationId": 1,
+    "memberId": 4,
+    "content": "춫ㄴ합니다",
+    "lastModifiedDate": "2022-11-30T13:29:01.177478",
+    "grade": 2,
+  },
+]
+
 export {
   QnAdummy,
+  ReviewDummy,
 }

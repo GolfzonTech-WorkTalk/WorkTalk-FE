@@ -17,10 +17,8 @@
     <p class="spaceTile">
       추천공간
     </p>
-    <div>
-      <p class="spaceTile">
-        준비중
-      </p>
+    <div class="spaceAll">
+      <recommend-space />
     </div>
     <p class="spaceTile">
       전체공간
@@ -32,10 +30,12 @@
 </template>
 
 <script>
+import RecommendSpace from '@/components/user/RecommendSpace.vue'
 import MainSpace from '@/components/user/MainSpace.vue'
 export default {
   components: {
     MainSpace,
+    RecommendSpace,
   },
   data(){
     return {
