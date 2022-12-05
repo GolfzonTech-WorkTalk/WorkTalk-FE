@@ -79,6 +79,8 @@ export default {
     // 지역선택
     async selectCityOne(){
       let typeCode = this.selectCityCode
+      this.cityDetailAddressData = []
+      this.selectCityDetailName='세부지역'
       // console.log(typeCode)
       for (let i = 0; i < cityAddressDetail.length; i++){
         if (cityAddressDetail[i].typeCode == typeCode){
