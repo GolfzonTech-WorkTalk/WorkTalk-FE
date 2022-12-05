@@ -25,10 +25,15 @@
           인증번호가 일치합니다.
         </p>
       </template>
+      <template v-if="(emailVerificationCodeCheck == 500)">
+        <p class="warning">
+          사용중인 이메일입니다.
+        </p>
+      </template>
     </div>
     <div>
-      <input id="pw" v-model="pw" class="pw joinFormItem" type="text" placeholder="비밀번호">
-      <input id="pwCheck" v-model="pwCheck" class="pwCheck joinFormItem" type="text" placeholder="비밀번호확인" @keyup="pwMatchCheck" @change="pwMatchCheck">
+      <input id="pw" v-model="pw" class="pw joinFormItem" type="password" placeholder="비밀번호">
+      <input id="pwCheck" v-model="pwCheck" class="pwCheck joinFormItem" type="password" placeholder="비밀번호확인" @keyup="pwMatchCheck" @change="pwMatchCheck">
       <p v-if="pwMatch" class="warning">
         비밀번호가 서로 다릅니다.
       </p>
@@ -104,7 +109,7 @@ export default {
     },
     // 도메인 선택
     domainCheck(){
-      console.log('실행')
+      // console.log('실행')
       this.emailChange()
       if (this.emailDomain === '기타'){
         this.ETCview = true
@@ -119,6 +124,7 @@ export default {
         this.$store.dispatch('MODALVIEWCLICK', true)
         this.$store.dispatch('MODALMESSAGE', message)
       } else {
+        this.emailVerificationCode = ''
         let sendEmail = ''
         if (this.emailDomainETC === ''){
           sendEmail = {
@@ -129,13 +135,18 @@ export default {
             email : this.email +'@'+this.emailDomainETC,
           }
         }
-        console.log(sendEmail)
-        let responce = await mailCheck(sendEmail)
-        console.log(responce)
-        this.emailVeificaion = false
-        this.emailVerificationCodeCheck = responce.data
-        console.log(this.emailVerificationCodeCheck)
-        console.log(typeof(responce.data))
+        try {
+          // console.log(sendEmail)
+          let responce = await mailCheck(sendEmail)
+          // console.log(responce)
+          this.emailVeificaion = false
+          this.emailVerificationCodeCheck = responce.data
+          // console.log(this.emailVerificationCodeCheck)
+          // console.log(typeof(responce.data))  
+        } catch (error){
+          // console.log(error.request.status)
+          this.emailVerificationCodeCheck = error.request.status
+        }
       }
     },
     // 비밀번호 일치여부 확인
@@ -152,17 +163,17 @@ export default {
     },
     // 닉네임체크
     async nicknameCheck(){
-      console.log(this.nickname)
+      // console.log(this.nickname)
       let name = {
         name: this.nickname,
       }
       try {
         let responce = await nickCheck(name)
         // console.log(responce)
-        console.log(responce.status)
+        // console.log(responce.status)
         this.nicknameMessage = responce.status
       } catch (error){
-        this.nicknameMessage = error.status
+        this.nicknameMessage = error.request.status
       }
     },
     // 전화번호 '-' 자동 부여
@@ -185,7 +196,7 @@ export default {
         'tel': this.tel,
         'role': this.role,
       }
-      console.log(joinData)
+      // console.log(joinData)
       const { data } = await registerMember(joinData)
       console.log(data)
       if (this.$store.state.role == 'ROLE_HOST'){
@@ -198,7 +209,7 @@ export default {
     joinCheck(){
       let message = ''
       if (!this.role){
-        let message = '가입유형을 선택해주세요.'
+        message = '가입유형을 선택해주세요.'
         this.$store.dispatch('MODALVIEWCLICK', true)
         this.$store.dispatch('MODALMESSAGE', message)
       } else if (!this.email || !this.emailDomain || this.emailDomain === '기타' && !this.emailDomainETC){
@@ -211,6 +222,10 @@ export default {
         this.$store.dispatch('MODALMESSAGE', message)
       } else if (!this.pw || !this.pwCheck || this.pw !== this.pwCheck){
         message = '비밀번호를 확인해주세요.'
+        this.$store.dispatch('MODALVIEWCLICK', true)
+        this.$store.dispatch('MODALMESSAGE', message)
+      } else if (this.nicknameMessage == '500'){
+        message = '사용중인 닉네임입니다.'
         this.$store.dispatch('MODALVIEWCLICK', true)
         this.$store.dispatch('MODALMESSAGE', message)
       } else if (this.nicknameMessage != '200'){

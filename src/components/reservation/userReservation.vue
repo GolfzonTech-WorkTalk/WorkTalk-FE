@@ -63,9 +63,9 @@
 </template>
 
 <script>
-// import { reservationList, reservationCancel } from '@/api/reservation.js'
+// import { reservationUser, reservationCancel } from '@/api/reservation.js'
 import {nowYYmmDDhhMM} from '@/utils/common.js'
-import {reservationDataDeskMeetingroom} from '@/utils/dummy.js'
+import {reservationDataDeskMeetingroom} from '@/utils/dummy/dummy.js'
 import FormReview from '@/components/Form/FormReviewCreate.vue'
 export default {
   components: {
@@ -110,7 +110,7 @@ export default {
       console.log(pageNowNum)
       this.reservationData = reservationDataDeskMeetingroom
       /*
-      let response = await reservationList(pageNowNum)
+      let response = await reservationUser(pageNowNum)
       this.reservationData = response.data
       */
     },

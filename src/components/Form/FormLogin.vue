@@ -43,15 +43,22 @@ export default {
         pw: this.pw,
       }
       this.pwClear()
-      console.log('loginData')
-      console.log(loginData)
-      const responce = await this.$store.dispatch('LOGIN', loginData)
-      const decode = jwt_decode(responce.token)
-      console.log(decode)
-      if (decode.auth == 'ROLE_HOST'){
-        this.$router.push('/host')
-      } else {
-        this.$router.push('/')
+      // console.log('loginData')
+      // console.log(loginData)
+      try {
+        const responce = await this.$store.dispatch('LOGIN', loginData)
+        const decode = jwt_decode(responce.token)
+        // console.log(decode)
+        if (decode.auth == 'ROLE_HOST'){
+          this.$router.push('/host')
+        } else {
+          this.$router.push('/')
+        }
+      } catch (error){
+        // console.log(error)
+        let message = '이메일과 비밀번호를 확인해주세요.'
+        this.$store.dispatch('MODALVIEWCLICK', true)
+        this.$store.dispatch('MODALMESSAGE', message)
       }
     },
     pwClear(){

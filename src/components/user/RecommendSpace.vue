@@ -25,7 +25,7 @@
 <script>
 // import { spaceAll } from '@/api/user.js'
 /* 더미 값 */
-import { recommendSpaceDumy } from '@/utils/dummy.js'
+import { recommendSpaceDumy } from '@/utils/dummy/dummy.js'
 export default {
   data(){
     return {

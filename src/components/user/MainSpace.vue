@@ -30,7 +30,7 @@
 <script>
 // import { spaceAll } from '@/api/user.js'
 /* 더미 값 */
-import { spaceDumy } from '@/utils/dummy.js'
+import { spaceDumy } from '@/utils/dummy/dummy.js'
 export default {
   data(){
     return {

@@ -38,7 +38,7 @@
     </div>
     <div class="menuTabServicecenter">
       <div>
-        <router-link to="/customercenter">
+        <router-link to="/user/customercenter">
           <span>1:1문의</span>
         </router-link>
       </div>

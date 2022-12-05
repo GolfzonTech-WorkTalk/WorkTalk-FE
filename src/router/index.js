@@ -39,12 +39,6 @@ const routes = [
     meta: {auth:true},
   },
   {
-    path: '/customercenter',
-    name: 'customercenter',
-    component: () => import('@/views/CustomerCenter.vue'),
-    meta: {auth:true},
-  },
-  {
     path: "/:catchAll(.*)",
     name: "404Name",
     component: () => import("@/views/NotFoundPage.vue"),
@@ -67,8 +61,8 @@ router.beforeEach((to, from, next) => {
     sub = decode.sub
     // console.log(token)
     // console.log(decode)
-    console.log('권한 : ', auth)
-    console.log('닉네임 : ', sub)
+    // console.log('권한 : ', auth)
+    // console.log('닉네임 : ', sub)
     store.dispatch('NICKNAME', sub)
     store.dispatch('ROLETYPE', auth)
   }
@@ -78,14 +72,14 @@ router.beforeEach((to, from, next) => {
   
   // 로그인 여부 확인
   if (to.meta.auth && !store.getters.isLogin){
-    console.log('로그인이 필요합니다.')
+    // console.log('로그인이 필요합니다.')
     alert('로그인이 필요합니다.')
     return next('/login')
   }
   
   // 로그인 검증 후 권한확인
   const pageRole = to.path.slice(1,5)
-  console.log(pageRole)
+  // console.log(pageRole)
   if (pageRole == 'host'){
     if ((auth != 'ROLE_HOST')){
       alert('권한이 없습니다.')

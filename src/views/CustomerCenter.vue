@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import CustomerCenter from '@/components/customerCenter/CustomerCenterView.vue'
+import CustomerCenter from '@/components/customerCenter/CustomerCenterUser.vue'
 export default {
   components: {
     CustomerCenter,

@@ -7,10 +7,20 @@
       </div>
       <div>
         <template v-if="pageView">
-          <review-view-vue />
+          <template v-if="role == 'ROLE_USER'">
+            <review-view-user />
+          </template>
+          <template v-else>
+            <review-view-host />
+          </template>
         </template>
         <template v-else>
-          <qna-view-vue />
+          <template v-if="role == 'ROLE_USER'">
+            <qna-view-user />
+          </template>
+          <template v-else>
+            <qna-view-host />
+          </template>
         </template>
       </div>
     </div>
@@ -18,16 +28,21 @@
 </template>
 
 <script>
-import ReviewViewVue from '@/components/user/ReviewView.vue'
-import QnaViewVue from '@/components/user/QnaView.vue'
+import ReviewViewUser from '@/components/QnaReview/ReviewViewUser.vue'
+import QnaViewUser from '@/components/QnaReview/QnaViewUser.vue'
+import ReviewViewHost from '@/components/QnaReview/ReviewViewHost.vue'
+import QnaViewHost from '@/components/QnaReview/QnaViewHost.vue'
 export default {
   components: {
-    ReviewViewVue,
-    QnaViewVue,
+    ReviewViewUser,
+    QnaViewUser,
+    ReviewViewHost,
+    QnaViewHost,
   },
   data(){
     return {
-      pageView: true,
+      role: this.$store.state.role,
+      pageView: false,
     }
   },
   methods: {
