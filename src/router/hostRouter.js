@@ -1,15 +1,5 @@
 export default [
   {
-    path: '/host/login',
-    name: 'hostlogin',
-    component: () => import('@/views/LoginPage.vue'),
-  },
-  {
-    path: '/host/join',
-    name: 'hostJoin',
-    component: () => import('@/views/JoinPage.vue'),
-  },
-  {
     path: '/host',  // selectAll
     name: 'hostMain',
     component: () => import('@/views/hostView/HostMainPage.vue'),
@@ -49,6 +39,18 @@ export default [
     path: '/host/reservation',
     name: 'hostReservation',
     component: () => import('@/views/ReservationPage.vue'),
+    meta: {auth:true},
+  },
+  {
+    path: '/host/QnAReview',
+    name: 'hostReview',
+    component: () => import('@/views/QnAReview.vue'),
+    meta: {auth:true},
+  },
+  {
+    path: '/host/customercenter',
+    name: 'hostCustomerCenter',
+    component: () => import('@/views/CustomerCenter.vue'),
     meta: {auth:true},
   },
 ]

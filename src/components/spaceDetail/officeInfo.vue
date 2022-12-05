@@ -11,7 +11,7 @@
         가격 : {{ item.roomPrice }}/일
       </p>
     </div>
-    <office-calendar-vue @select-day:date-click="lookupReservation" />
+    <office-calendar-vue :room-items="roomItems" @select-day:date-click="lookupReservation" />
     <div class="reservationResult">
       <p>이용기간</p>
       <p>시작일 : {{ initDate }}</p>
@@ -42,8 +42,9 @@
 </template>
 
 <script>
-// import { spaceOne, roomOne, reservationData, buyer, reserve, payment, mileageCheck } from '@/api/user.js'
-import { selectOneRoomDumy2 } from '@/utils/dummy.js'
+// import { spaceOne, roomOne } from '@/api/user.js'
+import { reserve, paymentSchedule } from '@/api/reservation.js'
+import { selectOneRoomDumy2 } from '@/utils/dummy/dummy.js'
 import OfficeCalendarVue from './reservation/OfficeCalendar.vue'
 export default {
   components: {
@@ -79,6 +80,7 @@ export default {
       this.roomItems = selectOneRoomDumy2
       this.price = selectOneRoomDumy2[0].roomPrice
       this.roomId = selectOneRoomDumy2[0].roomId
+      this.selectRoomName = selectOneRoomDumy2[0].roomName
     } catch (error){
       console.log(error)
     }
@@ -132,7 +134,11 @@ export default {
         this.$store.dispatch('MODALVIEWCLICK', true)
         this.$store.dispatch('MODALMESSAGE', message)
         this.$router.push('/login')
-      } else if (!this.reservationDay){
+      } else if (!this.initDate){
+        let message = '예약기간을 선택해주세요.'
+        this.$store.dispatch('MODALVIEWCLICK', true)
+        this.$store.dispatch('MODALMESSAGE', message)
+      } else if (!this.endDate){
         let message = '예약기간을 선택해주세요.'
         this.$store.dispatch('MODALVIEWCLICK', true)
         this.$store.dispatch('MODALMESSAGE', message)
@@ -142,11 +148,6 @@ export default {
     },
     // 결제로직
     async reservationSubmit(){
-      // 결제검증
-      if (this.reservationSubmitCheck()){
-        return
-      }
-
       // 예얄 데이터 정의
       const reservationData = {
         'roomId': this.roomId,
@@ -157,7 +158,6 @@ export default {
         'amount': this.amount,
         'paymentStatus': '',
       }
-      console.log(reservationData)
 
       // 유저정보 가져오기
       /*
@@ -176,7 +176,7 @@ export default {
       let paymentData = {
         pg: "kakaopay",
         pay_method: "card",
-        merchant_uid: this.roomReservationView+'_'+date.getFullYear()+date.getMonth()+date.getDate()+date.getHours()+date.getMinutes()+date.getSeconds(),
+        merchant_uid: this.selectRoomName+'_'+date.getFullYear()+date.getMonth()+date.getDate()+date.getHours()+date.getMinutes()+date.getSeconds(),
         // 룸ID_일련번호(고유값)
         // 고유값으로 채번하여 DB상에 저장(결제 위변조 작업시 필요)
         name: this.selectRoomName,
@@ -190,41 +190,43 @@ export default {
       console.log(paymentData)
       
       // 결제로직
-      let impResponse
       const { IMP } = window
       IMP.init('imp82350026')
       IMP.request_pay(paymentData, rsp => { // callback
         if (rsp.success){
           console.log('결제 성공')
+          console.log(rsp)
+          this.reservationPaymentSubmit(reservationData, rsp)
         } else {
+          console.log(rsp)
           console.log('결제 실패')
         }
-        impResponse = rsp
-        console.log(impResponse)
       })
-      /* rsp값
-      success : true/false
-      pay_uid : rsp.imp_uid
-      pay_statue : this.paymentType
-      amount : this.amount
-      merchant_uid: "ORD20180131-0000012"
-      */
-
-      /*
+    },
+    async reservationPaymentSubmit(reservationData, rsp){
+      console.log(reservationData)
+      console.log(rsp)
       try {
-        let response = await reserve(paymentData)
+        let response = await reserve(reservationData)
         console.log(response)
-      } catch (error) {
+        const paymentData = {
+          "reserveId" : '',
+          "customer_uid" : '',
+          "imp_uid" : rsp.imp_uid,
+          "merchant_uid" : rsp.merchant_uid,
+          "payStatus" : "DEPOSIT",
+          "payAmount" : rsp.paid_amount,
+          "mileageUsage" : this.useMileage,
+        }
+        try {
+          let response = await paymentSchedule(paymentData)
+          console.log(response)
+        } catch (error){
+          console.log(error)
+        }  
+      } catch (error){
         console.log(error)
       }
-
-      try {
-        let response = await payment(paymentData)
-        console.log(response)
-      } catch (error) {
-        console.log(error)
-      }
-      */
     },
   },
 }
@@ -315,6 +317,7 @@ export default {
   padding: 0 2.3vw;
   margin: 2vw;
   border-radius: 10px;
+  cursor: pointer;
 }
 /* 설명 */
 .statusExplanation{

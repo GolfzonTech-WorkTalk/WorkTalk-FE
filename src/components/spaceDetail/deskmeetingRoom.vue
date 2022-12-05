@@ -4,7 +4,7 @@
       방정보
     </p>
     <div v-for="item in roomItems" :key="item" class="roomItems">
-      <input v-model="roomReservationView" type="radio" :value="item.roomId" @click="reservationReset(item.roomPrice, item.roomName)">
+      <input v-model="roomReservationView" type="radio" :value="item.roomId" @click="reservationReset(item)">
       <span class="roomName">{{ item.roomName }}</span>
       <p class="roomTypePrice">
         운용시간 : {{ item.workStart }}:00 ~ {{ item.workEnd }}:00
@@ -83,8 +83,10 @@
 </template>
 
 <script>
-// import { spaceOne, roomOne, reservationData, buyer, reserve, payment, mileageCheck } from '@/api/user.js'
-import { selectOneRoomDumy, selectOneRoomDumy2, reservationData1, reservationData2 } from '@/utils/dummy.js'
+// import { spaceOne, roomOne } from '@/api/user.js'
+import { reservationData, reserve, paymentPrepaid, paymentSchedule } from '@/api/reservation.js'
+// import { selectOneRoomDumy, selectOneRoomDumy2, reservationData1, reservationData2 } from '@/utils/dummy/dummy.js'
+import { selectOneRoomDumy } from '@/utils/dummy/dummy.js'
 import DeskMeetingCalendarVue from './reservation/DeskMeetingCalendar.vue'
 export default {
   components: {
@@ -102,17 +104,19 @@ export default {
       MEETING8: '8~10인',
       MEETING20: '20인',
       // 시간출력관련
+      workStart: '',
+      workEnd:'',
       timeDatas: [],
       timelineView: false,
       // 예약된 시간 API 값 받아올 데이터
       reservation: [],
-      selectRoom: {},
       /* 제출데이터 */
       // 예약
       reservationDay: '',
       initTime:'',
       endTime:'',
       amount:'', // 총결제금액
+      roomType:'',
       // 결제
       selectRoomName: '',
       paymentType:'',
@@ -131,7 +135,7 @@ export default {
       // console.log(spaceResponce)
       // this.roomItems = spaceResponce.data
       /* 더미 */
-      this.roomItems = selectOneRoomDumy2
+      this.roomItems = selectOneRoomDumy
     } catch (error){
       console.log(error)
     }
@@ -149,16 +153,19 @@ export default {
       }
     },
     // 룸타입변경시 데이터 초기화
-    reservationReset(price, roomName){
-      this.price = price
+    reservationReset(item){
+      this.price = item.roomPrice
       this.timelineView = false
       // 예약데이터
       this.reservationDay = ''
       this.initTime = ''
       this.endTime = ''
       this.amount = ''
+      this.roomType = item.roomType
+      this.workStart = item.workStart,
+      this.workEnd = item.workEnd,
       // 결제데이터
-      this.selectRoomName = roomName
+      this.selectRoomName = item.roomName
       this.paymentType = ''
       this.paymentAmount = ''
       this.useMileage = ''
@@ -184,36 +191,40 @@ export default {
     async createTime(){
       this.timeDatas = []
       // 더미로직
-      for (let i = 0; i < selectOneRoomDumy.length; i++){
-        if (this.roomReservationView == selectOneRoomDumy[i].roomId){
-          this.selectRoom = selectOneRoomDumy[i]
-        }
-      }
-      let test = 1
-      if (test == 1){
-        this.reservation = reservationData1
-      } else {
-        this.reservation = reservationData2
-      }
+      // for (let i = 0; i < selectOneRoomDumy.length; i++){
+      //   if (this.roomReservationView == selectOneRoomDumy[i].roomId){
+      //     this.selectRoom = selectOneRoomDumy[i]
+      //   }
+      // }
+      // let test = 1
+      // if (test == 1){
+      //   this.reservation = reservationData1
+      // } else {
+      //   this.reservation = reservationData2
+      // }
 
       // 예약정보가져오는 api 적용
-      /*
       if (this.roomReservationView != ''){
         try {
-          let roomId = this.roomReservationView
-          let date = this.reservationDay
-          let response = await reservationData(roomId, date)
+          const reservedData = {
+            "roomId": this.roomReservationView,
+            "roomType": '',
+            "initDate" : this.reservationDay,
+            "endDate" : this.reservationDay,
+            "initTime" : '',
+            "endTime" : '',
+          }
+          let response = await reservationData(reservedData)
           console.log(response)
           this.reservation = response.data
-        } catch(error){
+        } catch (error){
           console.log(error)
         }
       }
-      */
 
       // 시간생성
-      let workStart = Number(this.selectRoom.workStart)
-      let workEnd = Number(this.selectRoom.workEnd)
+      let workStart = Number(this.workStart)
+      let workEnd = Number(this.workEnd)
       // console.log(workStart, workEnd)
       for (let i = workStart; i < workEnd + 1; i++){
         if (i < 10){
@@ -336,11 +347,6 @@ export default {
     },
     // 결제로직
     async reservationSubmit(){
-      // 결제검증
-      if (this.reservationSubmitCheck()){
-        return
-      }
-
       // 예약 데이터 정의
       const reservationData = {
         'roomId': this.roomReservationView,
@@ -390,41 +396,61 @@ export default {
       console.log(paymentData)
       
       // 결제로직
-      let impResponse
       const { IMP } = window
       IMP.init('imp82350026')
       IMP.request_pay(paymentData, rsp => { // callback
         if (rsp.success){
           console.log('결제 성공')
+          console.log(rsp)
+          this.reservationPaymentSubmit(reservationData, rsp)
         } else {
           console.log('결제 실패')
         }
-        impResponse = rsp
-        console.log(impResponse)
       })
-      /* rsp값
-      success : true/false
-      pay_uid : rsp.imp_uid
-      pay_statue : this.paymentType
-      amount : this.amount
-      merchant_uid: "ORD20180131-0000012"
-      */
-
-      /*
+    },
+    async reservationPaymentSubmit(reservationData, rsp){
+      console.log(reservationData)
+      console.log(rsp)
       try {
-        let response = await reserve(paymentData)
+        let response = await reserve(reservationData)
         console.log(response)
-      } catch (error) {
+      } catch (error){
         console.log(error)
       }
-
-      try {
-        let response = await payment(paymentData)
-        console.log(response)
-      } catch (error) {
-        console.log(error)
+      if (reservationData.paymentStatus == 'DEPOSIT'){
+        const paymentData = {
+          "reserveId" : '',
+          "customer_uid" : '',
+          "imp_uid" : rsp.imp_uid,
+          "merchant_uid" : rsp.merchant_uid,
+          "payStatus" : "DEPOSIT",
+          "payAmount" : rsp.paid_amount,
+          "mileageUsage" : this.useMileage,
+        }
+        try {
+          let response = await paymentPrepaid(paymentData)
+          console.log(response)
+        } catch (error){
+          console.log(error)
+        } 
+      } else {
+        const paymentData = {
+          "reserveId" : '',
+          "imp_uid" : rsp.imp_uid,
+          "merchant_uid" : rsp.merchant_uid,
+          "payAmount" : rsp.paid_amount,
+          "amount" : reservationData.amount,
+          "payStatus" : "DEPOSIT",
+          "mileageUsage" : this.useMileage,
+          "mileageSave" : this.saveMileage,
+        }
+        try {
+          let response = await paymentSchedule(paymentData)
+          console.log(response)
+        } catch (error){
+          console.log(error)
+        } 
       }
-      */
     },
   },
 }

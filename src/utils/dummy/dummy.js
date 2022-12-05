@@ -142,23 +142,6 @@ const selectOneSpaceDumy = [
       email: 'a@a.com',
     },
   },
-  {
-    spaceName:"더미 공간 5호",
-    spaceImg : "dummy3.jpg",
-    address:"서울 용산구 한강대로",
-    detailAddress:"270",
-    spaceDetail: "더미 공간 1호 입니다.",
-    spaceId:"5",
-    grade:"2",
-    review:"100",
-    spaceStatus: "waiting",
-    spaceType:'3',
-    member: {
-      name: '홍길동',
-      tel: '010-1234-5678',
-      email: 'a@a.com',
-    },
-  },
 ]
 
 const selectOneRoomDumy = [
@@ -485,6 +468,42 @@ const reservationDataDeskMeetingroom = [
   },
 ]
 
+const mapDummy = [
+  {
+    spaceName:"더미 공간 5호",
+    spaceImg : "dummy3.jpg",
+    address:"서울특별시 강남구 영동대로",
+    detailAddress:"735 골프존타워서울",
+    spaceDetail: "더미 공간 1호 입니다.",
+    spaceId:"5",
+    grade:"2",
+    review:"100",
+    spaceStatus: "waiting",
+    spaceType:'3',
+    member: {
+      name: '홍길동',
+      tel: '010-1234-5678',
+      email: 'a@a.com',
+    },
+  },
+  {
+    spaceName:"더미 공간 5호",
+    spaceImg : "dummy3.jpg",
+    address:"서울 용산구 한강대로",
+    detailAddress:"270",
+    spaceDetail: "더미 공간 1호 입니다.",
+    spaceId:"5",
+    grade:"2",
+    review:"100",
+    spaceStatus: "waiting",
+    spaceType:'3',
+    member: {
+      name: '홍길동',
+      tel: '010-1234-5678',
+      email: 'a@a.com',
+    },
+  },
+]
 export {
   spaceDumy,
   recommendSpaceDumy,
@@ -495,4 +514,5 @@ export {
   reservationData2,
   reservationData3,
   reservationDataDeskMeetingroom,
+  mapDummy,
 }

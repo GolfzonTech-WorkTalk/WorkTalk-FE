@@ -13,9 +13,10 @@
         </p>
       </div>
       <div v-if="item.qnacomment" class="hostAnswer">
+        <img src="@/assets/down-right.png" class="answerArrow">
         <span class="answerTitle">호스트의 답글</span>
         <span class="date">{{ dateCheck(item.qclastModifiedDate) }}</span>
-        <p class="QnAcontent">
+        <p class="answerContent">
           {{ item.qnacomment }}
         </p>
       </div>
@@ -24,7 +25,7 @@
 </template>
 
 <script>
-import { QnAdummy } from '@/utils/QnAReviewdummy.js'
+import { QnAdummy } from '@/utils/dummy/QnAReviewdummy.js'
 export default {
   emits: [ 'qna:open' ],
   data(){
@@ -95,15 +96,24 @@ export default {
   font-size: 0.8rem;
   font-weight: bold;
   color: rgba(0, 0, 0, 0.521);
-  margin-left: 0.5vw;
 }
+/* 답변 */
 .hostAnswer{
   margin-top: 2vh;
+  margin-left: 0.5vw;
 }
 .answerTitle{
   font-size: 0.9rem;
   font-weight: bold;
   color: rgb(43, 43, 185);
+}
+.answerArrow{
+  width: 1vw;
+  margin-right: 0.5vw;
+}
+.answerContent{
+  margin-left: 1.5vw;
+  font-size: 0.8rem;
 }
 /* 문의작성 */
 .QnAcreate{

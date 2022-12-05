@@ -184,7 +184,7 @@ emits: ['select-day:date-click'],
       date = this.dataFormChage(date)
       let reserveDay = this.year+'-'+month+'-'+date
       // console.log(reserveDay)
-      this.$emits('select-day:date-click', reserveDay)
+      this.$emit('select-day:date-click', reserveDay)
     },
   },
 }

@@ -52,29 +52,29 @@ export default {
     async officeRoomSubmit(){
       try {
         const officeRoom = this.officeRoom
-        // let formData = new FormData()
-        // formData.append('roomId', officeRoom.spaceId)
-        // formData.append('roomType', officeRoom.roomType)
-        // formData.append('roomName', officeRoom.roomName)
-        // if (!officeRoom.spaceImg){
-        //   formData.append('roomImg', officeRoom.roomImg)
-        // }
-        // formData.append('roomPrice', officeRoom.roomPrice)
-        // formData.append('workStart', officeRoom.workStart)
-        // formData.append('workEnd', officeRoom.workEnd)
-        // formData.append('roomDetail', officeRoom.roomDetail)
-        // console.log(officeRoom.spaceId)
-        const createData = {
-          'spaceId': officeRoom.spaceId,
-          'roomType': officeRoom.roomType,
-          'roomName': officeRoom.roomName,
-          'roomImg': officeRoom.roomImg,
-          'roomPrice': officeRoom.roomPrice,
-          'workStart': officeRoom.workStart,
-          'workEnd': officeRoom.workEnd,
-          'roomDetail': officeRoom.roomDetail,
+        let formData = new FormData()
+        formData.append('roomId', officeRoom.spaceId)
+        formData.append('roomType', officeRoom.roomType)
+        formData.append('roomName', officeRoom.roomName)
+        if (!officeRoom.spaceImg){
+          formData.append('roomImg', officeRoom.roomImg)
         }
-        const responce = await roomCreate(createData, officeRoom.spaceId)
+        formData.append('roomPrice', officeRoom.roomPrice)
+        formData.append('workStart', officeRoom.workStart)
+        formData.append('workEnd', officeRoom.workEnd)
+        formData.append('roomDetail', officeRoom.roomDetail)
+        console.log(officeRoom.spaceId)
+        // const createData = {
+        //   'spaceId': officeRoom.spaceId,
+        //   'roomType': officeRoom.roomType,
+        //   'roomName': officeRoom.roomName,
+        //   'roomImg': officeRoom.roomImg,
+        //   'roomPrice': officeRoom.roomPrice,
+        //   'workStart': officeRoom.workStart,
+        //   'workEnd': officeRoom.workEnd,
+        //   'roomDetail': officeRoom.roomDetail,
+        // }
+        const responce = await roomCreate(formData, officeRoom.spaceId)
         console.log(responce)
         alert('방이 생성되었습니다.')
         this.$router.push('/host')

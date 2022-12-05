@@ -10,7 +10,7 @@
 
 <script>
 // import { spaceOne } from '@/api/user.js'
-import { selectOneSpaceDumy } from '@/utils/dummy.js'
+import { selectOneSpaceDumy } from '@/utils/dummy/dummy.js'
 export default {
   data(){
     return {
@@ -92,6 +92,7 @@ export default {
 
 <style scoped>
 #mapContainer {
+  background: white;
   position: relative;
   display: flex;
   flex-direction: column;

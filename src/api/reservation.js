@@ -1,8 +1,8 @@
 import { instance, posts } from "./index"
 
 // 방의 예약조회
-function reservationData(roomId, reservationDate){
-  return instance.get('reservationData/'+roomId+'/'+reservationDate)
+function reservationData(reservedData){
+  return instance.get('/reservation/isBooked', reservedData)
 }
 
 // 예약인원정보
@@ -12,29 +12,37 @@ function buyer(reservaData){
 
 // 예약
 function reserve(reservaData){
-  return posts.get('reserve', reservaData)
+  return posts.post('/reservation/reserve', reservaData)
 }
 
 // 결제
-function payment(paymentData){
-  return posts.get('payment', paymentData)
+function paymentPrepaid(paymentData){
+  return posts.post('payment', paymentData)
+}
+function paymentSchedule(paymentData){
+  return posts.post('payment', paymentData)
 }
 
 // 예약리스트조회
-function reservationList(pageNowNum, sortWord1, sortWord2){
-  return posts.get('reservationList/'+pageNowNum+'/'+sortWord1+'/'+sortWord2)
+function reservationUser(){
+  return posts.get('/reservation/user')
+}
+function reservationHost(){
+  return posts.get('/reservation/host')
 }
 
 // 예약취소
 function reservationCancel(cancelData){
-  return posts.get('reservationCancel', cancelData)
+  return posts.get('/reservation/cancel', cancelData)
 }
 
 export {
     reservationData,
     reserve,
-    payment,
+    paymentPrepaid,
+    paymentSchedule,
     buyer,
-    reservationList,
+    reservationUser,
+    reservationHost,
     reservationCancel,
 }

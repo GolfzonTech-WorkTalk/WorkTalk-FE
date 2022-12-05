@@ -36,7 +36,7 @@ export default {
   border-radius: 20px;
   top: 20%;
   left: 30%;
-  height: 10vh;
+  height: 15vh;
   width: 37vw;
 }
 .modalMassege {

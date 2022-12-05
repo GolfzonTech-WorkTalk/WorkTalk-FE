@@ -25,6 +25,11 @@ function qnacommentUpdate(qnaId, qnaCommentData){
   return posts.get('qnacommentUpdate'+'/'+qnaId, qnaCommentData)
 }
 
+// QnA 답글수정
+function qnacommentDelete(qnaId){
+  return posts.get('qnacommentDelete'+'/'+qnaId)
+}
+
 // 공간에서의 QnA 리스트
 function spaceReviewList(spaceId){
   return instance.get('spaceOne/'+{spaceId}+'/qnas')
@@ -41,6 +46,7 @@ export {
   qnaDelete,
   qnacommentCreate,
   qnacommentUpdate,
+  qnacommentDelete,
   spaceReviewList,
   mypageReviewList,
 }

@@ -5,15 +5,22 @@
       <p class="contentCount" :class="(content.length > 100)?'warning':''">
         {{ content.length }}/100자
       </p>
-      <textarea v-model="content" class="QnAcontent" placeholder="문의내용을 작성해주세요." />
-      <span class="QnAbtn QnABtnClose" @click="emitClose">닫기</span>
-      <span class="QnAbtn QnABtnSubmit" @click="QnAupdate">작성</span>
+      <template v-if="userType == 'ROLE_USER'">
+        <textarea v-model="content" class="QnAcontent" placeholder="문의내용을 작성해주세요." />
+        <span class="QnAbtn QnABtnClose" @click="emitClose">닫기</span>
+        <span class="QnAbtn QnABtnSubmit" @click="QnAupdate">작성</span>
+      </template>
+      <template v-else>
+        <textarea v-model="qnacomment" class="QnAcontent" placeholder="문의내용을 작성해주세요." />
+        <span class="QnAbtn QnABtnClose" @click="emitClose">닫기</span>
+        <span class="QnAbtn QnABtnSubmit" @click="QnAcommentupdate">작성</span>
+      </template>
     </div>
   </div>
 </template>
 
 <script>
-import {qnaUpdata} from '@/api/QnA.js'
+import {qnaUpdata, qnacommentUpdate} from '@/api/QnA.js'
 export default {
   props: {
     item: {
@@ -29,6 +36,9 @@ export default {
       type : '',
       content : '',
       qnaId: '',
+      qnacomment: '',
+      // userType
+      userType: '',
     }
   },
   created(){
@@ -37,6 +47,8 @@ export default {
     this.type = this.item.type
     this.content = this.item.content
     this.qnaId = this.item.qnaId
+    this.qnacomment = this.item.qnacomment
+    this.userType = this.$store.state.role
   },
   methods: {
     emitClose(){
@@ -53,13 +65,27 @@ export default {
     },
     async QnAupdate(){
       const qnaUpdataData = {
-        'spaceId': this.spaceId,
+        'qnaId': this.qnaId,
         'type': this.type,
         'content': this.content,
       }
       console.log(qnaUpdataData)
       try {
         let response = await qnaUpdata(this.qnaId, qnaUpdataData)
+        console.log(response)
+      } catch (error){
+        console.log(error)
+      }
+    },
+    async QnAcommentupdate(){
+      const qnaUpdataData = {
+        'qnaId': this.qnaId,
+        'type': this.type,
+        'qnacomment': this.qnacomment,
+      }
+      console.log(qnaUpdataData)
+      try {
+        let response = await qnacommentUpdate(this.qnaId, qnaUpdataData)
         console.log(response)
       } catch (error){
         console.log(error)

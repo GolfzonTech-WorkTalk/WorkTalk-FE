@@ -16,7 +16,7 @@
           </router-link>
         </li>
         <li>
-          <router-link to="/host/review">
+          <router-link to="/host/QnAReview">
             <i class="fa-regular fa-comments fa-2x" />
             <p>후기 QnA 관리</p>
           </router-link>
@@ -31,7 +31,7 @@
     </div>
     <div class="menuTabServicecenter">
       <div>
-        <router-link to="/customercenter">
+        <router-link to="/host/customercenter">
           <span>1:1문의</span>
         </router-link>
       </div>

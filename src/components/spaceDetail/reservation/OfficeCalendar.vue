@@ -35,9 +35,16 @@
 </template>
 
 <script>
-import { reservationData3 } from '@/utils/dummy.js'
+import { reservationData3 } from '@/utils/dummy/dummy.js'
+import { reservationData } from '@/api/reservation.js'
 export default {
-emits: ['select-day:date-click'],
+  props: {
+    roomItems : {
+      type : Object,
+      required: true,
+    },
+  },
+  emits: ['select-day:date-click'],
   data(){
     return {
       // 요일
@@ -58,12 +65,19 @@ emits: ['select-day:date-click'],
   },
   created(){
     this.reserveData = reservationData3
+    // this.getRoomReservation()
     this.year = this.today.getFullYear()
     this.month = this.today.getMonth()
     this.date = this.today.getDate()
     this.getDates() // 달력의 전체 날짜를 출력하는 함수
   },
   methods: {
+    // 예약데이터 가져오는 API
+    async getRoomReservation(){
+      const response = await reservationData(this.roomItems[0].roomId)
+      console.log(response)
+      this.reserveData = response.data
+    },
     // 달력출력
     getDates(value){
       // console.log(this.clickDay)

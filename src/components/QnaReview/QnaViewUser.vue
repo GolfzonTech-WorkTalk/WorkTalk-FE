@@ -36,9 +36,10 @@
         </div>
       </div>
       <div v-if="item.qnacomment" class="hostAnswer">
+        <img src="@/assets/down-right.png" class="answerArrow">
         <span class="answerTitle">호스트의 답글</span>
         <span class="date">{{ dateCheck(item.qclastModifiedDate) }}</span>
-        <p class="QnAcontent">
+        <p class="answerContent">
           {{ item.qnacomment }}
         </p>
       </div>
@@ -49,7 +50,7 @@
 <script>
 import {qnaDelete} from '@/api/QnA.js'
 import FormQnAupdate from '@/components/Form/FormQnAupdate.vue'
-import { QnAdummy } from '@/utils/QnAReviewdummy.js'
+import { QnAdummy } from '@/utils/dummy/QnAReviewdummy.js'
 export default {
   components: {
     FormQnAupdate,
@@ -110,18 +111,28 @@ export default {
 <style scoped>
 .QnAContainer{
   position: relative;
-  padding: 2vw;
+  padding: 0.5vh 2vw;
   width: 36vw;
-  height: 84vh;
+  height: 94.5vh;
   background: white;
+  overflow-y: scroll;
+}
+.QnAContainer::-webkit-scrollbar{
+  display: none;
 }
 /* 정렬 */
 .SortQnAtypeBox{
-  margin-bottom: 5vh;
+  width: 36vw;
+  font-size: 2rem;
+  font-weight: bold;
+  text-align: right;
+  margin: 2vh 0;
 }
 .SortQnAtype{
-  width: 6vw;
-  float: right;
+  width: 8vw;
+  letter-spacing: 0.3rem;
+  font-size: 1.1rem;
+  font-weight: bold;
 }
 /* 문의리스트 출력 */
 .QnAitem{
@@ -159,13 +170,26 @@ export default {
   color: rgba(0, 0, 0, 0.521);
   margin-left: 0.5vw;
 }
+/* 답변 */
 .hostAnswer{
   margin-top: 2vh;
+  margin-left: 0.5vw;
 }
 .answerTitle{
   font-size: 0.9rem;
   font-weight: bold;
+  margin-right: 0.5vw;
   color: rgb(43, 43, 185);
+}
+.answerArrow{
+  width: 1vw;
+  margin-right: 0.5vw;
+}
+.answerContent{
+  font-size: 0.8rem;
+  font-weight: bold;
+  color: rgba(0, 0, 0, 0.521);
+  margin-left: 1.5vw;
 }
 .UpdateDeleteBtn{
   top: 2vh;
