@@ -17,7 +17,7 @@ function roomOne(spaceId){
 
 // 마일리지조회
 function mileage(){
-  return posts.get('mileage')
+  return posts.get('mileage/total')
 }
 
 export {

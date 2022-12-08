@@ -6,7 +6,7 @@
         <option value="" hidden>
           전체인원
         </option>
-        <option v-for="item in userListSortData" :key="item" :value="item.valeu">
+        <option v-for="item in userListSortData" :key="item" :value="item.value">
           {{ item.name }}
         </option>
       </select>
@@ -61,8 +61,8 @@ export default {
       userList:[],
       userListSortData:[
         {'name':'전체인원','value':''},
-        {'name':'패널티유','value':'penalty'},
-        {'name':'패널티무','value':'NoPanalty'},
+        {'name':'패널티유','value':'0'},
+        {'name':'패널티무','value':'1'},
       ],
       userListSort:'',
       userStatusUpdate:'패널티해제박스',
@@ -70,13 +70,13 @@ export default {
     }
   },
   created(){
-    this.userListCall()
+    this.userListCall(this.userListSort)
   },
   methods:{
-    async userListCall(){
+    async userListCall(userListSort){
       // const response = await userDummy.data
       try {
-        const response = await penaltyUser()
+        const response = await penaltyUser(userListSort)
         console.log(response.data.data)
         this.userList = response.data.data
       } catch (error){

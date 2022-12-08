@@ -21,7 +21,7 @@
         </router-link>
       </div>
       <div>
-        <router-link to="/master/UserManagement">
+        <router-link to="/master/memberManagement/user">
           <i class="fa-solid fa-credit-card fa-lg" />
           <span>패널티관리</span>
         </router-link>

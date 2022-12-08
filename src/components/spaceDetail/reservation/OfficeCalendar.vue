@@ -68,22 +68,25 @@ export default {
     this.year = this.today.getFullYear()
     this.month = this.today.getMonth()
     this.date = this.today.getDate()
-    this.getRoomReservation()
     this.getDates() // 달력의 전체 날짜를 출력하는 함수
   },
   methods: {
     // 예약데이터 가져오는 API
     async getRoomReservation(){
-
-      const reservedData = {
-        "roomId": this.roomItems.roomId,
-        "roomType": this.roomItems.roomType,
-        "initDate" : this.month,
-        "endDate" : this.month,
-        "initTime" : null,
-        "endTime" : null,
+      let month
+      let day = new Date(this.year, (this.month+1), 0)
+      if (this.month < 9){
+        month = '0'+(this.month+1)
+      } else {
+        month = (this.month+1)
       }
-      const response = await reservationData(reservedData)
+      const roomId = this.roomItems.roomId
+      const roomType = this.roomItems.roomType
+      const initDate = this.year+'-'+month+'-'+'01'
+      const endDate = this.year+'-'+month+'-'+day.getDate()
+      const initTime = null
+      const endTime = null
+      const response = await reservationData(roomId, roomType, initDate, endDate, initTime, endTime)
       console.log(response)
       this.reserveData = response.data
     },
@@ -120,6 +123,8 @@ export default {
       this.getPrevMonth(lastMonthLastDate,lastMonthLastDay)
       this.getTodayMonth(todayMonthLastDate)
       this.getNextMonth(nextMonthFirstDay)
+      // 예약가져오기
+      this.getRoomReservation()
       // 예약체크
       this.reservationCheck()
     },

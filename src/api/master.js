@@ -10,8 +10,12 @@ function penaltyRemove(penaltyId){
 }
 
 // 호스트관리
-function penaltyUser(){
-  return posts.get('penalty')
+function penaltyUser(activated){
+  return posts.get('penalty',{
+    params: {
+      activated,
+    },
+  })
 }
 
 function memberApprove(memberId){

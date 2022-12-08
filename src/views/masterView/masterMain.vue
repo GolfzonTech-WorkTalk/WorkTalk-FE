@@ -1,23 +1,23 @@
 <template>
   <div class="masterPageContainer">
-    <div class="masterPageItem">
-      <router-link to="master/space">
+    <router-link to="master/space">
+      <div class="masterPageItem">
         <i class="fa-solid fa-building-circle-check fa-4x" />
         <p>공간관리</p>
-      </router-link>
-    </div>
-    <div class="masterPageItem">
-      <router-link to="/master/customercneter">
+      </div>
+    </router-link>
+    <router-link to="/master/customercneter">
+      <div class="masterPageItem">
         <i class="fa-solid fa-headset fa-4x" />
         <p>1:1문의</p>
-      </router-link>
-    </div>
-    <div class="masterPageItem">
-      <router-link to="/master/UserManagement">
+      </div>
+    </router-link>
+    <router-link to="/master/memberManagement/user">
+      <div class="masterPageItem">
         <i class="fa-regular fa-id-card fa-4x" />
         <p>계정관리</p>
-      </router-link>
-    </div>
+      </div>
+    </router-link>
   </div>
 </template>
 

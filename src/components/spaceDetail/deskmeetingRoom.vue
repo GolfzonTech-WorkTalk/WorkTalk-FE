@@ -42,8 +42,8 @@
         <div class="reservationResult">
           <p>예약날짜 : {{ reservationDay }} </p>
           <span>예약시간 : </span>
-          <span v-if="initTime != ''">{{ initTime }}:00 ~ </span>
-          <span v-if="endTime != ''">{{ endTime }}:00</span>
+          <span v-if="(initTime != null)">{{ initTime }}:00 ~ </span>
+          <span v-if="(endTime != null)">{{ endTime }}:00</span>
         </div>
         <div v-if="amount != ''" class="reservationType">
           <!-- <div class="paymentTypeBox"> -->
@@ -86,7 +86,7 @@
 <script>
 import { roomOne } from '@/api/user.js'
 import { mileage } from '@/api/user.js'
-import { reservationData, reserve, paymentPrepaid, paymentSchedule } from '@/api/reservation.js'
+import { reservationData, reserveChoose, reservationReserve, reserveChooseDelete } from '@/api/reservation.js'
 // import { selectOneRoomDumy } from '@/utils/dummy/dummy.js'
 import DeskMeetingCalendarVue from './reservation/DeskMeetingCalendar.vue'
 export default {
@@ -114,8 +114,8 @@ export default {
       /* 제출데이터 */
       // 예약
       reservationDay: '',
-      initTime:'',
-      endTime:'',
+      initTime:null,
+      endTime:null,
       amount:'', // 총결제금액
       roomType:'',
       // 결제
@@ -164,8 +164,8 @@ export default {
       this.timelineView = false
       // 예약데이터
       this.reservationDay = ''
-      this.initTime = ''
-      this.endTime = ''
+      this.initTime = null
+      this.endTime = null
       this.amount = ''
       this.roomType = item.roomType
       this.workStart = item.workStart,
@@ -178,56 +178,37 @@ export default {
       this.saveMileage = ''
     },
     // 예약날짜 선택
-    lookupReservation(reserveDay){
+    async lookupReservation(reserveDay){
       // console.log(reserveDay)
       this.timelineView = true
       // 예약데이터
       this.reservationDay = reserveDay
-      this.initTime = ''
-      this.endTime = ''
+      this.initTime = null
+      this.endTime = null
       this.amount = ''
       // 결제데이터
       this.paymentType = ''
       this.paymentAmount = ''
       this.useMileage = ''
       this.saveMileage = ''
+      try {
+        const roomId = this.roomReservationView
+        const roomType = this.roomType
+        const initDate = this.reservationDay
+        const endDate = this.reservationDay
+        const initTime = null
+        const endTime = null
+        let response = await reservationData(roomId, roomType, initDate, endDate, initTime, endTime)
+        console.log(response)
+        this.reservation = response.data
+      } catch (error){
+        console.log(error)
+      }
       this.createTime()
     },
     // 시간출력 async
     async createTime(){
       this.timeDatas = []
-      // 더미로직
-      // for (let i = 0; i < selectOneRoomDumy.length; i++){
-      //   if (this.roomReservationView == selectOneRoomDumy[i].roomId){
-      //     this.selectRoom = selectOneRoomDumy[i]
-      //   }
-      // }
-      // let test = 1
-      // if (test == 1){
-      //   this.reservation = reservationData1
-      // } else {
-      //   this.reservation = reservationData2
-      // }
-
-      // 예약정보가져오는 api 적용
-      if (this.roomReservationView != ''){
-        try {
-          const reservedData = {
-            "roomId": this.roomReservationView,
-            "roomType": this.roomType,
-            "initDate" : this.reservationDay,
-            "endDate" : this.reservationDay,
-            "initTime" : null,
-            "endTime" : null,
-          }
-          console.log(reservedData)
-          let response = await reservationData(reservedData)
-          console.log(response)
-          this.reservation = response.data
-        } catch (error){
-          console.log(error)
-        }
-      }
 
       // 시간생성
       let workStart = Number(this.workStart)
@@ -366,38 +347,21 @@ export default {
     },
     // 결제로직
     async reservationSubmit(){
+      let date = new Date()
       // 예약 데이터 정의
       const reservationData = {
         'roomId': this.roomReservationView,
-        'initDate': this.reservationDay,
-        'endDate': this.reservationDay,
-        'initTime': this.initTime,
-        'endTime': this.endTime,
-        'amount': this.amount,
-        'paymentStatus': this.paymentType,
+        'checkInDate': this.reservationDay,
+        'checkOutDate': this.reservationDay,
+        'checkInTime': this.initTime,
+        'checkOutTime': this.endTime,
+        'reserveAmount': this.amount,
+        'payAmount': this.paymentAmount,
+        'payStatus': this.paymentType,
+        'customer_uid':this.$store.state.nickName+'_'+date.getFullYear()+date.getMonth()+date.getDate()+date.getHours()+date.getMinutes()+date.getSeconds(),
       }
-      console.log(reservationData)
-
-      // 마일리지 사용 및 적립 데이터 정의
-      const mileageData = {
-        'useMileage':this.useMileage,
-        'mileageAmount':this.saveMileage,
-      }
-      console.log(mileageData)
-      // 유저정보 가져오기
-      /*
-      let buyer
-      try {
-        let token = this.$store.state.token
-        let response = await buyer(token)
-        buyer = response
-      } catch (error){
-        console.log(error)
-      }
-      */
-
+      // console.log(reservationData)
       // 결제 데이터 정의
-      let date = new Date()
       let paymentData = {
         pg: "kakaopay",
         pay_method: "card",
@@ -406,69 +370,47 @@ export default {
         // 고유값으로 채번하여 DB상에 저장(결제 위변조 작업시 필요)
         name: this.selectRoomName,
         amount: this.paymentAmount,
-        buyer_email: "funidea_woo@naver.com",
-        buyer_name: "테스터",
-        buyer_tel: "010-1234-5678",
-        buyer_addr: "서울특별시 영등포구 당산동",
-        buyer_postcode: "07222",
       }
-      console.log(paymentData)
-      
-      // 결제로직
-      const { IMP } = window
-      IMP.init('imp82350026')
-      IMP.request_pay(paymentData, rsp => { // callback
-        if (rsp.success){
-          console.log('결제 성공')
-          console.log(rsp)
-          this.reservationPaymentSubmit(reservationData, rsp)
-        } else {
-          console.log('결제 실패')
-        }
-      })
-    },
-    async reservationPaymentSubmit(reservationData, rsp){
-      console.log(reservationData)
-      console.log(rsp)
+      //결제로직
       try {
-        let response = await reserve(reservationData)
+        let response = await reserveChoose(reservationData)
+        console.log('임시더미')
         console.log(response)
+        if (response.status == 200){
+          // 결제로직
+          const { IMP } = window
+          IMP.init('imp82350026')
+          IMP.request_pay(paymentData, rsp => { // callback
+            if (rsp.success){
+              console.log('결제 성공')
+              console.log(rsp)
+              reservationData.reserveId = response.data
+              reservationData.imp_uid = rsp.imp_uid
+              reservationData.merchant_uid = rsp.merchant_uid
+              reservationData.useMileage = this.useMileage
+              reservationData.saveMileage = this.saveMileage
+              console.log(reservationData)
+              this.reservationPaymentSubmit(reservationData)
+            } else {
+              console.log('결제 실패')
+              const dropReserve = reserveChooseDelete(response.data)
+              console.log(dropReserve)
+              console.log('결제DB삭제')
+            }
+          })
+        }
       } catch (error){
         console.log(error)
       }
-      if (reservationData.paymentStatus == 'DEPOSIT'){
-        const paymentData = {
-          "reserveId" : '',
-          "customer_uid" : '',
-          "imp_uid" : rsp.imp_uid,
-          "merchant_uid" : rsp.merchant_uid,
-          "payStatus" : "DEPOSIT",
-          "payAmount" : rsp.paid_amount,
-          "mileageUsage" : this.useMileage,
-        }
-        try {
-          let response = await paymentPrepaid(paymentData)
-          console.log(response)
-        } catch (error){
-          console.log(error)
-        } 
-      } else {
-        const paymentData = {
-          "reserveId" : '',
-          "imp_uid" : rsp.imp_uid,
-          "merchant_uid" : rsp.merchant_uid,
-          "payAmount" : rsp.paid_amount,
-          "amount" : reservationData.amount,
-          "payStatus" : "DEPOSIT",
-          "mileageUsage" : this.useMileage,
-          "mileageSave" : this.saveMileage,
-        }
-        try {
-          let response = await paymentSchedule(paymentData)
-          console.log(response)
-        } catch (error){
-          console.log(error)
-        } 
+    },
+    async reservationPaymentSubmit(reservationData){
+      console.log('DB넣기')
+      console.log(reservationData)
+      try {
+        let response = await reservationReserve(reservationData)
+        console.log(response)
+      } catch (error){
+        console.log(error)
       }
     },
   },

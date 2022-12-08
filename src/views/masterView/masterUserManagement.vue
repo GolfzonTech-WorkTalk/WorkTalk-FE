@@ -2,11 +2,11 @@
   <div class="masterSpaceContainer">
     <div>
       <div class="masterSpaceTitle">
-        <span :class="(pageView)?'NowView':'NoView'" @click="pageViewChange">이용자관리</span>
-        <span :class="(pageView)?'NoView':'NowView'" @click="pageViewChange">공급자관리</span>
+        <span :class="(pageView == 'user')?'NowView':'NoView'" @click="pageViewChange('user')">이용자관리</span>
+        <span :class="(pageView == 'host')?'NowView':'NoView'" @click="pageViewChange('host')">공급자관리</span>
       </div>
       <div>
-        <template v-if="pageView">
+        <template v-if="(pageView == 'user')">
           <user-management />
         </template>
         <template v-else>
@@ -27,12 +27,20 @@ export default {
   },
   data(){
     return {
-      pageView: true,
+      pageView:'',
     }
   },
+  created(){
+    this.pageViewCheck()
+  },
   methods: {
-    pageViewChange(){
-      this.pageView = !this.pageView
+    pageViewCheck(){
+      console.log(this.$route.params.role)
+      this.pageView = this.$route.params.role
+    },
+    pageViewChange(role){
+      this.$router.replace('/master/memberManagement/'+role)
+      this.pageViewCheck()
     },
   },
 }
