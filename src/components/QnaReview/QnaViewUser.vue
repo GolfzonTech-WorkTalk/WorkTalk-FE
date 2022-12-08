@@ -14,6 +14,7 @@
     <div v-for="item in QnAList" :key="item" class="QnAitem">
       <div>
         <span class="QnAtypelabel" :class="item.type">{{ typeCheck(item.type) }}</span>
+        <span class="spaceName">{{ item.spaceName }}</span>
         <p class="QnAcontent">
           {{ item.content }}
         </p>
@@ -149,6 +150,10 @@ export default {
   font-size: 0.8rem;
   letter-spacing: 0.1rem;
   color: white;
+}
+.spaceName{
+  font-weight: bold;
+  margin-left: 0.2vw;
 }
 .RESERVE{
   background: rgb(172, 223, 172);

@@ -42,9 +42,9 @@
 </template>
 
 <script>
-// import { spaceOne, roomOne } from '@/api/user.js'
+import { roomOne } from '@/api/user.js'
 import { reserve, paymentSchedule } from '@/api/reservation.js'
-import { selectOneRoomDumy2 } from '@/utils/dummy/dummy.js'
+// import { selectOneRoomDumy2 } from '@/utils/dummy/dummy.js'
 import OfficeCalendarVue from './reservation/OfficeCalendar.vue'
 export default {
   components: {
@@ -77,10 +77,10 @@ export default {
       // console.log(spaceResponce)
       // this.roomItems = spaceResponce.data
       /* 더미 */
-      this.roomItems = selectOneRoomDumy2
-      this.price = selectOneRoomDumy2[0].roomPrice
-      this.roomId = selectOneRoomDumy2[0].roomId
-      this.selectRoomName = selectOneRoomDumy2[0].roomName
+      this.roomItems = await roomOne()
+      this.price = roomOne[0].roomPrice
+      this.roomId = roomOne[0].roomId
+      this.selectRoomName = roomOne[0].roomName
     } catch (error){
       console.log(error)
     }
@@ -181,6 +181,7 @@ export default {
         // 고유값으로 채번하여 DB상에 저장(결제 위변조 작업시 필요)
         name: this.selectRoomName,
         amount: this.paymentAmount,
+        customer_uid : 'your-customer-unique-id',
         buyer_email: "funidea_woo@naver.com",
         buyer_name: "테스터",
         buyer_tel: "010-1234-5678",

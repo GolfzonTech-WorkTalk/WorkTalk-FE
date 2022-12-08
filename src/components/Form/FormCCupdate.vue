@@ -8,9 +8,16 @@
           {{ content.length }}/100자
         </p>
       </div>
-      <textarea v-model="content" class="CCcontent" placeholder="문의내용을 작성해주세요." />
-      <span class="CCbtn" @click="emitClose(false)">닫기</span>
-      <span class="CCbtn" @click="CCupdate">작성</span>
+      <template v-if="userType == 'ROLE_MASTER'">
+        <textarea v-model="CCcomment" class="CCcontent" placeholder="답변을 작성해주세요." />
+        <span class="CCbtn closeBtn" @click="emitClose(false)">닫기</span>
+        <span class="CCbtn updateBtn" @click="CCupdate">수정</span>
+      </template>
+      <template v-else>
+        <textarea v-model="content" class="CCcontent" placeholder="문의내용을 작성해주세요." />
+        <span class="CCbtn closeBtn" @click="emitClose(false)">닫기</span>
+        <span class="CCbtn updateBtn" @click="CCupdate">수정</span>
+      </template>
     </div>
   </div>
 </template>
@@ -37,6 +44,9 @@ export default {
       type : '',
       title:'',
       content : '',
+      CCcomment:'',
+      // userType
+      userType: '',
     }
   },
   created(){
@@ -45,6 +55,8 @@ export default {
     this.type = this.item.type
     this.title = this.item.title
     this.content = this.item.content
+    this.CCcomment = this.item.CCcomment
+    this.userType = this.$store.state.role
   },
   methods: {
     // 출력데이터 수정
@@ -62,11 +74,11 @@ export default {
     },
     async CCupdate(){
       if (this.contentCount.length == ''){
-        let message = '문의내용이 없습니다.'
+        let message = '내용이 없습니다.'
         this.$store.dispatch('MODALVIEWCLICK', true)
         this.$store.dispatch('MODALMESSAGE', message)
       } else if (this.contentCount.length > 100){
-        let message = '문의내용이 100자를 초과하였습니다.'
+        let message = '내용이 100자를 초과하였습니다.'
         this.$store.dispatch('MODALVIEWCLICK', true)
         this.$store.dispatch('MODALMESSAGE', message)
       } else {
@@ -75,11 +87,13 @@ export default {
           'type': this.type,
           'title':this.title,
           'content': this.content,
+          'CCcomment':this.CCcomment,
         }
         console.log(CCUpdataData)
         try {
           let response = await CCUpdata(this.cc_id, CCUpdataData)
           console.log(response)
+          this.emitClose(false)
         } catch (error){
           console.log(error)
         }
@@ -98,7 +112,7 @@ export default {
   padding: 2vh 1.5vw;
   width: 30vw;
   height: 26vh;
-  top: 10%;
+  top: -10vh;
   right: 7vw;
   z-index: 2;
 }
@@ -126,8 +140,12 @@ export default {
   margin-left: 1vw;
   cursor: pointer;
 }
-.CCbtn:hover{
+.updateBtn:hover{
   background: rgb(92, 92, 189);
+  color: white;
+}
+.closeBtn:hover{
+  background: rgb(165, 165, 165);
   color: white;
 }
 .contentCount{

@@ -45,7 +45,11 @@ export default {
       this.$emit('CC:close', value)
     },
     async CCCreate(){
-      if (this.title.length == ''){
+      if (this.type == '문의종류'){
+        let message = '문의종류를 선택해 주세요.'
+        this.$store.dispatch('MODALVIEWCLICK', true)
+        this.$store.dispatch('MODALMESSAGE', message)
+      } else if (this.title.length == ''){
         let message = '문의제목이 없습니다.'
         this.$store.dispatch('MODALVIEWCLICK', true)
         this.$store.dispatch('MODALMESSAGE', message)
@@ -71,6 +75,7 @@ export default {
         try {
           let response = await CCCreate(CCData)
           console.log(response)
+          this.emitClose(false)
         } catch (error){
           console.log(error)
         }

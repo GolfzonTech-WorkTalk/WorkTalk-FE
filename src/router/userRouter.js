@@ -19,7 +19,7 @@ export default [
   {
     path: '/user/payment',
     name: 'userPayment',
-    component: () => import('@/views/userView/PaymentPage.vue'),
+    component: () => import('@/views/userView/PaymentMileage.vue'),
     meta: {auth:true},
   },
   {
@@ -29,5 +29,3 @@ export default [
     meta: {auth:true},
   },
 ]
-
-

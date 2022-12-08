@@ -4,7 +4,7 @@
       프로젝트명
     </div>
     <div class="Teams">
-      팀원 : 이재석, 이주희, 최수현
+      팀원 : 이재석, 이주희, 최수연
     </div>
     <div class="devSpace">
       개발공간 : 

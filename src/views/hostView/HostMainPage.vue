@@ -59,19 +59,20 @@ export default {
       spaceItems: '',
     }
   },
-  async created(){
-    const responce =  await spaceAll(this.$store.state.nickName)
-    console.log(responce)
-    this.spaceItems = responce.data
-    // const responce = spaceDumy
-    // console.log(responce)
+  created(){
+    this.spaceAllCall()
   },
   methods: {
+    async spaceAllCall(){
+      const responce = await spaceAll()
+      console.log(responce)
+      this.spaceItems = responce.data
+    },
     itemLink(spaceStatus, title, spaceType, spaceName, spaceId){
       if (spaceStatus == 'waiting'){
         return '/host/roomCreate/'+title
       } else if (spaceStatus == 'approved'){
-        return 'host/spaceOne/'+spaceName+'/'+ spaceId
+        return 'host/spaceOne/'+spaceName+'/'+spaceId+'/'+spaceType
       } else {
         return '/host/roomCreate/'+title+'/'+spaceType+'/'+spaceId
       }

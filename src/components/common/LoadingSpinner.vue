@@ -10,6 +10,9 @@ export default {}
 
 <style scoped>
 .spinner-container {
+  top: 30%;
+  left: 48%;
+  position: absolute;
   display: flex;
   justify-content: center;
   align-items: center;

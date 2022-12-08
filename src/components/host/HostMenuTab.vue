@@ -7,42 +7,30 @@
         <span>{{ nickName }}</span>
       </router-link>
     </div>
-    <div class="menuTabUserService">
-      <ul>
-        <li>
-          <router-link to="/host/reservation">
-            <i class="fa-regular fa-calendar-check fa-2x" />
-            <p>예약관리</p>
-          </router-link>
-        </li>
-        <li>
-          <router-link to="/host/QnAReview">
-            <i class="fa-regular fa-comments fa-2x" />
-            <p>후기 QnA 관리</p>
-          </router-link>
-        </li>
-        <li>
-          <router-link to="/host/payment">
-            <i class="fa-solid fa-credit-card fa-2x" />
-            <p>정산관리</p>
-          </router-link>
-        </li>
-      </ul>
-    </div>
     <div class="menuTabServicecenter">
       <div>
-        <router-link to="/host/customercenter">
-          <span>1:1문의</span>
+        <router-link to="/host/reservation">
+          <i class="fa-regular fa-calendar-check fa-lg" />
+          <span>예약관리</span>
         </router-link>
       </div>
       <div>
-        <span>공지사항</span>
+        <router-link to="/host/QnAReview">
+          <i class="fa-regular fa-comments fa-lg" />
+          <span>후기 / QnA 관리</span>
+        </router-link>
       </div>
       <div>
-        <span>도움말</span>
+        <router-link to="/host/payment">
+          <i class="fa-solid fa-credit-card fa-lg" />
+          <span>정산관리</span>
+        </router-link>
       </div>
       <div>
-        <span>서비스정보</span>
+        <router-link to="/host/customercenter">
+          <i class="fa-solid fa-headset fa-lg" />
+          <span>1:1문의</span>
+        </router-link>
       </div>
     </div>
     <div class="menuTabHostpagemove">
@@ -112,40 +100,31 @@ export default {
   line-height: 15vh;
   border-bottom: 1px solid gray;
 }
-.menuTabUserService {
-  height: 15vh;
-  width: 100%;
-  border-bottom: 1px solid gray;
-}
-.menuTabUserService ul {
-  display: flex;
-  list-style: none;
-  justify-content: space-around;
-  font-size: 1.2rem;
-}
-.menuTabUserService ul li {
-  padding-top: 5vh;
-}
 .menuTabServicecenter {
   display:flex;
   flex-direction: column;
   justify-content: space-around;
-  height: 55vh;
+  height: 70vh;
+  text-align: left;
 }
 .menuTabServicecenter div {
-  height: 13vh;
-  line-height: 13vh;
+  height: 17.5vh;
+  line-height: 17.5vh;
 }
 .menuTabServicecenter div:not(:last-child) {
   border-bottom: 1px solid gray;
+}
+.menuTabServicecenter i {
+  margin-left: 3vw;
+  margin-right: 1vw;
 }
 .menuTabHostpagemove {
   height: 15vh;
   background: rgb(200, 218, 243);
   align-items: center;
-  line-height: 17vh;
+  line-height: 15vh;
 }
-li:hover, span:hover {
+span:hover {
   color: rgb(81, 81, 209);
 }
 </style>

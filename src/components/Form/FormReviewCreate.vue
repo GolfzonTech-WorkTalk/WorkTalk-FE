@@ -71,6 +71,7 @@ export default {
         reserveId: this.reserveId,
       }
       console.log(reviewData)
+      this.$emit('box-close:box-close-click')
       /*
       try {
         let response = await reviewCreate(reviewData)

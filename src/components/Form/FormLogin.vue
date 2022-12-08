@@ -51,6 +51,8 @@ export default {
         // console.log(decode)
         if (decode.auth == 'ROLE_HOST'){
           this.$router.push('/host')
+        } else if (decode.auth == 'ROLE_MASTER'){
+          this.$router.push('/master')
         } else {
           this.$router.push('/')
         }

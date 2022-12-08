@@ -1,10 +1,15 @@
 <template>
   <div class="spaceInfo">
-    <div v-for="item in spaceItems" :key="item">
+    <div>
       <p class="spaceName">
-        {{ item.spaceName }}
+        {{ spaceItems.spaceName }}
       </p>
-      <img class="spaceImg" :src="require(`@/assets/${item.spaceImg}`)" alt="공간이미지">
+      <template v-if="(spaceItems.spaceImg == null)">
+        <img class="spaceImg" :src="require(`@/assets/dummy1.jpg`)" alt="공간이미지">
+      </template>
+      <template v-else>
+        <img class="spaceImg" :src="require(`@/assets/${spaceItems.spaceImg}`)" alt="공간이미지">
+      </template>
       <div class="navVar">
         <ul>
           <li v-for="nav in navItems" :key="nav" @click="navMove(nav.nav)">
@@ -17,7 +22,7 @@
           [ 공간소개 ]
         </p>
         <p class="contentItem">
-          {{ item.spaceDetail }}
+          {{ spaceItems.spaceDetail }}
         </p>
       </div>
       <div class="contentBox">
@@ -47,24 +52,24 @@
         <p id="spaceReview" class="contentTitle">
           [ 이용후기 ]
         </p>
-        <p class="contentItem">
-          이용후기
-        </p>
+        <re-view-vue />
       </div>
     </div>
   </div>
 </template>
 
 <script>
-// import { spaceOne } from '@/api/user.js'
-import { selectOneSpaceDumy } from '@/utils/dummy/dummy.js'
+import { spaceOne } from '@/api/user.js'
+// import { selectOneSpaceDumy } from '@/utils/dummy/dummy.js'
 import { refundPolicy, notice } from '@/utils/textFile.js'
 import FormQnAVue from '@/components/Form/FormQnAcreate.vue'
+import ReViewVue from './QnAReview/ReView.vue'
 import QnAVue from './QnAReview/QnA.vue'
 export default {
   components: {
     QnAVue,
     FormQnAVue,
+    ReViewVue,
   },
   data(){
     return {
@@ -81,29 +86,27 @@ export default {
       QnAFormView: false,
     }
   },
-  // 공간정보 출력 async
-  created(){
-      // const spaceId = this.$route.params.spaceId
-      // console.log(spaceId)
-      // let spaceResponce = await spaceOne(spaceId)
-      // console.log(spaceResponce)
-      // this.spaceItems = spaceResponce.data
-      // this.memberItems = spaceResponce.data.member
-      /* 더미 */
-      this.spaceItems = selectOneSpaceDumy
-      this.memberItems = selectOneSpaceDumy.member
+  // 공간정보 출력
+  async created(){
+    try {
+      const spaceId = this.$route.params.spaceId
+      let spaceResponce = await spaceOne(spaceId)
+      // console.log(spaceResponce.data)
+      this.spaceItems = spaceResponce.data
+      this.memberItems = spaceResponce.data.member
+    } catch (error){
+      console.log(error)      
+    }
+    /* 더미 */
+    // this.spaceItems = selectOneSpaceDumy
+    // this.memberItems = selectOneSpaceDumy.member
   },
   methods: {
-    // 테스트 대기...
     navMove(value){
       console.log(value)
       window.location.href = `#${value}`
-      // let menuHeight = document.querySelector('#navVar').offsetHeight
-      // let location = document.querySelector(`#${x}`).offsetTop
-      // window.scrollTo({top:location - menuHeight, behavior:'smooth'})
     },
     QnAFormOpenClose(value){
-      // console.log(value)
       this.QnAFormView = value
     },
   },

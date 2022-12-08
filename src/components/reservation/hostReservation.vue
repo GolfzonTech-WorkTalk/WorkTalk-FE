@@ -67,7 +67,7 @@
 </template>
 
 <script>
-// import { reservationHost, reservationCancel } from '@/api/reservation.js'
+// import { reservation, reservationCancel } from '@/api/reservation.js'
 import {nowYYmmDDhhMM} from '@/utils/common.js'
 import {reservationDataDeskMeetingroom} from '@/utils/dummy/dummy.js'
 export default {
@@ -107,7 +107,7 @@ export default {
     this.reservationDataCall(this.pageNowNum)
     this.paging(this.pageNowNum)
     /*
-    let response = await reservationHost(pageNowNum)
+    let response = await reservation(pageNowNum)
     this.reservationData = response.data
     */
   },

@@ -141,14 +141,14 @@ export default {
 <style scoped>
 .profileContainer{
   position: relative;
-  width: 50vw;
+  width: 40vw;
   height: 23vh;
   padding: 1vh 2vw;
   background: white;
 }
 .profileTextBox{
   position: relative;
-  height: 28vh;
+  height: 23vh;
   padding: 1vh 0vw;
   line-height: 5vh;
 }
@@ -187,8 +187,8 @@ export default {
   width: 20vw;
   height: 20vh;
   padding: 2vh 1vw;
-  top: 15vh;
-  right: 16vw;
+  top: 0.5vh;
+  right: 11vw;
   z-index: 1;
 }
 .updateTitle{
@@ -233,8 +233,8 @@ export default {
   position: absolute;
   top: 0;
   left: 0;
-  width: 54vw;
-  height: 52vh;
+  width: 44vw;
+  height: 25vh;
   background: rgba(0, 0, 0, 0.212);
   z-index: 1;
 }

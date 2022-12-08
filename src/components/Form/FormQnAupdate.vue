@@ -6,12 +6,12 @@
         {{ content.length }}/100자
       </p>
       <template v-if="userType == 'ROLE_USER'">
-        <textarea v-model="content" class="QnAcontent" placeholder="문의내용을 작성해주세요." />
+        <textarea v-model="content" class="QnAcontent" :placeholder="content" />
         <span class="QnAbtn QnABtnClose" @click="emitClose">닫기</span>
         <span class="QnAbtn QnABtnSubmit" @click="QnAupdate">작성</span>
       </template>
       <template v-else>
-        <textarea v-model="qnacomment" class="QnAcontent" placeholder="문의내용을 작성해주세요." />
+        <textarea v-model="qnacomment" class="QnAcontent" :placeholder="qnacomment" />
         <span class="QnAbtn QnABtnClose" @click="emitClose">닫기</span>
         <span class="QnAbtn QnABtnSubmit" @click="QnAcommentupdate">작성</span>
       </template>
@@ -87,6 +87,7 @@ export default {
       try {
         let response = await qnacommentUpdate(this.qnaId, qnaUpdataData)
         console.log(response)
+        this.$emit('qnaupdate:close')
       } catch (error){
         console.log(error)
       }

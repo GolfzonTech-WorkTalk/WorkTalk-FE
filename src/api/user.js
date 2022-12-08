@@ -1,4 +1,4 @@
-import { instance } from "./index"
+import { instance, posts } from "./index"
 
 // 전체공간조회
 function spaceAll(){
@@ -12,11 +12,17 @@ function spaceOne(spaceId){
 
 // 룸조회
 function roomOne(spaceId){
-    return instance.get('roomOne/'+spaceId+'/rooms')
+    return instance.get('spaceOne/'+spaceId+'/rooms')
+}
+
+// 마일리지조회
+function mileage(){
+  return posts.get('mileage')
 }
 
 export {
     spaceAll,
     spaceOne,
     roomOne,
+    mileage,
 }

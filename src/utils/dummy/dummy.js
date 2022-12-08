@@ -8,6 +8,8 @@ const spaceDumy = [
     review:"100",
     spaceStatus: "NoSetting",
     spaceType:'1',
+    host:'공급자1',
+    regCode:'123-4567-89785',
   },
   {
     spaceName:"더미 공간 2호",
@@ -18,6 +20,8 @@ const spaceDumy = [
     review:"100",
     spaceStatus: "approved",
     spaceType:'2',
+    host:'공급자2',
+    regCode:'123-4567-89785',
   },
   {
     spaceName:"더미 공간 3호",
@@ -28,6 +32,8 @@ const spaceDumy = [
     review:"100",
     spaceStatus: "NoSetting",
     spaceType:'1',
+    host:'공급자3',
+    regCode:'123-4567-89785',
   },
   {
     spaceName:"더미 공간 4호",
@@ -38,6 +44,8 @@ const spaceDumy = [
     review:"100",
     spaceStatus: "approved",
     spaceType:'2',
+    host:'공급자4',
+    regCode:'123-4567-89785',
   },
   {
     spaceName:"더미 공간 5호",
@@ -48,6 +56,8 @@ const spaceDumy = [
     review:"100",
     spaceStatus: "waiting",
     spaceType:'3',
+    host:'공급자5',
+    regCode:'123-4567-89785',
   },
   {
     spaceName:"더미 공간 6호",
@@ -58,6 +68,8 @@ const spaceDumy = [
     review:"100",
     spaceStatus: "waiting",
     spaceType:'3',
+    host:'공급자6',
+    regCode:'123-4567-89785',
   },
   {
     spaceName:"더미 공간 7호",
@@ -68,6 +80,8 @@ const spaceDumy = [
     review:"100",
     spaceStatus: "waiting",
     spaceType:'3',
+    host:'공급자7',
+    regCode:'123-4567-89785',
   },
   {
     spaceName:"더미 공간 8호",
@@ -78,6 +92,8 @@ const spaceDumy = [
     review:"100",
     spaceStatus: "waiting",
     spaceType:'3',
+    host:'공급자8',
+    regCode:'123-4567-89785',
   },
   {
     spaceName:"더미 공간 9호",
@@ -86,8 +102,10 @@ const spaceDumy = [
     spaceId:"9",
     grade:"2",
     review:"100",
-    spaceStatus: "waiting",
+    spaceStatus: "suspension",
     spaceType:'3',
+    host:'공급자9',
+    regCode:'123-4567-89785',
   },
 ]
 
@@ -114,6 +132,36 @@ const recommendSpaceDumy = [
   },
   {
     spaceName:"더미 공간 3호",
+    spaceImg : "dummy3.jpg",
+    address:"경기도 수원시 장안구",
+    spaceId:"3",
+    grade:"1",
+    review:"100",
+    spaceStatus: "roomSetting",
+    spaceType:'1',
+  },
+  {
+    spaceName:"더미 공간 4호",
+    spaceImg : "dummy1.jpg",
+    address:"경기도 수원시 장안구",
+    spaceId:"1",
+    grade:"4",
+    review:"100",
+    spaceStatus: "roomSetting",
+    spaceType:'1',
+  },
+  {
+    spaceName:"더미 공간 5호",
+    spaceImg : "dummy2.jpg",
+    address:"경기도 수원시 장안구",
+    spaceId:"2",
+    grade:"3",
+    review:"100",
+    spaceStatus: "approved",
+    spaceType:'2',
+  },
+  {
+    spaceName:"더미 공간 6호",
     spaceImg : "dummy3.jpg",
     address:"경기도 수원시 장안구",
     spaceId:"3",

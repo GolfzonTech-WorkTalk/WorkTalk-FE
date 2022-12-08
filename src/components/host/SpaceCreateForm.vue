@@ -51,7 +51,7 @@
 
 <script>
 import { regCodeCheck } from '@/utils/regCodeCheck'
-import { spaceCreate } from '@/api/host'
+import { spaceCreate, spaceImg } from '@/api/host'
 export default {
   data(){
     return {
@@ -114,9 +114,6 @@ export default {
     execDaumPostcode(){
       new window.daum.Postcode({
         oncomplete: (data) => {
-          if (this.spaceDetail !== ""){
-            this.spaceDetail = ""
-          }
           if (data.userSelectedType === "R"){
             // 사용자가 도로명 주소를 선택했을 경우
             this.address = data.roadAddress
@@ -157,34 +154,37 @@ export default {
     // async 
     async spaceCreate(){
       try {
+        const createData = {
+          'name': this.$store.state.nickName,
+          'spaceType': this.spaceType,
+          'spaceName': this.spaceName,
+          'spaceDetail': this.spaceDetail,
+          'postcode': this.postcode,
+          'address': this.address,
+          'detailAddress': this.detailAddress,
+          'regCode': this.regCode,
+          'spaceImg': this.spaceImg,
+        }
+        console.log(createData)
         let formData = new FormData()
-        formData.append('name', this.$store.state.nickName)
-        formData.append('spaceType', this.spaceType)
-        formData.append('spaceName', this.spaceName)
-        formData.append('spaceDetail', this.spaceDetail)
-        formData.append('postcode', this.postcode)
-        formData.append('address', this.address)
-        formData.append('detailAddress', this.detailAddress)
-        formData.append('regCode', this.regCode)
+        // formData.append('name', this.$store.state.nickName)
+        // formData.append('spaceType', this.spaceType)
+        // formData.append('spaceName', this.spaceName)
+        // formData.append('spaceDetail', this.spaceDetail)
+        // formData.append('postcode', this.postcode)
+        // formData.append('address', this.address)
+        // formData.append('detailAddress', this.detailAddress)
+        // formData.append('regCode', this.regCode)
         if (this.spaceImg != null){
           formData.append('spaceImg', this.spaceImg)
         }
-        // 데이터 확인
-        // const createData = {
-        //   'name': this.$store.state.nickName,
-        //   'spaceType': this.spaceType,
-        //   'spaceName': this.spaceName,
-        //   'spaceDetail': this.spaceDetail,
-        //   'postcode': this.postcode,
-        //   'address': this.address,
-        //   'detailAddress': this.detailAddress,
-        //   'regCode': this.regCode,
-        //   'spaceImg': this.spaceImg,
-        // }
         console.log(formData)
-        // console.log(createData)
-        const response = await spaceCreate(formData)
-        console.log(response)
+        const createDataResponse = await spaceCreate(createData)
+        console.log(createDataResponse)
+        if (createDataResponse.status == 200){
+          const FormDataResponse = await spaceImg(formData)
+          console.log(FormDataResponse)
+        }
         // this.$router.push('/host')
         // alert('공간이 생성되었습니다. 방을 생성해 주세요.')
         // this.$router.push(`/host/roomCreate/${this.spaceName}/${this.spaceType}`)  

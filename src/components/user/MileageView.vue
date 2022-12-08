@@ -1,6 +1,6 @@
 <template>
   <div>
-    결제내역
+    마일리지
   </div>
 </template>
 
