@@ -18,7 +18,7 @@ export default [
     meta: {auth:true},
   },
   {
-    path: '/master/UserManagement',
+    path: '/master/memberManagement/:role',
     name: 'masterUserManagement',
     component: () => import('@/views/masterView/masterUserManagement.vue'),
     meta: {auth:true},
