@@ -1,5 +1,6 @@
 <template>
   <div class="profileBox">
+    <div v-if="goodByeView" class="leaveClubBackground" />
     <div>
       <div class="profileTitle">
         <span>프로필 관리</span>
@@ -8,9 +9,25 @@
         <profile-view />
       </div>
       <div class="goodByeBox">
-        <span class="goodByeBtn">탈퇴하기</span>
+        <span class="goodByeBtn" @click="goodByeWorkTalk">탈퇴하기</span>
       </div>
     </div>
+    <template v-if="goodByeView">
+      <div class="goodBye">
+        <p class="goodByeTitle">
+          정말 탈퇴하시겠습니까?
+        </p>
+        <p class="goodByeExplain">
+          탈퇴하실 경우 기존에 이용한 모든 데이터는 삭제됩니다
+        </p>
+        <P class="goodByeCancel" @click="goodByeWorkTalkCancel">
+          아니요
+        </P>
+        <P class="goodByeDone" @click="goodByeWorkTalkDone">
+          예,탈퇴하겠습니다
+        </P>
+      </div>
+    </template>
   </div>
 </template>
 
@@ -20,10 +37,34 @@ export default {
   components: {
     ProfileView,
   },
+  data(){
+    return {
+      goodByeView:false,
+    }
+  },
+  methods: {
+    goodByeWorkTalk(){
+      this.goodByeView = true
+    },
+    goodByeWorkTalkCancel(){
+      this.goodByeView = false
+    },
+    async goodByeWorkTalkDone(){
+      
+    },
+  },
 }
 </script>
 
 <style scoped>
+.leaveClubBackground{
+  background: rgba(0, 0, 0, 0.123);
+  position: absolute;
+  top: -10vh;
+  width: 100vw;
+  height: 140vh;
+  z-index: 1;
+}
 .profileBox{
   position: relative;
   justify-content: center;
@@ -55,12 +96,45 @@ export default {
   padding: 0 1vw;
   font-size: 0.8rem;
   font-weight: bold;
-  cursor: pointer;
   color: rgb(143, 39, 39);
   background: white;
+  cursor: pointer;
 }
 .goodByeBtn:hover{
   background: rgb(143, 39, 39);
+  color: white;
+}
+.goodBye{
+  background: white;
+  border-radius: 15px;
+  position: absolute;
+  top: 20%;
+  width: 17vw;
+  height: 21vh;
+  padding: 2vh 2vw;
+  z-index: 2;
+}
+.goodByeTitle{
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 1vh;
+}
+.goodByeExplain{
+  color: gray;
+  margin-bottom: 1vh;
+}
+.goodByeCancel, .goodByeDone{
+  background: rgba(212, 212, 212, 0.445);
+  border-radius: 10px;
+  text-align: center;
+  padding: 0.5vh;
+  cursor: pointer;
+}
+.goodByeCancel {
+  margin-bottom: 1vh;
+}
+.goodByeDone:hover{
+  background: rgb(116, 116, 206);
   color: white;
 }
 </style>

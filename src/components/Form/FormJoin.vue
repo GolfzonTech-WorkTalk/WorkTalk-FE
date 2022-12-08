@@ -136,15 +136,15 @@ export default {
           }
         }
         try {
-          // console.log(sendEmail)
+          console.log(sendEmail)
           let responce = await mailCheck(sendEmail)
-          // console.log(responce)
+          console.log(responce)
           this.emailVeificaion = false
           this.emailVerificationCodeCheck = responce.data
-          // console.log(this.emailVerificationCodeCheck)
-          // console.log(typeof(responce.data))  
+          console.log(this.emailVerificationCodeCheck)
+          console.log(typeof(responce.data))  
         } catch (error){
-          // console.log(error.request.status)
+          console.log(error.request.status)
           this.emailVerificationCodeCheck = error.request.status
         }
       }
@@ -163,14 +163,14 @@ export default {
     },
     // 닉네임체크
     async nicknameCheck(){
-      // console.log(this.nickname)
+      console.log(this.nickname)
       let name = {
         name: this.nickname,
       }
       try {
         let responce = await nickCheck(name)
-        // console.log(responce)
-        // console.log(responce.status)
+        console.log(responce)
+        console.log(responce.status)
         this.nicknameMessage = responce.status
       } catch (error){
         this.nicknameMessage = error.request.status
@@ -199,11 +199,7 @@ export default {
       // console.log(joinData)
       const { data } = await registerMember(joinData)
       console.log(data)
-      if (this.$store.state.role == 'ROLE_HOST'){
-        return this.$router.push('/host')
-      } else {
-        return this.$router.push('/')
-      }
+      return this.$router.push('/login')
     },
     // 회원가입 검증
     joinCheck(){
@@ -213,7 +209,7 @@ export default {
         this.$store.dispatch('MODALVIEWCLICK', true)
         this.$store.dispatch('MODALMESSAGE', message)
       } else if (!this.email || !this.emailDomain || this.emailDomain === '기타' && !this.emailDomainETC){
-        let message = '이메일을 확인해주세요'
+        message = '이메일을 확인해주세요'
         this.$store.dispatch('MODALVIEWCLICK', true)
         this.$store.dispatch('MODALMESSAGE', message)
       } else if (this.emailVerificationCode != this.emailVerificationCodeCheck){

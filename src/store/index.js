@@ -16,6 +16,8 @@ export default createStore({
     // 모달창 관리 변수
     modalView: false,
     modalMessage: '',
+    // 스피너 관리 변수
+    spinnerView: false,
   },
   getters: {
     // 로그인여부 확인
@@ -49,6 +51,10 @@ export default createStore({
     },
     setModalMessage(state, msg){
       state.modalMessage = msg
+    },
+    // 스피너
+    setSpinnerView(state){
+      state.spinnerView = !state.spinnerView
     },
     // 로그아웃
     setlogoutUser(state){
@@ -98,6 +104,10 @@ export default createStore({
       // const dumydata = {
       //   "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiLsgqzsmqnsnpAiLCJhdXRoIjoiUk9MRV9IT1NUIiwiZXhwIjoxNjY5Mjg5MDc5fQ.sVyrbk8A9lkSh_RCxWPKfBPtts3wrw6jaDZwyGy6UnPEcinXpPeQtJoDr5qq-0pY1SxDHTQ1EG3VIyNhZjRvEg",
       // }
+      // 마스터더미
+      // const dumydata = {
+      //   "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiLsgqzsmqnsnpAiLCJhdXRoIjoiUk9MRV9NQVNURVIiLCJleHAiOjE2NjkyODkwNzl9.CljqifTj5RJ9A6vOex7YxYv2IYLPkiGnbQuZg8wKSCTkbSgS4AIs_UmE9gN0pZp15Fl9zfMiDBqfyOaVF9dVGg",
+      // }
       // const decode = jwt_decode(dumydata.token)
       // context.commit('setToken', dumydata.token)
       // context.commit('setNickName', decode.sub)
@@ -112,6 +122,10 @@ export default createStore({
     MODALMESSAGE(context, msg){
       // console.log(msg)
       context.commit('setModalMessage', msg)
+    },
+    // 스피너
+    SPINNERVIEW(context){
+      context.commit('setSpinnerView')
     },
   },
   modules: {

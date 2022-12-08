@@ -19,87 +19,41 @@
         </router-link>
       </div>
     </div>
-    <div class="pageNumber">
-      <span><i class="fa-solid fa-chevron-left monthMoveBtn" @click="pageMove('pre')" /></span>
-      <span v-for="num in pageData" :key="num" :class="num.class" @click="paging(num.value)">{{ num.value }}</span>
-      <span><i class="fa-solid fa-chevron-right" @click="pageMove('next')" /></span>
+    <div>
+      <span>more</span>
     </div>
   </div>
 </template>
 
 <script>
-// import { spaceAll } from '@/api/user.js'
+import { spaceAll } from '@/api/user.js'
 /* 더미 값 */
-import { spaceDumy } from '@/utils/dummy/dummy.js'
+// import { spaceDumy } from '@/utils/dummy/dummy.js'
 export default {
   data(){
     return {
       spaceItems: '',
-      pageStartNum: 1,
-      pageNowNum:1,
-      pageData:[],
-      pageTotal:'',
     }
   },
   // async
   created(){
     /* 더미 값 */
-    this.reservationDataCall(this.pageNowNum)
-    this.paging(this.pageNowNum)
-    // console.log(this.spaceItems)
+    this.reservationDataCall()
   },
   methods: {
     // 데이터 API로 불러오기
-    async reservationDataCall(pageNowNum){
-      console.log(pageNowNum)
-      const responce = spaceDumy
-      this.spaceItems = responce
-      /*
-      const responce = await spaceAll()
-      this.spaceItems = responce.data
-      */
+    async reservationDataCall(){
+      // const responce = spaceDumy
+      // this.spaceItems = responce
+      try {
+        const responce = await spaceAll()
+        this.spaceItems = responce.data
+      } catch (error){
+        console.log(error)
+      }
     },
     itemLink(spaceName, spaceId, spaceType){
       return '/spaceOne/'+spaceName+'/'+ spaceId + '/' + spaceType
-    },
-    // 페이징
-    paging(pageNowNum){
-      this.pageData = []
-      this.pageNowNum = pageNowNum
-      // 전체 데이터의 길이... this.reservationData.length
-      let total = 111
-      if (total%10 != 0){
-        this.pageTotal = parseInt(total/10)+1
-      } else { 
-        this.pageTotal = total/10
-      }
-      // console.log(this.pageTotal)
-      let lastPage = this.pageStartNum+5
-      if (lastPage >= this.pageTotal ){
-        lastPage = this.pageTotal
-      }
-      for (let i = this.pageStartNum; i < lastPage; i++){
-        if (pageNowNum == i){
-          this.pageData.push({'value':i,'class':'pageNowNum'})
-        } else {
-          this.pageData.push({'value':i,'class':''})
-        }
-      }
-      this.reservationDataCall(this.pageNowNum)
-    },
-    // 페이지 번호 넘기기
-    pageMove(value){
-      if (value == 'next'){
-        this.pageStartNum = this.pageStartNum + 5
-        this.paging(this.pageStartNum)
-      } else {
-        if (this.pageStartNum == 1){
-          this.paging(this.pageStartNum)
-        }
-        this.pageStartNum = this.pageStartNum - 5
-        this.paging(this.pageStartNum)
-      }
-      this.reservationDataCall(this.pageNowNum)
     },
   },
 }

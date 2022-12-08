@@ -2,7 +2,7 @@ import { instance, posts } from "./index"
 
 // 방의 예약조회
 function reservationData(reservedData){
-  return instance.get('/reservation/isBooked', reservedData)
+  return instance.get('reservations/isBooked', reservedData)
 }
 
 // 예약인원정보
@@ -12,7 +12,7 @@ function buyer(reservaData){
 
 // 예약
 function reserve(reservaData){
-  return posts.post('/reservation/reserve', reservaData)
+  return posts.post('/reservations/reserve', reservaData)
 }
 
 // 결제
@@ -24,11 +24,8 @@ function paymentSchedule(paymentData){
 }
 
 // 예약리스트조회
-function reservationUser(){
-  return posts.get('/reservation/user')
-}
-function reservationHost(){
-  return posts.get('/reservation/host')
+function reservation(){
+  return posts.get('/reservation')
 }
 
 // 예약취소
@@ -42,7 +39,6 @@ export {
     paymentPrepaid,
     paymentSchedule,
     buyer,
-    reservationUser,
-    reservationHost,
+    reservation,
     reservationCancel,
 }

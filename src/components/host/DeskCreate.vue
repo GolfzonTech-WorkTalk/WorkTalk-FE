@@ -157,30 +157,34 @@ export default {
       try {
         for (let i = 0; i < roomCreateData.length; i++){
           let formData = new FormData()
-          formData.append('roomId', roomCreateData[i].spaceId)
-          formData.append('roomType', roomCreateData[i].roomType)
-          formData.append('roomName', roomCreateData[i].roomName)
+          // formData.append('roomId', roomCreateData[i].spaceId)
+          // formData.append('roomType', roomCreateData[i].roomType)
+          // formData.append('roomName', roomCreateData[i].roomName)
           if (!roomCreateData[i].roomImg){
             formData.append('roomImg', roomCreateData[i].roomImg)
           }
-          formData.append('roomPrice', roomCreateData[i].roomPrice)
-          formData.append('workStart', roomCreateData[i].workStart)
-          formData.append('workEnd', roomCreateData[i].workEnd)
-          formData.append('roomDetail', roomCreateData[i].roomDetail)
+          // formData.append('roomPrice', roomCreateData[i].roomPrice)
+          // formData.append('workStart', roomCreateData[i].workStart)
+          // formData.append('workEnd', roomCreateData[i].workEnd)
+          // formData.append('roomDetail', roomCreateData[i].roomDetail)
           console.log(roomCreateData[i].spaceId)
-          // const createData = {
-          //   'spaceId': roomCreateData[i].spaceId,
-          //   'roomType': roomCreateData[i].roomType,
-          //   'roomName': roomCreateData[i].roomName,
-          //   'roomImg': roomCreateData[i].roomImg,
-          //   'roomPrice': roomCreateData[i].roomPrice,
-          //   'workStart': roomCreateData[i].workStart,
-          //   'workEnd': roomCreateData[i].workEnd,
-          //   'roomDetail': roomCreateData[i].roomDetail,
-          // }
-          // console.log(createData)
-          const responce = await roomCreate(formData, roomCreateData[i].spaceId)
+          const createData = {
+            'spaceId': roomCreateData[i].spaceId,
+            'roomType': roomCreateData[i].roomType,
+            'roomName': roomCreateData[i].roomName,
+            'roomImg': roomCreateData[i].roomImg,
+            'roomPrice': roomCreateData[i].roomPrice,
+            'workStart': roomCreateData[i].workStart,
+            'workEnd': roomCreateData[i].workEnd,
+            'roomDetail': roomCreateData[i].roomDetail,
+          }
+          console.log(createData)
+          const responce = await roomCreate(createData, roomCreateData[i].spaceId)
           console.log(responce)
+          if (responce.status == 200){
+            const responce2 = await roomCreate(createData, roomCreateData[i].spaceId)
+            console.log(responce2)
+          }
         }
         alert('방이 생성되었습니다.')
         // this.$router.push('/host')

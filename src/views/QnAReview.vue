@@ -42,7 +42,7 @@ export default {
   data(){
     return {
       role: this.$store.state.role,
-      pageView: false,
+      pageView: true,
     }
   },
   methods: {

@@ -9,11 +9,14 @@
     </div>
     <div>
       <i class="fa-solid fa-bars fa-2x" @click="menuTabBtn" />
-      <template v-if="searchBoxMenuTabValid()">
-        <UserMenuTab v-if="MenuTabView" @menu-tab-btn="menuTabBtn" />
+      <template v-if="(searchBoxMenuTabValid() == 'host')">
+        <HostMenuTab v-if="MenuTabView" @menu-tab-btn="menuTabBtn" />
+      </template>
+      <template v-else-if="(searchBoxMenuTabValid() == 'master')">
+        <master-menu-tab v-if="MenuTabView" @menu-tab-btn="menuTabBtn" />
       </template>
       <template v-else>
-        <HostMenuTab v-if="MenuTabView" @menu-tab-btn="menuTabBtn" />
+        <UserMenuTab v-if="MenuTabView" @menu-tab-btn="menuTabBtn" />
       </template>
     </div>
   </header>
@@ -23,11 +26,13 @@
 import FormSearch from '@/components/Form/FormSearch.vue'
 import UserMenuTab from '@/components/user/UserMenuTab.vue'
 import HostMenuTab from '@/components/host/HostMenuTab.vue'
+import MasterMenuTab from '../master/MasterMenuTab.vue'
 export default {
   components: {
     FormSearch,
     UserMenuTab,
     HostMenuTab,
+    MasterMenuTab,
   },
   computed: {
     // 메뉴탭 상태변수
@@ -50,8 +55,16 @@ export default {
       this.$store.dispatch('MENUTABVIEW')
     },
     searchBoxMenuTabValid(){
-      // console.log(this.$store.state.role != 'ROLE_HOST')
-      return this.$store.state.role != 'ROLE_HOST'
+      let result
+      if (this.$store.state.role == 'ROLE_USER'){
+        result = 'user'
+      } else if (this.$store.state.role == 'ROLE_HOST'){
+        result = 'host'
+      } else if (this.$store.state.role == 'ROLE_MASTER'){
+        result = 'master'
+      }
+      // console.log(result)
+      return result
     },
   },
 }

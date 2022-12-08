@@ -57,10 +57,11 @@
         <div v-if="amount != ''" class="mileageBox">
           <!-- <div class="mileageBox"> -->
           <span>마일리지</span>
-          <span class="mileageCheck" @click="mileageCheck">확 인</span>
+          <span class="mileageCheck" @click="mileageCheck">조회</span>
           <div>
             <p>보유 : {{ mileage }}</p>
-            <input v-model="useMileage" class="useMileageBox" type="text" placeholder="사용할 마일리지" @keypress="useMuleageCheck" @change="useMuleageCheckOK">
+            <input v-model="useMileage" class="useMileageBox" type="text" placeholder="100단위 사용가능" @keypress="useMuleagePress" @change="useMuleageChange">
+            <span class="mileageCheck" @click="useMuleageCheckOK">사용</span>
           </div>
         </div>
         <div v-if="amount != ''" class="paymentBox">
@@ -68,7 +69,7 @@
             총금액 : {{ amount }}
           </p>
           <p>
-            결제금액 : {{ paymentAmount }}
+            예약금 : {{ paymentAmount }}
           </p>
           <p>
             적립예정 : {{ saveMileage }}
@@ -83,10 +84,10 @@
 </template>
 
 <script>
-// import { spaceOne, roomOne } from '@/api/user.js'
+import { roomOne } from '@/api/user.js'
+import { mileage } from '@/api/user.js'
 import { reservationData, reserve, paymentPrepaid, paymentSchedule } from '@/api/reservation.js'
-// import { selectOneRoomDumy, selectOneRoomDumy2, reservationData1, reservationData2 } from '@/utils/dummy/dummy.js'
-import { selectOneRoomDumy } from '@/utils/dummy/dummy.js'
+// import { selectOneRoomDumy } from '@/utils/dummy/dummy.js'
 import DeskMeetingCalendarVue from './reservation/DeskMeetingCalendar.vue'
 export default {
   components: {
@@ -130,12 +131,17 @@ export default {
   // 룸정보 출력
   async created(){
     try {
-      // const spaceId = this.$route.params.spaceId
-      // let spaceResponce = await roomOne(spaceId)
-      // console.log(spaceResponce)
-      // this.roomItems = spaceResponce.data
+      try {
+        const spaceId = this.$route.params.spaceId
+        // console.log(spaceId)
+        let spaceResponce = await roomOne(spaceId)
+        // console.log(spaceResponce)
+        this.roomItems = spaceResponce.data
+      } catch (error){
+        console.log(error)
+      }
       /* 더미 */
-      this.roomItems = selectOneRoomDumy
+      // this.roomItems = selectOneRoomDumy
     } catch (error){
       console.log(error)
     }
@@ -208,12 +214,13 @@ export default {
         try {
           const reservedData = {
             "roomId": this.roomReservationView,
-            "roomType": '',
+            "roomType": this.roomType,
             "initDate" : this.reservationDay,
             "endDate" : this.reservationDay,
-            "initTime" : '',
-            "endTime" : '',
+            "initTime" : null,
+            "endTime" : null,
           }
+          console.log(reservedData)
           let response = await reservationData(reservedData)
           console.log(response)
           this.reservation = response.data
@@ -289,11 +296,13 @@ export default {
     // 결제방식 선택
     paymentTypeSelect(value){
       this.paymentType = value
-      this.useMileage = ''
-      if (value == 'DEPOSIT'){
-        this.paymentAmount = this.amount * 0.2
-      } else {
+      if (this.paymentType != value){
+        this.useMileage = ''
+      }
+      if (value == 'PREPAID'){
         this.paymentAmount = this.amount
+      } else {
+        this.paymentAmount = this.amount * 0.2
       }
       if (value == 'POSTPAID'){
         this.saveMileage = '0'
@@ -304,41 +313,51 @@ export default {
     },
     // 마일리지 조회
     async mileageCheck(){
-      /*
-      let response = await mileageCheck()
-      console.log(response.data)
-      this.mileage = response.data
-      */
+      let response = await mileage()
+      console.log(response.data.data)
+      this.mileage = response.data.data
       // 더미
-      this.mileage = 10000
+      // this.mileage = 10000
     },
     // 마일리지 사용체크
-    useMuleageCheck(){
+    useMuleagePress(){
       if (this.mileage < this.useMileage){
         this.useMileage = this.mileage
       }
     },
+    useMuleageChange(){
+      this.useMuleagePress()
+      this.useMileage = parseInt(this.useMileage/100)*100
+    },
     useMuleageCheckOK(){
-      this.useMuleageCheck()
-      this.paymentAmount = this.paymentAmount - this.useMileage
+      if (!this.mileage){
+        let message = '마일리지 조회를 먼저해주세요.'
+        this.$store.dispatch('MODALVIEWCLICK', true)
+        this.$store.dispatch('MODALMESSAGE', message)
+      } else {
+        this.amount = (this.endTime - this.initTime + 1) *  this.price
+        this.amount = this.amount - this.useMileage
+        this.paymentTypeSelect(this.paymentType)
+      }
     },
     // 결제전 값 확인
     reservationSubmitCheck(){
+      let message
       if (!this.$store.state.token){
-        let message = '로그인을 해주세요'
+        message = '로그인을 해주세요'
         this.$store.dispatch('MODALVIEWCLICK', true)
         this.$store.dispatch('MODALMESSAGE', message)
         this.$router.push('/login')
       } else if (!this.reservationDay){
-        let message = '예약날짜를 선택해주세요.'
+        message = '예약날짜를 선택해주세요.'
         this.$store.dispatch('MODALVIEWCLICK', true)
         this.$store.dispatch('MODALMESSAGE', message)
       } else if (!this.initTime || !this.endTime){
-        let message = '예약시간을 선택해주세요.'
+        message = '예약시간을 선택해주세요.'
         this.$store.dispatch('MODALVIEWCLICK', true)
         this.$store.dispatch('MODALMESSAGE', message)
       } else if (!this.paymentType){
-        let message = '결제유형을 선택해주세요.'
+        message = '결제유형을 선택해주세요.'
         this.$store.dispatch('MODALVIEWCLICK', true)
         this.$store.dispatch('MODALMESSAGE', message)
       } else {
@@ -517,11 +536,13 @@ export default {
   border-radius: 10px;
   padding: 0 0.5vw;
   text-align: center;
+  cursor: pointer;
 }
 .useMileageBox{
   border: 1px solid gray;
   border-radius: 5px;
   padding: 0.5vh 0.5vw;
+  width: 11vw;
 }
 /* 결제버튼 */
 .reservationSubmitBtn{

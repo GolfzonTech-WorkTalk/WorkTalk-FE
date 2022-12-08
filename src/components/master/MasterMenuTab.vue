@@ -9,33 +9,33 @@
     </div>
     <div class="menuTabServicecenter">
       <div>
-        <router-link to="/host/reservation">
+        <router-link to="/master/space">
           <i class="fa-regular fa-calendar-check fa-lg" />
-          <span>예약관리</span>
+          <span>공간관리</span>
         </router-link>
       </div>
       <div>
-        <router-link to="/host/QnAReview">
+        <router-link to="/master/customercneter">
           <i class="fa-regular fa-comments fa-lg" />
-          <span>후기 / QnA 관리</span>
+          <span>1:1문의</span>
         </router-link>
       </div>
       <div>
-        <router-link to="/host/payment">
+        <router-link to="/master/UserManagement">
           <i class="fa-solid fa-credit-card fa-lg" />
-          <span>정산관리</span>
+          <span>패널티관리</span>
         </router-link>
       </div>
       <div>
-        <router-link to="/host/customercenter">
+        <router-link to="/master/space">
           <i class="fa-solid fa-headset fa-lg" />
           <span>1:1문의</span>
         </router-link>
       </div>
     </div>
     <div class="menuTabHostpagemove">
-      <span @click="userPageMove">
-        공간 관리페이지로 이동
+      <span @click="masterPageMove">
+        마스터 페이지로 이동
         <i class="fa-solid fa-arrow-right" />
       </span>
     </div>
@@ -55,8 +55,8 @@ export default {
     menuTabBtn(){
       this.$emit('menu-tab-btn')
     },
-    userPageMove(){
-      this.$router.push('/host')
+    masterPageMove(){
+      this.$router.push('/master')
     },
     logout(){
       this.$store.commit('setlogoutUser')

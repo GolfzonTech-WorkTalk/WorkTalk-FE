@@ -1,7 +1,7 @@
 <template>
   <div id="mapContainer">
-    <div class="searchBox">
-      <select v-model="selectCityCode" @change="selectCityOne">
+    <div class="mapLocationSortBox">
+      <select v-model="selectCityCode" class="mapLocationSort" @change="selectCityOne">
         <option value="지역" hidden>
           지역
         </option>
@@ -9,16 +9,23 @@
           {{ item.name }}
         </option>
       </select>
-      <template v-if="selectCityCode != '지역'">
-        <select v-model="selectCityDetailName" @change="selectCityDetailOne">
-          <option value="세부지역" hidden>
-            세부지역
-          </option>
-          <option v-for="item in cityDetailAddressData" :key="item" :value="item.name">
-            {{ item.name }}
-          </option>
-        </select>
-      </template>
+      <select v-model="selectCityDetailName" class="mapLocationSort" @change="selectCityDetailOne">
+        <option value="세부지역" hidden>
+          세부지역
+        </option>
+        <option v-for="item in cityDetailAddressData" :key="item" :value="item.name">
+          {{ item.name }}
+        </option>
+      </select>
+      <select v-model="selectSpaceType" class="mapLocationSort" @change="selectCityDetailOne">
+        <option value="공간타입" hidden>
+          공간타입
+        </option>
+        <option v-for="item in selectSpaceTypeData" :key="item" :value="item.value">
+          {{ item.name }}
+        </option>
+      </select>
+      <input type="text" placeholder="공간검색" class="mapLocationSort">
     </div>
     <div id="map" />
   </div>
@@ -35,6 +42,12 @@ export default {
       cityDetailAddressData:[],
       selectCityCode:'지역',
       selectCityDetailName:'세부지역',
+      selectSpaceType:'공간타입',
+      selectSpaceTypeData:[
+        {'name':'오피스','value':'1'},
+        {'name':'데스크','value':'2'},
+        {'name':'회의실','value':'3'},
+      ],
       selectCityName:'',
       // 공간정보
       spaceItems:[],
@@ -42,6 +55,7 @@ export default {
       geocoder: '',
       // 인포화면 관리배열
       markerArray: [],
+      infowindow:'',
       infowindowArray: [],
       // 맵
       map:'',
@@ -151,17 +165,17 @@ export default {
         this.markerArray.push(marker)
 
         // 마커에 표시할 인포윈도우를 생성합니다
-        let infowindow = new kakao.maps.InfoWindow({
+        this.infowindow = new kakao.maps.InfoWindow({
           content: this.getContent(this.spaceItems[i]), // 인포윈도우에 표시할 내용
         })
 
-        infowindowArray.push(infowindow)
+        infowindowArray.push(this.infowindow)
 
         // 마커에 mouseover 이벤트와 mouseout 이벤트를 등록합니다
         // 이벤트 리스너로는 클로저를 만들어 등록합니다
         // for문에서 클로저를 만들어 주지 않으면 마지막 마커에만 이벤트가 등록됩니다
-        kakao.maps.event.addListener(marker, "click", this.makeOverListener(this.map, marker, infowindow, infowindowArray, coords))
-        kakao.maps.event.addListener(this.map, "click", this.makeOutListener(infowindow))
+        kakao.maps.event.addListener(marker, "click", this.makeOverListener(this.map, marker, this.infowindow, infowindowArray, coords))
+        kakao.maps.event.addListener(this.map, "click", this.makeOutListener(this.infowindow))
       }
     },
     // 주소-좌표 변환 함수
@@ -230,7 +244,7 @@ export default {
 }
 #map{
   border: 1px solid gray;
-  width: 70vw;
+  width: 80vw;
   height: 110vh;
   border: 0;
 }
@@ -247,5 +261,22 @@ export default {
 }
 .kakaoInfoGrade, .kakaoInfoReview{
   font-size: 0.8rem
+}
+.mapLocationSortBox{
+  position: absolute;
+  width: 22vw;
+  padding: 2vh 0vw;
+  z-index: 2;
+  left: 10vw;
+}
+.mapLocationSort{
+  width: 9vw;
+  border: 3px solid rgb(157, 208, 224);
+  border-radius: 10px;
+  padding: 0.5vh 0.5vw;
+  font-size: 1rem;
+  font-weight: bold;
+  margin-right: 1vw;
+  margin-bottom: 1vh;
 }
 </style>

@@ -1,10 +1,8 @@
 <template>
   <div class="ReviewContainer">
-    <div v-if="deleteReviewNum != '후기삭제' || updateReviewNum != '후기수정'" class="backgroundReview" @click="deleteReviewCancel" />
     <div v-for="item in ReviewList" :key="item" class="Reviewitem">
       <div>
         <span class="spacetypelabel" :class="item.spacetype">{{ spacetypeCheck(item.spacetype) }}</span>
-        <span class="spaceName">{{ item.spaceName }}</span>
         <span class="roomName">{{ item.roomName }}</span>
         <div class="gradeBox">
           <i v-for="gradeitem in gradeCheck(item.grade)" :key="gradeitem" :class="gradeitem.star" />
@@ -12,19 +10,7 @@
         <p class="Reviewcontent">
           {{ item.content }}
         </p>
-        <div class="UpdateDeleteBtn">
-          <i class="fa-solid fa-pen-to-square" @click="updateReview(item)" />
-          <i class="fa-solid fa-trash" @click="deleteReview(item)" />
-          <template v-if="deleteReviewNum == item.reviewId">
-            <div class="deleteBox">
-              <p>해당 후기를 삭제하시겠습니까?</p>
-              <span class="deleteBtn deleteReviewDo" @click="deleteReviewSubmit(item)">삭 제</span>
-              <span class="deleteBtn deleteReviewCancel" @click="deleteReviewCancel">취 소</span>
-            </div>
-          </template>
-          <template v-if="updateReviewNum == item.reviewId">
-            <form-review-update :item="item" @reviewupdate:close="deleteReviewCancel" />
-          </template>
+        <div class="dateBox">
           <p class="date">
             {{ dateCheck(item.lastModifiedDate) }}
           </p>
@@ -35,12 +21,9 @@
 </template>
 
 <script>
-import {reviewDelete} from '@/api/review.js'
-import FormReviewUpdate from '@/components/Form/FormReviewUpdate.vue'
 import { ReviewDummy } from '@/utils/dummy/QnAReviewdummy.js'
 export default {
   components: {
-    FormReviewUpdate,
   },
   data(){
     return {
@@ -88,24 +71,6 @@ export default {
       let time = value.slice(11,16)
       return `${date} ${time}`
     },
-    deleteReview(item){
-      this.deleteReviewNum = item.reviewId
-    },
-    updateReview(item){
-      this.updateReviewNum = item.reviewId
-    },
-    deleteReviewCancel(){
-      this.deleteReviewNum = '후기삭제'
-      this.updateReviewNum = '후기수정'
-    },
-    async deleteReviewSubmit(item){
-      try {
-        let response = await reviewDelete(item.qnaId)
-        console.log(response)
-      } catch (error){
-        console.log(error)
-      }
-    },
   },
 }
 </script>
@@ -113,38 +78,16 @@ export default {
 <style scoped>
 .ReviewContainer{
   position: relative;
-  padding: 2vw;
-  width: 36vw;
-  height: 87vh;
-  background: white;
-  overflow-y: scroll;
-}
-.ReviewContainer::-webkit-scrollbar{
-  display: none;
-}
-/* 정렬 */
-.SortReviewtypeBox{
-  margin-bottom: 5vh;
-}
-.SortReviewtype{
-  width: 6vw;
-  float: right;
+  margin-left: 1vw;
 }
 /* 후기리스트 출력 */
 .Reviewitem{
   position: relative;
-  border: 2px solid gray;
-  border-radius: 10px;
-  width: 35vw;
-  padding: 2vh 0.5vw;
-  margin-bottom: 1vh;
-}
-.spaceName{
-  font-weight: bold;
-  margin-right: 0.2vw;
+  border-bottom: 2px solid gray;
+  width: 33vw;
+  padding: 1vh 0.5vw;
 }
 .roomName{
-  border-left: 2px solid gray;
   padding-left: 0.2vw;
   color: rgb(65, 65, 65);
   font-weight: bold;
@@ -162,11 +105,14 @@ export default {
   margin-left: 0.5vw;
   margin-top: 1vh;
 }
-.UpdateDeleteBtn{
+.dateBox{
   top: 2vh;
   right: 0.5vw;
   position: absolute;
   text-align: right;
+}
+.fullstar{
+  color: rgba(248, 248, 27, 0.5);
 }
 .UpdateDeleteBtn i {
   margin-left: 0.5vw;
@@ -179,11 +125,9 @@ export default {
   color: red;
 }
 .spacetypelabel{
-  border: 1px solid gray;
   border-radius: 10px;
   color: white;
   font-size: 0.8rem;
-  font-weight: bold;
   width: 4vw;
   padding: 0 0.5vw;
   margin-right: 0.5vw;
@@ -196,49 +140,5 @@ export default {
 }
 .MEETING4, .MEETING6, .MEETING8, .MEETING20{
   background: rgba(9, 44, 139, 0.527);
-}
-/* 삭제 창 */
-.fullstar{
-  color: rgba(248, 248, 27, 0.5);
-}
-.deleteBox{
-  position: absolute;
-  text-align: center;
-  top: 0;
-  left: -22vw;
-  background: white;
-  width: 20vw;
-  border-radius: 10px;
-  padding: 1vh 1vw;
-  z-index: 2;
-}
-.backgroundReview{
-  position: absolute;
-  background: rgba(0, 0, 0, 0.212);
-  top: 0;
-  left: 0;
-  width: 40vw;
-  height: 92.5vh;
-  z-index: 1;
-}
-.deleteBtn{
-  border: 1px solid gray;
-  border-radius: 10px;
-  font-size: 0.8rem;
-  padding: 0 0.5vw;
-}
-.deleteBox p{
-  margin-bottom: 1vh;
-}
-.deleteReviewDo:hover{
-  background: rgb(223, 69, 69);
-  color: white;
-}
-.deleteReviewCancel{
-  margin-left: 0.5vw;
-}
-.deleteReviewCancel:hover{
-  background: rgb(165, 165, 165);
-  color: white;
 }
 </style>

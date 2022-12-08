@@ -2,6 +2,7 @@ const QnAdummy = [
   {
       "qnaId": 1,
       "spaceId": 3,
+      "spaceName": '공간1호',
       "memberId": 4,
       "type": "RESERVE",
       "content": "냉무",
@@ -12,6 +13,7 @@ const QnAdummy = [
   {
       "qnaId": 2,
       "spaceId": 3,
+      "spaceName": '공간2호',
       "memberId": 4,
       "type": "PAY",
       "content": "testtet",
@@ -22,6 +24,7 @@ const QnAdummy = [
   {
       "qnaId": 3,
       "spaceId": 1,
+      "spaceName": '공간3호',
       "memberId": 4,
       "type": "USING",
       "content": "sdfsdsdsㄴ하ㅣㅓㅎㄹㄴ몮리",
@@ -34,6 +37,8 @@ const QnAdummy = [
 const ReviewDummy = [
   {
     "spacetype":'DESK',
+    "spaceName": '공간1호',
+    "roomName": '방1번',
     "reviewId": 1,
     "reservationId": 1,
     "memberId": 4,
@@ -43,6 +48,8 @@ const ReviewDummy = [
   },
   {
     "spacetype":'OFFICE',
+    "spaceName": '공간1호',
+    "roomName": '방2번',
     "reviewId": 2,
     "reservationId": 1,
     "memberId": 4,
@@ -52,6 +59,8 @@ const ReviewDummy = [
   },
   {
     "spacetype":'MEETING8',
+    "spaceName": '공간1호',
+    "roomName": '방3번',
     "reviewId": 3,
     "reservationId": 1,
     "memberId": 4,

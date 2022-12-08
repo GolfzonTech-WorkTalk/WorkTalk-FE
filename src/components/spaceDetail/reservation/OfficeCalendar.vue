@@ -35,7 +35,7 @@
 </template>
 
 <script>
-import { reservationData3 } from '@/utils/dummy/dummy.js'
+// import { reservationData3 } from '@/utils/dummy/dummy.js'
 import { reservationData } from '@/api/reservation.js'
 export default {
   props: {
@@ -64,17 +64,26 @@ export default {
     }
   },
   created(){
-    this.reserveData = reservationData3
-    // this.getRoomReservation()
+    // this.reserveData = reservationData3
     this.year = this.today.getFullYear()
     this.month = this.today.getMonth()
     this.date = this.today.getDate()
+    this.getRoomReservation()
     this.getDates() // 달력의 전체 날짜를 출력하는 함수
   },
   methods: {
     // 예약데이터 가져오는 API
     async getRoomReservation(){
-      const response = await reservationData(this.roomItems[0].roomId)
+
+      const reservedData = {
+        "roomId": this.roomItems.roomId,
+        "roomType": this.roomItems.roomType,
+        "initDate" : this.month,
+        "endDate" : this.month,
+        "initTime" : null,
+        "endTime" : null,
+      }
+      const response = await reservationData(reservedData)
       console.log(response)
       this.reserveData = response.data
     },

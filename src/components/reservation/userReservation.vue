@@ -63,7 +63,7 @@
 </template>
 
 <script>
-// import { reservationUser, reservationCancel } from '@/api/reservation.js'
+// import { reservation, reservationCancel } from '@/api/reservation.js'
 import {nowYYmmDDhhMM} from '@/utils/common.js'
 import {reservationDataDeskMeetingroom} from '@/utils/dummy/dummy.js'
 import FormReview from '@/components/Form/FormReviewCreate.vue'
@@ -107,10 +107,10 @@ export default {
   methods: {
     //데이터 API로 불러오기
     async reservationDataCall(pageNowNum){
-      console.log(pageNowNum)
+      console.log(pageNowNum-1)
       this.reservationData = reservationDataDeskMeetingroom
       /*
-      let response = await reservationUser(pageNowNum)
+      let response = await reservation(pageNowNum)
       this.reservationData = response.data
       */
     },
@@ -210,14 +210,19 @@ export default {
     // 페이지 번호 넘기기
     pageMove(value){
       if (value == 'next'){
-        this.pageStartNum = this.pageStartNum + 5
-        this.paging(this.pageStartNum)
+        if (this.pageStartNum == this.pageTotal-1){
+          this.paging(this.pageStartNum)
+        } else {
+          this.pageStartNum = this.pageStartNum + 5
+          this.paging(this.pageStartNum)
+        }
       } else {
         if (this.pageStartNum == 1){
           this.paging(this.pageStartNum)
+        } else {
+          this.pageStartNum = this.pageStartNum - 5
+          this.paging(this.pageStartNum)
         }
-        this.pageStartNum = this.pageStartNum - 5
-        this.paging(this.pageStartNum)
       }
       this.reservationDataCall(this.pageNowNum)
     },
@@ -263,6 +268,8 @@ export default {
       console.log(cancelData)
       this.cancelIndex = '취소번호'
       this.cancelReason = ''
+      this.boxClose()
+      this.reservationDataCall(this.pageNowNum)
       /*
       try {
         let response = await reservationCancel(cancelData)
@@ -501,7 +508,7 @@ export default {
 .background{
   position: absolute;
   background: rgba(0, 0, 0, 0.356);
-  top: 0;
+  top: -14.5vh;
   left: -15vw;
   width: 110vw;
   height: 110vh;

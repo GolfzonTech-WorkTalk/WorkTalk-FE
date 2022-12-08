@@ -14,7 +14,8 @@
     <div v-for="item in ReviewList" :key="item" class="Reviewitem">
       <div>
         <span class="spacetypelabel" :class="item.spacetype">{{ spacetypeCheck(item.spacetype) }}</span>
-        <span class="spaceName">공간1호</span>
+        <span class="spaceName">{{ item.spaceName }}</span>
+        <span class="roomName">{{ item.roomName }}</span>
         <div class="gradeBox">
           <i v-for="gradeitem in gradeCheck(item.grade)" :key="gradeitem" :class="gradeitem.star" />
         </div>
@@ -152,6 +153,17 @@ export default {
   width: 35vw;
   padding: 2vh 0.5vw;
   margin-bottom: 1vh;
+}
+.spaceName{
+  font-weight: bold;
+  margin-right: 0.2vw;
+}
+.roomName{
+  border-left: 2px solid gray;
+  padding-left: 0.2vw;
+  color: rgb(65, 65, 65);
+  font-weight: bold;
+  font-size: 0.9rem;
 }
 .date{
   font-size: 0.7rem;

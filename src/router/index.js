@@ -1,12 +1,14 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import userRouter from './userRouter'
 import hostRouter from './hostRouter'
+import masterRouter from './masterRouter'
 import store from '@/store'
 import jwt_decode from 'jwt-decode'
 
 const routes = [
   ...userRouter,
   ...hostRouter,
+  ...masterRouter,
   {
     path: '/testPage',
     name: 'testPage',
@@ -51,6 +53,8 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
+  // 스피너 동작
+  store.dispatch('SPINNERVIEW')
   // 토큰이 있을 경우
   let auth
   let sub
@@ -79,13 +83,22 @@ router.beforeEach((to, from, next) => {
   
   // 로그인 검증 후 권한확인
   const pageRole = to.path.slice(1,5)
-  // console.log(pageRole)
+  console.log(pageRole)
   if (pageRole == 'host'){
-    if ((auth != 'ROLE_HOST')){
+    if (auth == 'ROLE_USER'){
       alert('권한이 없습니다.')
-      return this.$router.go(-1)
+      store.dispatch('SPINNERVIEW')
+      return next('/')
     }
   }
+  if (pageRole == 'mast'){
+    if ((auth != 'ROLE_MASTER')){
+      alert('권한이 없습니다.')
+      store.dispatch('SPINNERVIEW')
+      return next('/')
+    }
+  }
+  store.dispatch('SPINNERVIEW')
   next()
 })
 

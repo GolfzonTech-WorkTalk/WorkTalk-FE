@@ -114,9 +114,6 @@ export default {
     execDaumPostcode(){
       new window.daum.Postcode({
         oncomplete: (data) => {
-          if (this.spaceDetail !== ""){
-            this.spaceDetail = ""
-          }
           if (data.userSelectedType === "R"){
             // 사용자가 도로명 주소를 선택했을 경우
             this.address = data.roadAddress
@@ -184,8 +181,10 @@ export default {
         console.log(formData)
         const createDataResponse = await spaceCreate(createData)
         console.log(createDataResponse)
-        const FormDataResponse = await spaceImg(formData)
-        console.log(FormDataResponse)
+        if (createDataResponse.status == 200){
+          const FormDataResponse = await spaceImg(formData)
+          console.log(FormDataResponse)
+        }
         // this.$router.push('/host')
         // alert('공간이 생성되었습니다. 방을 생성해 주세요.')
         // this.$router.push(`/host/roomCreate/${this.spaceName}/${this.spaceType}`)  

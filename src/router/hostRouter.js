@@ -6,7 +6,7 @@ export default [
     meta: {auth:true},
   },
   {
-    path: '/host/spaceOne/:spaceName/:spaceId',
+    path: '/host/spaceOne/:spaceName/:spaceId/:spaceType',
     name: 'hostSpaceOne',
     component: () => import('@/views/SpaceDetail.vue'),
     meta: {auth:true},
@@ -51,6 +51,12 @@ export default [
     path: '/host/customercenter',
     name: 'hostCustomerCenter',
     component: () => import('@/views/CustomerCenter.vue'),
+    meta: {auth:true},
+  },
+  {
+    path: '/host/payment',
+    name: 'hostPayment',
+    component: () => import('@/views/hostView/PaymentView.vue'),
     meta: {auth:true},
   },
 ]

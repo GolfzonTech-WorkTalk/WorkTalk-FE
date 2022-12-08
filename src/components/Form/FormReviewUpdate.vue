@@ -56,7 +56,7 @@ export default {
       this.gradeCheck(grade)
     },
     reviewSubmitCheck(){
-      if (!this.reviewContent){
+      if (!this.content){
         let message = '내용을 작성해 주세요.'
         this.$store.dispatch('MODALVIEWCLICK', true)
         this.$store.dispatch('MODALMESSAGE', message)
@@ -76,6 +76,7 @@ export default {
         reserveId: this.reserveId,
       }
       console.log(reviewData)
+      this.$emit('reviewupdate:close')
       /*
       try {
         let response = await reviewCreate(reviewData)
