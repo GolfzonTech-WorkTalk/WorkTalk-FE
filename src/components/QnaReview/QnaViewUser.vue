@@ -70,9 +70,14 @@ export default {
     }
   },
   created(){
-    this.QnAList = QnAdummy
+    this.qnaListCall()
   },
   methods: {
+    async qnaListCall(){
+      const response = await QnAdummy
+      this.QnAList = response
+      this.$store.dispatch('SPINNERVIEW', false)
+    },
     typeCheck(value){
       if (value == 'RESERVE'){
         return '예약'

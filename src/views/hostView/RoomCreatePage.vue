@@ -47,6 +47,7 @@ export default {
       this.spaceType = '오피스'
       this.spaceTypeClass = 'officeLabel LabelDesign'
     }
+    this.$store.dispatch('SPINNERVIEW')
   },
   methods: {
   },

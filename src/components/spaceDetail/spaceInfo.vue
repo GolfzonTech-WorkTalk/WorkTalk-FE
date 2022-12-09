@@ -97,6 +97,7 @@ export default {
     } catch (error){
       console.log(error)      
     }
+    this.$store.dispatch('SPINNERVIEW', false)
     /* 더미 */
     // this.spaceItems = selectOneSpaceDumy
     // this.memberItems = selectOneSpaceDumy.member

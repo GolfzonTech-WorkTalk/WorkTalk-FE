@@ -11,6 +11,9 @@ export default {
   components: {
     FormJoinVue,
   },
+  created(){
+    this.$store.dispatch('SPINNERVIEW', false)
+  },
 }
 </script>
 

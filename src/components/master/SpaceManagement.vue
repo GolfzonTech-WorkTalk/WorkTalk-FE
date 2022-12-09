@@ -59,6 +59,7 @@ export default {
     async spaceListCall(){
       const response = await spaceDumy
       this.spaceList = response
+      this.$store.dispatch('SPINNERVIEW')
     },
     spaceTypeCheck(value){
       if (value == '1'){

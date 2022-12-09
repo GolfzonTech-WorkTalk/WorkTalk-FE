@@ -1,5 +1,10 @@
 export default [
   {
+    path: '/searchSpace/:spaceType/:address/:date/:time',
+    name: 'searchSpace',
+    component: () => import('@/views/SearchSpace.vue'),
+  },
+  {
     path: '/spaceOne/:spaceName/:spaceId/:spaceType',
     name: 'spaceOne',
     component: () => import('@/views/SpaceDetail.vue'),

@@ -26,8 +26,8 @@
 </template>
 
 <script>
-// import {mileage} from '@/api/user.js'
-import {mileage} from '@/utils/dummy/paymentDummy.js'
+import {mileageList} from '@/api/user.js'
+// import {mileage} from '@/utils/dummy/paymentDummy.js'
 export default {
   data(){
     return {
@@ -38,7 +38,7 @@ export default {
         {'name':'1년','value':'12'},
       ],
       mileageSort:'기간',
-      mileageOwn:'',
+      mileageOwn:'0',
       mileageData:'',
     }
   },
@@ -48,9 +48,10 @@ export default {
   methods: {
     async mileageInquire(){
       // let response = await mileage()
-      let response = await mileage
-      this.mileageOwn = response.count
-      this.mileageData = response.data
+      let response = await mileageList()
+      console.log(response)
+      this.mileageOwn = response.data.count
+      this.mileageData = response.data.data
     },
     mileageStatusCheck(status){
       let result

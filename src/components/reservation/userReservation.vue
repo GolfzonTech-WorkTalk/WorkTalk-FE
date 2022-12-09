@@ -17,9 +17,8 @@
         <span class="roomName itemTitle">방이름</span>
         <span class="reservaStatusTitle">예약상태</span>
         <span class="reserveTimeTitle itemTitle">예약일</span>
-        <span class="paymentTypeTitle itemTitle">결제종류</span>
         <span class="paymentSatusTitle itemTitle">결제상태</span>
-        <span class="amountTitle itemTitle">금액</span>
+        <span class="amountTitle itemTitle">예약금</span>
         <span class="reservationCancel itemTitle">비 고</span>
       </div>
       <div v-for="(item, index) in reservationData" :key="item" class="reservationItem">
@@ -28,7 +27,7 @@
         <span class="reserveStatus" :class="item.reserveStatus">{{ reserveStatusRename(item.reserveStatus) }}</span>
         <span class="reserveTime">{{ reserveTime(item.bookDate.checkInDate, item.bookDate.checkInTime, item.bookDate.checkOutTime) }}</span>
         <span class="paymentType" :class="item.paymentStatus">{{ paymentTypeRename(item.paymentStatus) }}</span>
-        <span class="paymentSatus" :class="(item.paid == '0' && item.paymentStatus != 'REFUND')?'paymentWaiting':'paymentDone'">{{ paymentSatusRename(item.paid, item.paymentStatus) }}</span>
+        <span class="paymentSatus" :class="(item.paid == '0' && item.paymentStatus != 'REFUND')?'paymentWaiting':'paymentDone'">{{ paymentSatusRename(item.paid, item.paymentStatus, item.reserveStatus) }}</span>
         <span class="amount">{{ item.reserveAmount }}</span>
         <span v-if="cancelPossible(item)" class="reservationCancelBtn" @click="boxOpen('cancel', index)">예약취소</span>
         <template v-if="cancelIndex == index">
@@ -37,15 +36,23 @@
               {{ cancelReason.length }}/100자
             </p>
             <textarea v-model="cancelReason" cols="30" rows="5" placeholder="취소사유를 입력해주세요" />
-            <span @click="boxClose()">닫기</span>
-            <span @click="reservationCancel(item)">취소</span>
+            <span class="closeBtn" @click="boxClose()">닫기</span>
+            <span class="reservationCancelDo" @click="reservationCancel(item)">취소</span>
+          </div>
+        </template>
+        <span v-if="amountLeaveCheck(item)" class="amountLeaveBtn" @click="boxOpen('amountLeave', index)">잔금결제</span>
+        <template v-if="amountLeaveIndex == index">
+          <div class="amountLeaveBox">
+            <p>결제잔금 {{ (item.reserveAmount*0.8) }}원을 결제하시겠습니까?</p>
+            <span class="closeBtn" @click="boxClose()">닫기</span>
+            <span class="paymentBtn" @click="paymentLeave(item)">결제</span>
           </div>
         </template>
         <span v-if="cancelReasonView(item)" class="cancelReason" @click="boxOpen('cancelReason', index)">취소사유보기</span>
         <template v-if="cancelReasonIndex == index">
           <div class="reservationCancelReasonBox">
             <p>{{ item.cancelReason }}</p>
-            <span @click="boxClose()">닫기</span>
+            <span class="closeBtn" @click="boxClose()">닫기</span>
           </div>
         </template>
         <span v-if="reviewPossible(item)" class="reviewBtn" @click="boxOpen('review', index, item)">후기작성</span>
@@ -64,8 +71,9 @@
 
 <script>
 // import { reservation, reservationCancel } from '@/api/reservation.js'
-import {nowYYmmDDhhMM} from '@/utils/common.js'
-import {reservationDataDeskMeetingroom} from '@/utils/dummy/dummy.js'
+import { reservation, reservationCancel, reservationPrepaid } from '@/api/reservation.js'
+// import {nowYYmmDDhhMM} from '@/utils/common.js'
+// import {reservationDataDeskMeetingroom} from '@/utils/dummy/dummy.js'
 import FormReview from '@/components/Form/FormReviewCreate.vue'
 export default {
   components: {
@@ -97,6 +105,8 @@ export default {
       cancelReason:'',
       // 리뷰관련 데이터
       reserveId:'',
+      // 잔금결제
+      amountLeaveIndex:'잔금결제',
     }
   },
   created(){
@@ -108,11 +118,15 @@ export default {
     //데이터 API로 불러오기
     async reservationDataCall(pageNowNum){
       console.log(pageNowNum-1)
-      this.reservationData = reservationDataDeskMeetingroom
-      /*
-      let response = await reservation(pageNowNum)
-      this.reservationData = response.data
-      */
+      // this.reservationData = reservationDataDeskMeetingroom
+      try {
+        let response = await reservation(pageNowNum-1)
+        console.log(response.data)
+        this.reservationData = response.data.data
+      } catch (error){
+        console.log(error)
+      }
+      this.$store.dispatch('SPINNERVIEW', false)
     },
     // 템플릿 디자인 함수
     roomTypeRename(roomType){
@@ -142,16 +156,16 @@ export default {
         status = '보증금'
       } else if (status == 'PREPAID'){
         status = '선납'
-      } else if (status == 'POSTPAID_BOOKED'){
+      } else if (status == 'POSTPAID' || status == 'POSTPAID_BOOKED'){
         status = '후납'
       } else {
         status = '환불'
       }
       return status
     },
-    paymentSatusRename(paid, status){
-      if (status == 'REFUND'){
-        return paid = '-'
+    paymentSatusRename(paid, status, reserveStatus){
+      if (reserveStatus == 'NOSHOW' || status == 'REFUND'){
+        return '-'
       }
       if (paid == '0'){
         paid = '결제진행중'
@@ -177,10 +191,17 @@ export default {
       return false
     },
     reviewPossible(item){
-      if (item.reserveStatus == 'USED'){
+      if (item.reserveStatus == 'END'){
         return true
       } 
       return false
+    },
+    amountLeaveCheck(item){
+      if (item.paid == '0' && item.paymentStatus == 'DEPOSIT'){
+        return true
+      } else {
+        return false
+      }
     },
     // 페이징
     paging(pageNowNum){
@@ -233,6 +254,8 @@ export default {
         this.cancelIndex = index
       } else if (value == 'cancelReason'){
         this.cancelReasonIndex = index
+      } else if (value == 'amountLeave'){
+        this.amountLeaveIndex = index
       } else {
         this.reviewIndex = index
         this.reserveId = item.reserveId
@@ -244,6 +267,7 @@ export default {
       this.cancelReasonIndex = '취소사유'
       this.reviewIndex = '리뷰'
       this.reserveId = ''
+      this.amountLeaveIndex = '잔금결제'
       this.background = false
     },
     // 예약취소
@@ -262,22 +286,72 @@ export default {
       let cancelData = {
         reserveId : item.reserveId,
         cencelReason : this.cancelReason,
-        cancelDate : nowYYmmDDhhMM(),
-        reserveStatus: "CANCELED_BY_USER",
+        // cancelDate : nowYYmmDDhhMM(),
+        // reserveStatus: "CANCELED_BY_USER",
       }
       console.log(cancelData)
       this.cancelIndex = '취소번호'
       this.cancelReason = ''
-      this.boxClose()
-      this.reservationDataCall(this.pageNowNum)
-      /*
       try {
         let response = await reservationCancel(cancelData)
         console.log(response)
+        this.boxClose()
+        this.reservationDataCall(this.pageNowNum)
       } catch (error){
         console.log(error)
       }
-      */
+    },
+    // 잔금결제
+    async paymentLeave(item){
+      const reservationData = {
+        'roomId': item.rooomId,
+        'reserveAmount': item.reserveAmount,
+        'payAmount': item.reserveAmount*0.8,
+        'payStatus': item.paymentStatus,
+        'reserveId': item.reserveId,
+      }
+      const paymentData = {
+        pg: "kakaopay",
+        pay_method: "card",
+        merchant_uid: item.pays[0].merchantUid+'잔금',
+        // 룸ID_일련번호(고유값)
+        // 고유값으로 채번하여 DB상에 저장(결제 위변조 작업시 필요)
+        name: item.roomName,
+        amount: item.reserveAmount*0.8,
+      }
+      console.log(reservationData)
+      console.log(paymentData)
+      try {
+        const { IMP } = window
+        IMP.init('imp38067385')
+        IMP.request_pay(paymentData, rsp => { // callback
+          if (rsp.success){
+            console.log('결제 성공')
+            console.log(rsp)
+            reservationData.merchant_uid = rsp.merchant_uid
+            reservationData.imp_uid = rsp.imp_uid
+            console.log(reservationData)
+            this.reservationPaymentSubmit(reservationData)
+          } else {
+            console.log('결제 실패')
+            console.log(rsp)
+          }
+        })
+      } catch (error){
+        console.log(error)
+      }
+      this.boxClose()
+    },
+    async reservationPaymentSubmit(reservationData){
+      console.log('DB넣기')
+      console.log(reservationData)
+      try {
+        let response = await reservationPrepaid(reservationData)
+        console.log(response)
+        this.reservationDataCall(this.pageNowNum)
+      } catch (error){
+        console.log(error)
+      }
     },
   },
 }
@@ -378,12 +452,12 @@ export default {
   font-size: 0.8rem;
   font-weight: bold;
 }
-/* 예약종류,상태 */
-.paymentTypeTitle, .paymentType{
-  width: 6vw;
+.paymentSatusTitle{
+  width: 12vw;
 }
-.paymentSatusTitle, .paymentSatus{
-  width: 7vw;
+/* 예약종류,상태 */
+.paymentType, .paymentSatus{
+  width: 6vw;
 }
 .paymentType, .paymentSatus{
   font-size: 0.9rem;
@@ -402,10 +476,10 @@ export default {
 .reservationCancel{
   width: 7vw;
 }
-.reservationCancelBtn, .reviewBtn{
+.reservationCancelBtn, .reviewBtn, .amountLeaveBtn{
   padding: 0 0.2vw;
-  width: 3.5vw;
-  margin-left: 2vw;
+  width: 3vw;
+  margin-left: 0.5vw;
   color: white;
   font-weight: bold;
   font-size: 0.8rem;
@@ -414,6 +488,9 @@ export default {
 }
 .reservationCancelBtn{
   background: rgb(212, 49, 49);
+}
+.amountLeaveBtn{
+  background: rgb(44, 44, 175);
 }
 .pageNumber{
   text-align: center;
@@ -452,15 +529,15 @@ export default {
   margin-left: 1vw;
   float: right;
 }
-.reservationCancelBox span:hover{
-  background: rgb(93, 93, 214);
-  color: white;
-}
 .reservationCancelBox p {
   float: right;
 }
 .warning{
   color: red;
+}
+.reservationCancelDo:hover{
+  background: rgb(214, 93, 93);
+  color: white;
 }
 /* 취소사유창 */
 .cancelReason{
@@ -497,10 +574,6 @@ export default {
   margin-left: 1vw;
   float: right;
 }
-.reservationCancelReasonBox span:hover{
-  background: rgb(93, 93, 214);
-  color: white;
-}
 /* 리뷰 */
 .reviewBtn{
   background: rgb(78, 86, 197);
@@ -513,5 +586,34 @@ export default {
   width: 110vw;
   height: 110vh;
   z-index: 1;
+}
+/* 잔금결제 */
+.amountLeaveBox{
+  position: absolute;
+  background: white;
+  right: 0;
+  top: 0;
+  border: 3px solid gray;
+  width: 20vw;
+  height: 6vh;
+  padding: 1vh 0.5vw;
+  z-index: 1;
+}
+.amountLeaveBox span{
+  padding: 0 1vw;
+  border: 1px solid gray;
+  border-radius: 10px;
+  margin-top: 1vh;
+  margin-left: 1vw;
+  float: right;
+  cursor: pointer;
+}
+.closeBtn:hover{
+  background: rgb(200, 200, 200);
+  color: white;
+}
+.paymentBtn:hover{
+  background: rgb(78, 86, 197);
+  color: white;
 }
 </style>

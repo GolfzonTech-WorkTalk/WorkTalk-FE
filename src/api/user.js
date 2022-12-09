@@ -20,9 +20,15 @@ function mileage(){
   return posts.get('mileage/total')
 }
 
+// 마일리지 내역
+function mileageList(){
+  return posts.get('mileage')
+}
+
 export {
     spaceAll,
     spaceOne,
     roomOne,
     mileage,
+    mileageList,
 }

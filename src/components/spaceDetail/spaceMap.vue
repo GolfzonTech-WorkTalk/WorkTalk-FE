@@ -9,8 +9,8 @@
 </template>
 
 <script>
-// import { spaceOne } from '@/api/user.js'
-import { selectOneSpaceDumy } from '@/utils/dummy/dummy.js'
+import { spaceOne } from '@/api/user.js'
+// import { selectOneSpaceDumy } from '@/utils/dummy/dummy.js'
 export default {
   data(){
     return {
@@ -18,21 +18,21 @@ export default {
       memberItems:{},
     }
   },
-  // 공간정보 출력 async
-  created(){
+  // 공간정보 출력
+  async created(){
     try {
-      // const spaceId = this.$route.params.spaceId
-      // console.log(spaceId)
-      // let spaceResponce = await spaceOne(spaceId)
-      // console.log(spaceResponce)
-      // this.spaceItems = spaceResponce.data
-      // this.memberItems = spaceResponce.data.member
+      const spaceId = this.$route.params.spaceId
+      console.log(spaceId)
+      let spaceResponce = await spaceOne(spaceId)
+      console.log(spaceResponce)
+      this.spaceItems = spaceResponce.data
+      this.memberItems = spaceResponce.data.member
       /* 더미 */
-      let spaceResponce = selectOneSpaceDumy
+      // let spaceResponce = selectOneSpaceDumy
       // console.log(spaceResponce)
       // console.log(spaceResponce[0].member)
-      this.spaceItems = spaceResponce
-      this.memberItems = spaceResponce[0].member
+      // this.spaceItems = spaceResponce
+      // this.memberItems = spaceResponce[0].member
     } catch (error){
       console.log(error)
     }
@@ -70,7 +70,7 @@ export default {
       // console.log(this.spaceItems)
       // console.log(this.spaceItems[0].address)
 
-      let addressData = this.spaceItems[0].address + this.spaceItems[0].detailAddress
+      let addressData = this.spaceItems.address + this.spaceItems.detailAddress
 
       geocoder.addressSearch(addressData, function(result, status){
         if (status === kakao.maps.services.Status.OK){

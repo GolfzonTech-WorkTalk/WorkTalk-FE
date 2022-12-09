@@ -11,6 +11,9 @@ export default {
   components: {
     FormLogin,
   },
+  created(){
+    this.$store.dispatch('SPINNERVIEW', false)
+  },
 }
 </script>
 

@@ -1,9 +1,10 @@
 <template>
   <div class="reservationContainer">
+    <div v-if="background" class="background" @click="boxClose()" />
     <div class="reservationTitle">
       <select v-model="sortPayment" class="sortBox" @change="reservationDataCall()">
         <option value="" hidden>
-          결제상태
+          예상상태
         </option>
         <option v-for="item in sortPaymentData" :key="item" :value="item.value">
           {{ item.name }}
@@ -37,23 +38,30 @@
         <span class="paymentType" :class="item.paymentStatus">{{ paymentTypeRename(item.paymentStatus) }}</span>
         <span class="amount">{{ item.reserveAmount }}</span>
         <span class="paymentSatus" :class="(item.paid == '0' && item.paymentStatus != 'REFUND')?'paymentWaiting':'paymentDone'">{{ paymentSatusRename(item.paid, item.paymentStatus) }}</span>
-        <span v-if="cancelPossible(item)" class="reservationCancelBtn" @click="reservationCancel(index)">예약취소</span>
+        <span v-if="cancelPossible(item)" class="reservationCancelBtn" @click="boxOpen('cancel', index)">예약취소</span>
         <template v-if="cancelIndex == index">
           <div class="reservationCancelBox">
             <p :class="(cancelReason.length >= 100)?'warning':''">
               {{ cancelReason.length }}/100자
             </p>
             <textarea v-model="cancelReason" cols="30" rows="5" placeholder="취소사유를 입력해주세요" />
-            <span @click="cencelCencel()">닫기</span>
-            <span @click="reservationCancelOK(item)">취소</span>
+            <span class="closeBtn" @click="boxClose()">닫기</span>
+            <span class="cancelBtn" @click="reservationCancelOK(item)">취소</span>
           </div>
         </template>
-        <span v-if="cancelPossible(item)" class="reservationDoneBtn" @click="reservationCancel(item)">이용완료</span>
-        <span v-if="cancelReasonView(item)" class="cancelReason" @click="cancelReasonOpen(index)">취소사유보기</span>
+        <span v-if="cancelPossible(item)" class="reservationDoneBtn" @click="boxOpen('done', index)">이용완료</span>
+        <template v-if="(reservationDone == index)">
+          <div class="reservationDoneBox">
+            <p>해당 예약을 이용완료처리 하시겠습니까?</p>
+            <span class="closeBtn" @click="boxClose()">닫기</span>
+            <span class="doneBtn" @click="reservationDoneOK(item)">완료</span>
+          </div>
+        </template>
+        <span v-if="cancelReasonView(item)" class="cancelReason" @click="boxOpen('cancelReason', index)">취소사유보기</span>
         <template v-if="cancelReasonIndex == index">
           <div class="reservationCancelReasonBox">
             <p>{{ item.cancelReason }}</p>
-            <span @click="cencelCencel()">닫기</span>
+            <span class="closeBtn" @click="boxClose()">닫기</span>
           </div>
         </template>
       </div>
@@ -67,9 +75,10 @@
 </template>
 
 <script>
-// import { reservation, reservationCancel } from '@/api/reservation.js'
-import {nowYYmmDDhhMM} from '@/utils/common.js'
-import {reservationDataDeskMeetingroom} from '@/utils/dummy/dummy.js'
+// import { reservation, reservationCancel, reservationCompletion } from '@/api/reservation.js'
+// import {nowYYmmDDhhMM} from '@/utils/common.js'
+// import {reservationDataDeskMeetingroom} from '@/utils/dummy/dummy.js'
+import { reservation, reservationCancel, reservationCompletion } from '@/api/reservation.js'
 export default {
   data(){
     return {
@@ -78,8 +87,9 @@ export default {
       sortSpaceData:[
         // api로 받아야 함...
         {'name':'전 체','value':''},
-        {'name':'데스크','value':'DESK'},
-        {'name':'오피스','value':'OFFICE'},
+        {'name':'오피스','value':'1'},
+        {'name':'데스크','value':'2'},
+        {'name':'회의실','value':'3'},
       ],
       sortPaymentData: [
         {'name':'전 체','value':''},
@@ -100,16 +110,14 @@ export default {
       cancelReason:'',
       // 취소사유보기
       cancelReasonIndex: '취소사유',
+      background: false,
+      // 이용완료
+      reservationDone:'이용완료',
     }
   },
   created(){
-    // 초기 api로 데이터 가죠오기
     this.reservationDataCall(this.pageNowNum)
     this.paging(this.pageNowNum)
-    /*
-    let response = await reservation(pageNowNum)
-    this.reservationData = response.data
-    */
   },
   methods: {
     //데이터 API로 불러오기
@@ -122,12 +130,16 @@ export default {
       if (this.sortPayment != ''){
         sortPayment = this.sortPayment
       }
-      console.log(pageNowNum, sortSpace, sortPayment)
-      this.reservationData = reservationDataDeskMeetingroom
-      /*
-      let response = await reservationData(pageNowNum)
-      this.reservationData = response.data
-      */
+      console.log(pageNowNum-1, sortSpace, sortPayment)
+      // this.reservationData = reservationDataDeskMeetingroom
+      try {
+        let response = await reservation(pageNowNum-1)
+        console.log(response.data)
+        this.reservationData = response.data.data
+      } catch (error){
+        console.log(error)
+      }
+      this.$store.dispatch('SPINNERVIEW', false)
     },
     // 템플릿 디자인 함수
     roomTypeRename(roomType){
@@ -233,20 +245,27 @@ export default {
       this.reservationDataCall(this.pageNowNum)
     },
     // 예약취소창 열기
-    reservationCancel(index){
-      this.cancelIndex = index
-    },
-    cancelReasonOpen(index){
-      this.cancelReasonIndex = index
+    boxOpen(value, index){
+      this.boxClose()
+      if (value == 'cancel'){
+        this.cancelIndex = index
+      } else if (value == 'cancelReason'){
+        this.cancelReasonIndex = index
+      } else {
+        this.reservationDone = index
+      }
+      this.background = true
     },
     // 예약취소창 닫기
-    cencelCencel(){
+    boxClose(){
       this.cancelIndex = '취소번호'
       this.cancelReasonIndex = '취소사유'
       this.cancelReason = ''
+      this.reservationDone='이용완료'
+      this.background = false
     },
     // 예약취소
-    reservationCancelOK(item){
+    async reservationCancelOK(item){
       if (this.cancelReason.length >= 100){
         let message = '취소사유가 100자를 초과했습니다.'
         this.$store.dispatch('MODALVIEWCLICK', true)
@@ -261,20 +280,29 @@ export default {
       let cancelData = {
         reserveId : item.reserveId,
         cencelReason : this.cancelReason,
-        cancelDate : nowYYmmDDhhMM(),
-        reserveStatus: "CANCELED_BY_HOST",
+        // cancelDate : nowYYmmDDhhMM(),
+        // reserveStatus: "CANCELED_BY_HOST",
       }
       console.log(cancelData)
-      this.cancelIndex = '취소번호'
-      this.cancelReason = ''
-      /*
       try {
         let response = await reservationCancel(cancelData)
         console.log(response)
+        this.boxClose()
+        this.reservationDataCall(this.pageNowNum)
       } catch (error){
         console.log(error)
       }
-      */
+    },
+    // 이용완료
+    async reservationDoneOK(item){
+      try {
+        let response = await reservationCompletion(item.reserveId)
+        console.log(response)
+        this.boxClose()
+        this.reservationDataCall(this.pageNowNum)
+      } catch (error){
+        console.log(error)
+      }
     },
   },
 }
@@ -448,9 +476,10 @@ export default {
   border-radius: 10px;
   margin-left: 1vw;
   float: right;
+  cursor: pointer;
 }
-.reservationCancelBox span:hover{
-  background: rgb(93, 93, 214);
+.cancelBtn:hover{
+  background: rgb(217, 136, 136);
   color: white;
 }
 .reservationCancelBox p {
@@ -493,9 +522,45 @@ export default {
   border-radius: 10px;
   margin-left: 1vw;
   float: right;
+  cursor: pointer;
 }
-.reservationCancelReasonBox span:hover{
-  background: rgb(93, 93, 214);
+/* 이용완료창 */
+.reservationDoneBox{
+  position: absolute;
+  text-align: center;
+  background: white;
+  right: 0;
+  top: 0;
+  border: 3px solid gray;
+  width: 20vw;
+  height: 6vh;
+  padding: 1vh 0.5vw;
+  z-index: 1;
+}
+.reservationDoneBox span{
+  padding: 0 1vw;
+  border: 1px solid gray;
+  border-radius: 10px;
+  margin-top: 1vh;
+  margin-left: 1vw;
+  float: right;
+  cursor: pointer;
+}
+.doneBtn:hover{
+  background: rgb(136, 154, 217);
   color: white;
+}
+.closeBtn:hover{
+  background: rgb(200, 200, 200);
+  color: white;
+}
+.background{
+  position: absolute;
+  background: rgba(0, 0, 0, 0.356);
+  top: -13.5vh;
+  left: -15vw;
+  width: 110vw;
+  height: 110vh;
+  z-index: 1;
 }
 </style>

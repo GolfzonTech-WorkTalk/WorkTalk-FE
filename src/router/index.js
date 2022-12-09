@@ -54,7 +54,7 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   // 스피너 동작
-  store.dispatch('SPINNERVIEW')
+  store.dispatch('SPINNERVIEW', true)
   // 토큰이 있을 경우
   let auth
   let sub
@@ -98,7 +98,6 @@ router.beforeEach((to, from, next) => {
       return next('/')
     }
   }
-  store.dispatch('SPINNERVIEW')
   next()
 })
 

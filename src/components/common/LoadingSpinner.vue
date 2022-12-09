@@ -17,13 +17,14 @@ export default {}
   justify-content: center;
   align-items: center;
   height: 240px;
+  z-index: 2;
 }
 .spinner {
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  border: 5px solid #e0e0e0;
-  border-bottom: 5px solid rgb(103, 139, 218);
+  border: 10px solid #e0e0e0;
+  border-bottom: 10px solid rgb(103, 139, 218);
   animation: spin 1s linear infinite;
   position: relative;
 }

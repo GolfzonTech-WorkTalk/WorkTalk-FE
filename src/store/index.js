@@ -53,8 +53,8 @@ export default createStore({
       state.modalMessage = msg
     },
     // 스피너
-    setSpinnerView(state){
-      state.spinnerView = !state.spinnerView
+    setSpinnerView(state, status){
+      state.spinnerView = status
     },
     // 로그아웃
     setlogoutUser(state){
@@ -124,8 +124,8 @@ export default createStore({
       context.commit('setModalMessage', msg)
     },
     // 스피너
-    SPINNERVIEW(context){
-      context.commit('setSpinnerView')
+    SPINNERVIEW(context, status){
+      context.commit('setSpinnerView', status)
     },
   },
   modules: {

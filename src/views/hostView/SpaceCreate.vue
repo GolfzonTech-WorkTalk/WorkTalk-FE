@@ -10,6 +10,9 @@ export default {
   components: {
     SpaceCreateFrom,
   },
+  created(){
+    this.$store.dispatch('SPINNERVIEW')
+  },
 }
 </script>
 

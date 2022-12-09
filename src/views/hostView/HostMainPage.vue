@@ -67,6 +67,7 @@ export default {
       const responce = await spaceAll()
       console.log(responce)
       this.spaceItems = responce.data
+      this.$store.dispatch('SPINNERVIEW')
     },
     itemLink(spaceStatus, title, spaceType, spaceName, spaceId){
       if (spaceStatus == 'waiting'){

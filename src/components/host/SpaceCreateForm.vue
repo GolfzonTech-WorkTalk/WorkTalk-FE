@@ -51,7 +51,7 @@
 
 <script>
 import { regCodeCheck } from '@/utils/regCodeCheck'
-import { spaceCreate, spaceImg } from '@/api/host'
+import { spaceCreate } from '@/api/host'
 export default {
   data(){
     return {
@@ -154,37 +154,33 @@ export default {
     // async 
     async spaceCreate(){
       try {
-        const createData = {
-          'name': this.$store.state.nickName,
-          'spaceType': this.spaceType,
-          'spaceName': this.spaceName,
-          'spaceDetail': this.spaceDetail,
-          'postcode': this.postcode,
-          'address': this.address,
-          'detailAddress': this.detailAddress,
-          'regCode': this.regCode,
-          'spaceImg': this.spaceImg,
-        }
-        console.log(createData)
+        // const createData = {
+        //   'name': this.$store.state.nickName,
+        //   'spaceType': this.spaceType,
+        //   'spaceName': this.spaceName,
+        //   'spaceDetail': this.spaceDetail,
+        //   'postcode': this.postcode,
+        //   'address': this.address,
+        //   'detailAddress': this.detailAddress,
+        //   'regCode': this.regCode,
+        //   'spaceImg': this.spaceImg,
+        // }
+        // console.log(createData)
         let formData = new FormData()
-        // formData.append('name', this.$store.state.nickName)
-        // formData.append('spaceType', this.spaceType)
-        // formData.append('spaceName', this.spaceName)
-        // formData.append('spaceDetail', this.spaceDetail)
-        // formData.append('postcode', this.postcode)
-        // formData.append('address', this.address)
-        // formData.append('detailAddress', this.detailAddress)
-        // formData.append('regCode', this.regCode)
+        formData.append('name', this.$store.state.nickName)
+        formData.append('spaceType', this.spaceType)
+        formData.append('spaceName', this.spaceName)
+        formData.append('spaceDetail', this.spaceDetail)
+        formData.append('postcode', this.postcode)
+        formData.append('address', this.address)
+        formData.append('detailAddress', this.detailAddress)
+        formData.append('regCode', this.regCode)
         if (this.spaceImg != null){
           formData.append('spaceImg', this.spaceImg)
         }
         console.log(formData)
-        const createDataResponse = await spaceCreate(createData)
+        const createDataResponse = await spaceCreate(formData)
         console.log(createDataResponse)
-        if (createDataResponse.status == 200){
-          const FormDataResponse = await spaceImg(formData)
-          console.log(FormDataResponse)
-        }
         // this.$router.push('/host')
         // alert('공간이 생성되었습니다. 방을 생성해 주세요.')
         // this.$router.push(`/host/roomCreate/${this.spaceName}/${this.spaceType}`)  

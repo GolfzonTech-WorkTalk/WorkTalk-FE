@@ -84,8 +84,7 @@
 </template>
 
 <script>
-import { roomOne } from '@/api/user.js'
-import { mileage } from '@/api/user.js'
+import { roomOne, mileage } from '@/api/user.js'
 import { reservationData, reserveChoose, reservationReserve, reserveChooseDelete } from '@/api/reservation.js'
 // import { selectOneRoomDumy } from '@/utils/dummy/dummy.js'
 import DeskMeetingCalendarVue from './reservation/DeskMeetingCalendar.vue'
@@ -295,8 +294,8 @@ export default {
     // 마일리지 조회
     async mileageCheck(){
       let response = await mileage()
-      console.log(response.data.data)
-      this.mileage = response.data.data
+      console.log(response)
+      this.mileage = response.data
       // 더미
       // this.mileage = 10000
     },
@@ -358,12 +357,10 @@ export default {
         'reserveAmount': this.amount,
         'payAmount': this.paymentAmount,
         'payStatus': this.paymentType,
-        'customer_uid':this.$store.state.nickName+'_'+date.getFullYear()+date.getMonth()+date.getDate()+date.getHours()+date.getMinutes()+date.getSeconds(),
       }
       // console.log(reservationData)
       // 결제 데이터 정의
       let paymentData = {
-        pg: "kakaopay",
         pay_method: "card",
         merchant_uid: this.roomReservationView+'_'+date.getFullYear()+date.getMonth()+date.getDate()+date.getHours()+date.getMinutes()+date.getSeconds(),
         // 룸ID_일련번호(고유값)
@@ -371,6 +368,13 @@ export default {
         name: this.selectRoomName,
         amount: this.paymentAmount,
       }
+      if (this.paymentType == 'POSTPAID'){
+        paymentData.pg = "kakaopay.TCSUBSCRIP"
+        paymentData.customer_uid = this.$store.state.nickName+'_'+date.getFullYear()+date.getMonth()+date.getDate()+date.getHours()+date.getMinutes()+date.getSeconds()
+      } else {
+        paymentData.pg = "kakaopay"
+      }
+      console.log(paymentData)
       //결제로직
       try {
         let response = await reserveChoose(reservationData)
@@ -379,7 +383,7 @@ export default {
         if (response.status == 200){
           // 결제로직
           const { IMP } = window
-          IMP.init('imp82350026')
+          IMP.init('imp38067385')
           IMP.request_pay(paymentData, rsp => { // callback
             if (rsp.success){
               console.log('결제 성공')
@@ -387,8 +391,11 @@ export default {
               reservationData.reserveId = response.data
               reservationData.imp_uid = rsp.imp_uid
               reservationData.merchant_uid = rsp.merchant_uid
-              reservationData.useMileage = this.useMileage
-              reservationData.saveMileage = this.saveMileage
+              reservationData.mileageUse = this.useMileage
+              reservationData.mileageSave = this.saveMileage
+              if (this.paymentType == 'POSTPAID'){
+                reservationData.customer_uid = paymentData.customer_uid
+              }
               console.log(reservationData)
               this.reservationPaymentSubmit(reservationData)
             } else {
@@ -396,6 +403,7 @@ export default {
               const dropReserve = reserveChooseDelete(response.data)
               console.log(dropReserve)
               console.log('결제DB삭제')
+              this.roomReservationView = ''
             }
           })
         }
@@ -409,6 +417,7 @@ export default {
       try {
         let response = await reservationReserve(reservationData)
         console.log(response)
+        this.$router.push('/user/reservation')
       } catch (error){
         console.log(error)
       }
