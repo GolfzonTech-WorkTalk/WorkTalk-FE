@@ -389,7 +389,7 @@ const reservationDataDeskMeetingroom = [
           "checkOutTime": 23,
       },
       "name": "사용자",
-      "reserveStatus": "USED",
+      "reserveStatus": "END",
       "paymentStatus": "PREPAID",
       "roomType": "OFFICE",
       "reserveAmount": 30000,
@@ -476,7 +476,7 @@ const reservationDataDeskMeetingroom = [
   },
   {
     "roomName": "room_meetingRoom",
-    "paid": 0,
+    "paid": 1,
     "reserveId": 201,
     "memberId": 1,
     "rooomId": 51,

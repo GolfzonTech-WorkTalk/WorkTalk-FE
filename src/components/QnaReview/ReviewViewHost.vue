@@ -53,9 +53,14 @@ export default {
     }
   },
   created(){
-    this.ReviewList = ReviewDummy
+    this.reviewListCall()
   },
   methods: {
+    async reviewListCall(){
+      const response = await ReviewDummy
+      this.ReviewList = response
+      this.$store.dispatch('SPINNERVIEW', false)
+    },
     //데이터 API로 불러오기
     async ReviewDataCall(pageNowNum){
       let sortSpace

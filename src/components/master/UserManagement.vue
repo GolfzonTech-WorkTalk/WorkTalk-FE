@@ -82,6 +82,7 @@ export default {
       } catch (error){
         console.log(error)
       }
+      this.$store.dispatch('SPINNERVIEW')
     },
     penaltyCheck(item){
       if (item.activated == 0){

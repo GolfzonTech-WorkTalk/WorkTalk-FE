@@ -33,7 +33,8 @@
 
 <script>
 import { cityAddress, cityAddressDetail } from '@/utils/addressCity.js'
-import { mapDummy } from '@/utils/dummy/dummy.js'
+import {spaceAll} from '@/api/user.js'
+// import { mapDummy } from '@/utils/dummy/dummy.js'
 export default {
   data(){
     return {
@@ -61,21 +62,20 @@ export default {
       map:'',
     }
   },
-  // 공간정보 출력 async
-  created(){
+  // 공간정보 출력
+  async created(){
     try {
-      // const spaceId = this.$route.params.spaceId
-      // let spaceResponce = await spaceOne(spaceId)
-      // this.spaceItems = spaceResponce.data
-      // this.memberItems = spaceResponce.data.member
       /* 더미 */
-      let spaceResponce = mapDummy
-      this.spaceItems = spaceResponce
+      // let spaceResponce = mapDummy
+      // this.spaceItems = spaceResponce
       // 공간 검색 데이터
       this.cityAddressData = cityAddress
+      const response = await spaceAll()
+      this.spaceItems = response.data
     } catch (error){
       console.log(error)
     }
+    this.$store.dispatch('SPINNERVIEW')
   },
   mounted(){
     // 카카오API

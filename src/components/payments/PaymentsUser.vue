@@ -41,7 +41,8 @@
 </template>
 
 <script>
-import {payment} from '@/utils/dummy/paymentDummy.js'
+// import {payment} from '@/utils/dummy/paymentDummy.js'
+import {paymentHistory} from '@/api/reservation.js'
 export default {
   data(){
     return {
@@ -62,15 +63,16 @@ export default {
     }
   },
   created(){
-    this.paymentDataRequest()
+    this.paymentDataRequest(this.pageNowNum)
     this.paging(this.pageNowNum)
   },
   methods: {
     async paymentDataRequest(pageNowNum){
-      console.log(pageNowNum)
-      // let response = await paymenRequest(pageNowNum)
-      let response = payment
-      this.paymentData = response.data
+      console.log(pageNowNum-1)
+      let response = await paymentHistory(pageNowNum-1)
+      console.log(response)
+      this.paymentData = response.data.data
+      this.$store.dispatch('SPINNERVIEW', false)
     },
     roomTypeCheck(roomType){
       let result

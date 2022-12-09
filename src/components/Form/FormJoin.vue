@@ -30,6 +30,11 @@
           사용중인 이메일입니다.
         </p>
       </template>
+      <template v-if="(emailVerificationCodeCheck.length == 6 && emailVerificationCode == '')">
+        <p class="available">
+          메일로 인증번호가 발송되었습니다.
+        </p>
+      </template>
     </div>
     <div>
       <input id="pw" v-model="pw" class="pw joinFormItem" type="password" placeholder="비밀번호">
@@ -124,6 +129,7 @@ export default {
         this.$store.dispatch('MODALVIEWCLICK', true)
         this.$store.dispatch('MODALMESSAGE', message)
       } else {
+        this.$store.dispatch('SPINNERVIEW')
         this.emailVerificationCode = ''
         let sendEmail = ''
         if (this.emailDomainETC === ''){
@@ -142,11 +148,12 @@ export default {
           this.emailVeificaion = false
           this.emailVerificationCodeCheck = responce.data
           console.log(this.emailVerificationCodeCheck)
-          console.log(typeof(responce.data))  
+          console.log(typeof(responce.data))
         } catch (error){
           console.log(error.request.status)
           this.emailVerificationCodeCheck = error.request.status
         }
+        this.$store.dispatch('SPINNERVIEW')
       }
     },
     // 비밀번호 일치여부 확인

@@ -41,7 +41,8 @@
 </template>
 
 <script>
-import {payment} from '@/utils/dummy/paymentDummy.js'
+// import {payment} from '@/utils/dummy/paymentDummy.js'
+import {paymentHistory} from '@/api/reservation.js'
 export default {
   data(){
     return {
@@ -62,15 +63,16 @@ export default {
     }
   },
   created(){
-    this.paymentDataRequest()
+    this.paymentDataRequest(this.pageNowNum)
     this.paging(this.pageNowNum)
   },
   methods: {
     async paymentDataRequest(pageNowNum){
-      console.log(pageNowNum)
-      // let response = await paymenRequest(pageNowNum)
-      let response = payment
-      this.paymentData = response.data
+      console.log(pageNowNum-1)
+      let response = await paymentHistory(pageNowNum-1)
+      console.log(response)
+      this.paymentData = response.data.data
+      this.$store.dispatch('SPINNERVIEW', false)
     },
     roomTypeCheck(roomType){
       let result
@@ -88,10 +90,21 @@ export default {
         payStatus = '보증금'
       } else if (payStatus == 'PREPAID'){
         payStatus = '선납'
-      } else if (payStatus == 'POSTPAID'){
+      } else if (payStatus == 'POSTPAID' || payStatus == 'POSTPAID_BOOKED' || payStatus == 'POSTPAID_DONE'){
         payStatus = '후납'
       } else {
         payStatus = '환불'
+      }
+      if (reserveStatus == 'END'){
+        reserveStatus = '이용완료'
+      } else if (reserveStatus == 'CANCELED_BY_USER'){
+        reserveStatus = '이용자 취소'
+      } else if (reserveStatus == 'CANCELED_BY_HOST'){
+        reserveStatus = '공급자 취소'
+      } else if (reserveStatus == 'NOSHOW'){
+        reserveStatus = '노쇼'
+      } else {
+        reserveStatus = '환불'
       }
       return payStatus+'/'+reserveStatus
     },

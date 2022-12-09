@@ -57,9 +57,14 @@ export default {
     }
   },
   created(){
-    this.ReviewList = ReviewDummy
+    this.reviewListCall()
   },
   methods: {
+    async reviewListCall(){
+      const response = await ReviewDummy
+      this.ReviewList = response
+      this.$store.dispatch('SPINNERVIEW', false)
+    },
     testRangeCheck(value){
       console.log(value)
     },

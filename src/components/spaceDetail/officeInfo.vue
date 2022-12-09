@@ -177,7 +177,6 @@ export default {
         'reserveAmount': this.amount,
         'payAmount': this.paymentAmount,
         'payStatus': 'POSTPAID',
-        'customer_uid':this.$store.state.nickName+'_'+date.getFullYear()+date.getMonth()+date.getDate()+date.getHours()+date.getMinutes()+date.getSeconds(),
       }
       // console.log(reservationData)
       // 결제 데이터 정의
@@ -189,6 +188,7 @@ export default {
         // 고유값으로 채번하여 DB상에 저장(결제 위변조 작업시 필요)
         name: this.selectRoomName,
         amount: this.paymentAmount,
+        customer_uid:this.$store.state.nickName+'_'+date.getFullYear()+date.getMonth()+date.getDate()+date.getHours()+date.getMinutes()+date.getSeconds(),
       }
       // 결제로직
       try {
@@ -208,6 +208,7 @@ export default {
               reservationData.merchant_uid = rsp.merchant_uid
               reservationData.useMileage = this.useMileage
               reservationData.saveMileage = this.saveMileage
+              reservationData.customer_uid = this.customer_uid
               console.log(reservationData)
               this.reservationPaymentSubmit(reservationData)
             } else {
@@ -228,6 +229,7 @@ export default {
       try {
         let response = await reservationReserve(reservationData)
         console.log(response)
+        this.$router.push('/user/reservation')
       } catch (error){
         console.log(error.response)
       }

@@ -8,8 +8,8 @@
       </div>
       <textarea v-model="reviewContent" class="reviewContent" cols="30" rows="5" placeholder="후기내용 작성" />
       <!-- <input type="file" multiple> -->
-      <span class="reviewBtn" @click="$emit('box-close:box-close-click')">닫 기</span>
-      <label for="submitButton" class="reviewBtn">작 성</label>
+      <span class="reviewBtn closeBtn" @click="$emit('box-close:box-close-click')">닫 기</span>
+      <label for="submitButton" class="reviewBtn submitBtn">작 성</label>
       <button id="submitButton" hidden />
     </form>
   </div>
@@ -114,11 +114,20 @@ export default {
   border: 1px solid gray;
   border-radius: 10px;
   text-align: center;
+  cursor: pointer;
 }
 .gradeBox span:last-child{
   float: right;
 }
 .warning{
   color: red;
+}
+.closeBtn:hover{
+  background: rgb(200, 200, 200);
+  color: white;
+}
+.submitBtn:hover{
+  background: rgb(78, 86, 197);
+  color: white;
 }
 </style>

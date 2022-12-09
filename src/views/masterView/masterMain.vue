@@ -23,6 +23,9 @@
 
 <script>
 export default {
+  created(){
+    this.$store.dispatch('SPINNERVIEW')
+  },
 }
 </script>
 

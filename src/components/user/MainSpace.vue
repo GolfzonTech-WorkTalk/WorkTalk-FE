@@ -1,5 +1,10 @@
 <template>
   <div class="spaceAllContainer">
+    <div class="moreButton">
+      <router-link to="searchSpace/spaceType/address/date/time">
+        <span>more</span>
+      </router-link>
+    </div>
     <div v-for="item in spaceItems" :key="item.spaceName" class="spaceItem">
       <div class="spaceImg">
         <img :src="require(`@/assets/${item.spaceImg}`)" alt="공간이미지">
@@ -19,9 +24,6 @@
         </router-link>
       </div>
     </div>
-    <div>
-      <span>more</span>
-    </div>
   </div>
 </template>
 
@@ -37,7 +39,6 @@ export default {
   },
   // async
   created(){
-    /* 더미 값 */
     this.reservationDataCall()
   },
   methods: {
@@ -51,6 +52,7 @@ export default {
       } catch (error){
         console.log(error)
       }
+      this.$store.dispatch('SPINNERVIEW', false)
     },
     itemLink(spaceName, spaceId, spaceType){
       return '/spaceOne/'+spaceName+'/'+ spaceId + '/' + spaceType
@@ -107,5 +109,13 @@ export default {
 }
 .reservationETC{
   width: 4vw;
+}
+/* more버튼 */
+.moreButton{
+  position: absolute;
+  right: 12vw;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
 }
 </style>

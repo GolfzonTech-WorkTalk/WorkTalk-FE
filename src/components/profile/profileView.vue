@@ -76,6 +76,7 @@ export default {
         tel:'010-1234-5678',
         imgName:'',
       }
+      this.$store.dispatch('SPINNERVIEW', false)
     },
     updateProfile(value){
       this.updateTitle = value
