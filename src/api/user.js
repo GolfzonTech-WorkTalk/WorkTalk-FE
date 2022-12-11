@@ -1,13 +1,20 @@
 import { instance, posts } from "./index"
 
 // 전체공간조회
-function spaceAll(){
-    return instance.get('user/spaceAll')
+function spaceSearch(pageNum,searchSpaceType,searchSpaceName,searchAddress){
+  return instance.get('main',{
+    params:{
+      pageNum,
+      searchSpaceType,
+      searchSpaceName,
+      searchAddress,
+    },
+  })
 }
 
 // 공간조회
 function spaceOne(spaceId){
-    return instance.get('spaceOne/'+spaceId)
+    return instance.get('spaceOne/'+spaceId+'/rooms')
 }
 
 // 룸조회
@@ -26,9 +33,9 @@ function mileageList(){
 }
 
 export {
-    spaceAll,
-    spaceOne,
-    roomOne,
-    mileage,
-    mileageList,
+  spaceSearch,
+  spaceOne,
+  roomOne,
+  mileage,
+  mileageList,
 }

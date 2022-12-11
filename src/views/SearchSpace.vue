@@ -1,10 +1,10 @@
 <template>
   <div class="searchContainer">
     <div class="searchTermsContainer">
-      <search-box />
+      <search-box @search-submit="searchSubmit" />
     </div>
     <div class="searchSpaceContainer">
-      <search-space />
+      <search-space ref="searchSpaceAPI" />
     </div>
   </div>
 </template>
@@ -16,6 +16,12 @@ export default {
   components:{
     SearchBox,
     SearchSpace,
+  },
+  methods:{
+    async searchSubmit(link){
+      await this.$router.push('/searchSpace/'+link)
+      this.$refs.searchSpaceAPI.reservationDataCall()
+    },
   },
 }
 </script>

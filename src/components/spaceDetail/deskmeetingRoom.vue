@@ -42,8 +42,7 @@
         <div class="reservationResult">
           <p>예약날짜 : {{ reservationDay }} </p>
           <span>예약시간 : </span>
-          <span v-if="(initTime != null)">{{ initTime }}:00 ~ </span>
-          <span v-if="(endTime != null)">{{ endTime }}:00</span>
+          <span v-if="(initTime != null)">{{ timeCheck() }}</span>
         </div>
         <div v-if="amount != ''" class="reservationType">
           <!-- <div class="paymentTypeBox"> -->
@@ -213,11 +212,24 @@ export default {
       let workStart = Number(this.workStart)
       let workEnd = Number(this.workEnd)
       // console.log(workStart, workEnd)
-      for (let i = workStart; i < workEnd + 1; i++){
+      for (let i = workStart; i < workEnd; i++){
         if (i < 10){
           this.timeDatas.push({'name':'0'+i, 'value':i, 'class':'timeItem'})
         } else {
           this.timeDatas.push({'name':i, 'value':i, 'class':'timeItem'})
+        }
+      }
+      // 현재시간 예외처리
+      const today = new Date()
+      const CurrentDate = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate()
+      // console.log(CurrentDate)
+      const CurrentTime = today.getHours()
+      if (CurrentDate == this.reservationDay){
+        for (let j = 0; j < workEnd - workStart + 1; j++){
+          let time = this.timeDatas[j].value
+          if (time <= CurrentTime){
+            this.timeDatas[j].class = 'timeItem reserved'
+          }
         }
       }
       // 예약날짜 제외처리
@@ -226,18 +238,21 @@ export default {
       if (this.initTime != '' || this.endTime != ''){
         this.selectTimeCheck(workStart, workEnd)
       }
+      if (this.endTime != '' && this.initTime != ''){
+        console.log('계산')
+        this.amount = (this.endTime - this.initTime) *  this.price
+      }
     },
     // 예약날짜 제외처리 함수
     reserveCheck(workStart, workEnd){
-      // console.log(this.reservation)
       for (let i = 0; i < this.reservation.length; i++){
         let initTime = this.reservation[i].initTime
         let endTime = this.reservation[i].endTime
         // console.log(initTime, endTime)
-        for (let i = 0; i < workEnd - workStart + 1; i++){
-          let time = this.timeDatas[i].value
-          if (time == initTime || time > initTime && time < endTime || time == endTime){
-            this.timeDatas[i].class = 'timeItem reserved'
+        for (let j = 0; j < workEnd - workStart + 1; j++){
+          let time = this.timeDatas[j].value
+          if (time == initTime || time > initTime && time < endTime){
+            this.timeDatas[j].class = 'timeItem reserved'
           }
         }
       }
@@ -248,30 +263,59 @@ export default {
         let time = this.timeDatas[i].value
         let initTime = this.initTime
         let endTime = this.endTime
-        if (time == initTime || time > initTime && time < endTime || time == endTime){
-          this.timeDatas[i].class = 'timeItem selectTime'
+        if (time == initTime || time > initTime && time < endTime){
+          if (this.timeDatas[i].class == 'timeItem reserved'){
+            let message = '중간에 예약이 있습니다. 다시 선택해 주세요.'
+            this.$store.dispatch('MODALVIEWCLICK', true)
+            this.$store.dispatch('MODALMESSAGE', message)
+            this.endTime = this.timeDatas[i].value
+          } else {
+            this.timeDatas[i].class = 'timeItem selectTime'
+          }
         }
       }
     },
     // 시간선택 처리 및 가격계산 함수
     clickTime(item){
-      // console.log(item)
-      if (!this.initTime){
-        this.initTime = item.value
-      } else if (this.initTime == item.value){
-        this.initTime = ''
-      } else if (this.endTime == item.value){
-        this.endTime = ''
-      } else if (this.initTime < item.value){
-        this.endTime = item.value
-      } else if (this.initTime > item.value){
-        this.endTime = this.initTime
-        this.initTime = item.value
-      }
-      if (this.endTime != '' && this.initTime != ''){
-        this.amount = (this.endTime - this.initTime + 1) *  this.price
+      const num = item.value
+      if (item.class == 'timeItem'){
+        if (!this.initTime){
+          this.initTime = num
+          this.endTime = num+1
+        } else if (this.initTime > num){
+          this.initTime = num
+        } else if (this.endTime < num || this.endTime == num){
+          this.endTime = num+1
+        }
+      } else if (item.class == 'timeItem selectTime'){
+        if (this.endTime - this.initTime == 1){
+          this.initTime = null
+          this.endTime = null
+        } else if (this.endTime - this.initTime != 1){
+          if (this.initTime == num){
+            this.initTime = this.initTime+1
+          } else if (this.endTime == num+1){
+            this.endTime = this.endTime - 1
+          } else if (this.initTime - num < this.endTime - 1 - num){
+            this.initTime = num
+          } else if (this.initTime - num > this.endTime - 1 - num){
+            this.endTime = num+1
+          }
+        }
       }
       this.createTime()
+    },
+    // 시간출력
+    timeCheck(){
+      let initTime = this.initTime
+      let endTime = this.endTime
+      if (initTime < 10){
+        initTime = '0'+initTime
+      }
+      if (endTime < 10){
+        endTime = '0'+endTime
+      }
+      return `${initTime}:00 ~ ${endTime}:00`
     },
     // 결제방식 선택
     paymentTypeSelect(value){

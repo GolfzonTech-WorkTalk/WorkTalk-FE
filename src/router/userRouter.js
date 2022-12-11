@@ -1,6 +1,6 @@
 export default [
   {
-    path: '/searchSpace/:spaceType/:address/:date/:time',
+    path: '/searchSpace/:spaceType/:spaceName/:address',
     name: 'searchSpace',
     component: () => import('@/views/SearchSpace.vue'),
   },
@@ -22,8 +22,8 @@ export default [
     meta: {auth:true},
   },
   {
-    path: '/user/payment',
-    name: 'userPayment',
+    path: '/user/:PaymentMileage',
+    name: 'userPaymentMileage',
     component: () => import('@/views/userView/PaymentMileage.vue'),
     meta: {auth:true},
   },

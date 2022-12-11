@@ -3,6 +3,20 @@
     <p class="roomSpaceTile">
       오피스 정보
     </p>
+    <div class="imgContainer">
+      <template v-if="(roomItems.spaceImgList == null)">
+        <img class="spaceImg" :src="require(`@/assets/noImg.gif`)" alt="공간이미지">
+      </template>
+      <template v-else>
+        <div class="moveImgBox leftBox">
+          <i class="fa-solid fa-chevron-left fa-lg moveBtn" @click="movePrev" />
+        </div>
+        <img class="spaceImg" :src="spaceItems.spaceImgList[spaceImgListNum].spaceImgUrl" alt="공간이미지">
+        <div class="moveImgBox rightBox">
+          <i class="fa-solid fa-chevron-right fa-lg moveBtn" @click="moveNext" />
+        </div>
+      </template>
+    </div>
     <div>
       <p class="roomDetail">
         {{ roomItems.roomDetail }}
@@ -267,30 +281,6 @@ export default {
 .roomItems{
   margin-bottom: 3vh;
 }
-/* 결제종류 선택 및 결제버튼 */
-.paymentTypeBox{
-  margin-left: 0.5vw;
-  border-bottom: 2px solid gray;
-}
-.paymentTypeItems{
-  display: flex;
-  justify-content: center;
-  margin-left: 0.5vw;
-  padding: 1vh 0vw;
-  width: 16.8vw;
-}
-.paymentTypeItems span{
-  padding: 0.5vh 1.3vw;
-  margin: 0vh 0.2vw;
-  border: 1px solid gray;
-  border-radius: 10px;
-  text-align: center;
-  line-height: 2.5vh;
-}
-.paymentType{
-  background: rgb(127, 127, 201);
-  color: white;
-}
 /* 결제금액 및 마일리지 */
 .paymentBox, .mileageBox{
   position: relative;
@@ -341,5 +331,33 @@ export default {
 }
 .StatusBoxSelect {
   color:rgb(235, 140, 85);
+}
+/* 룸이미지 */
+.imgContainer{
+  position: relative;
+  width: 19vw;
+  height: 12vh;
+}
+.spaceImg{
+  width: 19vw;
+  height: 12vh;
+}
+.moveImgBox{
+  position: absolute;
+  height: 12vh;
+  top: 0;
+}
+.moveImgBox:hover{
+  background: rgba(255, 255, 255, 0.301);
+}
+.moveBtn{
+  padding-top: 6vh;
+  color: rgba(128, 128, 128, 0.712);
+}
+.leftBox{
+  left: 0;
+}
+.rightBox{
+  right: 0;
 }
 </style>

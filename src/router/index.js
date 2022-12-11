@@ -30,7 +30,7 @@ const routes = [
     component: () => import('@/views/JoinPage.vue'),
   },
   {
-    path: '/map',
+    path: '/map/:spaceType/:spaceName/:address',
     name: 'userMAP',
     component: () => import('@/views/MapPage.vue'),
   },
@@ -78,6 +78,7 @@ router.beforeEach((to, from, next) => {
   if (to.meta.auth && !store.getters.isLogin){
     // console.log('로그인이 필요합니다.')
     alert('로그인이 필요합니다.')
+    store.dispatch('SPINNERVIEW', false)
     return next('/login')
   }
   
@@ -87,14 +88,14 @@ router.beforeEach((to, from, next) => {
   if (pageRole == 'host'){
     if (auth == 'ROLE_USER'){
       alert('권한이 없습니다.')
-      store.dispatch('SPINNERVIEW')
+      store.dispatch('SPINNERVIEW', false)
       return next('/')
     }
   }
   if (pageRole == 'mast'){
     if ((auth != 'ROLE_MASTER')){
       alert('권한이 없습니다.')
-      store.dispatch('SPINNERVIEW')
+      store.dispatch('SPINNERVIEW', false)
       return next('/')
     }
   }

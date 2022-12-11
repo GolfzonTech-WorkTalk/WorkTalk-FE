@@ -22,7 +22,6 @@ export default {
   async created(){
     try {
       const spaceId = this.$route.params.spaceId
-      console.log(spaceId)
       let spaceResponce = await spaceOne(spaceId)
       console.log(spaceResponce)
       this.spaceItems = spaceResponce.data
