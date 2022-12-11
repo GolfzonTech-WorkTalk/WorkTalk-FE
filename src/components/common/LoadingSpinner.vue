@@ -12,7 +12,7 @@ export default {}
 .spinner-container {
   top: 30%;
   left: 48%;
-  position: absolute;
+  position: fixed;
   display: flex;
   justify-content: center;
   align-items: center;

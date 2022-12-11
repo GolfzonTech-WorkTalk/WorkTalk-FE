@@ -56,7 +56,7 @@ export default {
 .reservationContainer{
   position: relative;
   background: white;
-  width: 70vw;
+  width: 62vw;
   height: 88vh;
   margin: auto;
   padding: 2vh 2vw;

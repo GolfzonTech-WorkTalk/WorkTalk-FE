@@ -2,7 +2,7 @@
   <div id="mapContainer">
     <div class="mapLocationSortBox">
       <select v-model="selectCityCode" class="mapLocationSort" @change="selectCityOne">
-        <option value="지역" hidden>
+        <option value="지역코드" hidden>
           지역
         </option>
         <option v-for="item in cityAddressData" :key="item" :value="item.typeCode">
@@ -33,7 +33,7 @@
 
 <script>
 import { cityAddress, cityAddressDetail } from '@/utils/addressCity.js'
-import {spaceAll} from '@/api/user.js'
+import {spaceSearch} from '@/api/user.js'
 // import { mapDummy } from '@/utils/dummy/dummy.js'
 export default {
   data(){
@@ -41,15 +41,16 @@ export default {
       // 검색데이터
       cityAddressData:[],
       cityDetailAddressData:[],
-      selectCityCode:'지역',
+      selectCityCode:'지역코드',
+      selectCityName:'지역',
       selectCityDetailName:'세부지역',
       selectSpaceType:'공간타입',
       selectSpaceTypeData:[
+        {'name':'전체','value':'공간타입'},
         {'name':'오피스','value':'1'},
         {'name':'데스크','value':'2'},
         {'name':'회의실','value':'3'},
       ],
-      selectCityName:'',
       // 공간정보
       spaceItems:[],
       // 주소-좌표 변환 객체생성
@@ -64,18 +65,19 @@ export default {
   },
   // 공간정보 출력
   async created(){
+    this.paramsCheck()
     try {
       /* 더미 */
       // let spaceResponce = mapDummy
       // this.spaceItems = spaceResponce
       // 공간 검색 데이터
       this.cityAddressData = cityAddress
-      const response = await spaceAll()
+      const response = await spaceSearch(this.pageNum,this.spaceType,this.spaceName,this.address)
       this.spaceItems = response.data
     } catch (error){
       console.log(error)
     }
-    this.$store.dispatch('SPINNERVIEW')
+    this.$store.dispatch('SPINNERVIEW', false)
   },
   mounted(){
     // 카카오API
@@ -90,6 +92,41 @@ export default {
     }
   },
   methods: {
+    paramsCheck(){
+      this.cityAddressData = cityAddress
+      this.selectSpaceType = this.$route.params.spaceType
+      if (this.$route.params.spaceType == 'AllType'){
+        this.selectSpaceType = '공간타입'
+      }
+      this.searchWord = this.$route.params.spaceName
+      if (this.$route.params.spaceName == 'AllName'){
+        this.searchWord = ''
+      }
+      this.selectCityName = this.$route.params.address
+      if (this.$route.params.address == 'AllRegions'){
+        this.selectCityName = '지역'
+      }
+      for (let i = 0; i < this.cityAddressData.length; i++){
+        if (this.selectCityName.indexOf(this.cityAddressData[i].name) != '-1'){
+          this.selectCityCode = this.cityAddressData[i].typeCode
+        }
+      }
+      for (let i = 0; i < cityAddressDetail.length; i++){
+        if (cityAddressDetail[i].typeCode == this.selectCityCode){
+          this.cityDetailAddressData.push(cityAddressDetail[i])
+        }
+      }
+      for (let i = 0; i < this.cityDetailAddressData.length; i++){
+        if (this.selectCityName.indexOf(this.cityDetailAddressData[i].name) != '-1'){
+          this.selectCityDetailName = this.cityDetailAddressData[i].name
+        }
+      }
+      for (let i = 0; i < this.cityAddressData.length; i++){
+        if (this.selectCityCode == this.cityAddressData[i].typeCode){
+          this.selectCityName = this.cityAddressData[i].name
+        }
+      }
+    },
     // 지역선택
     async selectCityOne(){
       let typeCode = this.selectCityCode

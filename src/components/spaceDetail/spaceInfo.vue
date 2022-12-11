@@ -4,12 +4,20 @@
       <p class="spaceName">
         {{ spaceItems.spaceName }}
       </p>
-      <template v-if="(spaceItems.spaceImg == null)">
-        <img class="spaceImg" :src="require(`@/assets/dummy1.jpg`)" alt="공간이미지">
-      </template>
-      <template v-else>
-        <img class="spaceImg" :src="require(`@/assets/${spaceItems.spaceImg}`)" alt="공간이미지">
-      </template>
+      <div class="imgContainer">
+        <template v-if="(spaceItems.spaceImgList == null)">
+          <img class="spaceImg" :src="require(`@/assets/noImg.gif`)" alt="공간이미지">
+        </template>
+        <template v-else>
+          <div class="moveImgBox leftBox">
+            <i class="fa-solid fa-chevron-left fa-2x moveBtn" @click="movePrev" />
+          </div>
+          <img class="spaceImg" :src="spaceItems.spaceImgList[spaceImgListNum].spaceImgUrl" alt="공간이미지">
+          <div class="moveImgBox rightBox">
+            <i class="fa-solid fa-chevron-right fa-2x moveBtn" @click="moveNext" />
+          </div>
+        </template>
+      </div>
       <div class="navVar">
         <ul>
           <li v-for="nav in navItems" :key="nav" @click="navMove(nav.nav)">
@@ -83,6 +91,7 @@ export default {
       ],
       refundPolicy: refundPolicy,
       notice: notice,
+      spaceImgListNum:'0',
       QnAFormView: false,
     }
   },
@@ -110,6 +119,20 @@ export default {
     QnAFormOpenClose(value){
       this.QnAFormView = value
     },
+    movePrev(){
+      if (this.spaceImgListNum == '0'){
+        this.spaceImgListNum = this.item.spaceImgList.length -1  
+      } else {
+        this.spaceImgListNum --
+      }
+    },
+    moveNext(){
+      if (this.spaceImgListNum == this.item.spaceImgList.length -1 ){
+        this.spaceImgListNum = 0
+      } else {
+        this.spaceImgListNum ++
+      }
+    },
   },
 }
 </script>
@@ -122,10 +145,6 @@ export default {
   font-size: 2rem;
   font-weight: bold;
   margin: 1vh;
-}
-.spaceImg{
-  width: 40vw;
-  height: 30vh;
 }
 .navVar {
     display: flex;
@@ -166,5 +185,33 @@ export default {
   margin-left: 1vw;
   white-space: pre-line;
   font-weight: bold;
+}
+/* 이미지 */
+.spaceImg{
+  width: 40vw;
+  height: 30vh;
+}
+.imgContainer{
+  position: relative;
+  width: 40vw;
+  height: 30vh;
+}
+.moveImgBox{
+  position: absolute;
+  height: 30vh;
+  top: 0;
+}
+.moveImgBox:hover{
+  background: rgba(255, 255, 255, 0.301);
+}
+.moveBtn{
+  padding-top: 13vh;
+  color: rgba(128, 128, 128, 0.712);
+}
+.leftBox{
+  left: 0;
+}
+.rightBox{
+  right: 0;
 }
 </style>

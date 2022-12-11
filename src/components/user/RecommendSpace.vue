@@ -3,78 +3,87 @@
     <i class="fa-solid fa-chevron-left fa-2x prevBtn" @click="movePrev" />
     <i class="fa-solid fa-chevron-right fa-2x nextBtn" @click="moveNext" />
     <div class="recommendSpaceItems">
-      <div v-for="item in spaceItems" :key="item.spaceName" class="spaceItem" :style="{transform: 'translate3d(' + slideCoord + 'vw, 0, 0)',}" :class="{ 'slide-active' : transitionOn }">
-        <div class="spaceImg">
-          <img :src="require(`@/assets/${item.spaceImg}`)" alt="공간이미지">
-        </div>
-        <div class="linkBox">
-          <router-link :to="itemLink(item.spaceName, item.spaceId, item.spaceType)">
-            <div class="spaceTitle">
-              <span>{{ item.spaceName }}</span>
-            </div>
-            <div class="spaceLocation">
-              <i class="fa-solid fa-map-pin" />
-              <span>{{ item.address }}</span>
-            </div>
-            <div class="spaceGradeReview">
-              <i class="fa-regular fa-star" /> {{ item.grade }} <i class="fa-regular fa-comments" /> {{ item.review }}
-            </div><br>
-          </router-link>
-        </div>
-      </div>
+      <search-space-one v-for="item in spaceViewItems" :key="item" :item="item" />
     </div>
   </div>
 </template>
 
 <script>
+import searchSpaceOne from '@/components/searchSpace/spaceModule.vue'
 // import { spaceAll } from '@/api/user.js'
 /* 더미 값 */
 import { recommendSpaceDumy } from '@/utils/dummy/dummy.js'
 export default {
+  components:{
+    searchSpaceOne,
+  },
   data(){
     return {
-      spaceItems: '',
+      spaceItems: [],
+      spaceViewItems: [],
       transitionOn: true,
-      slideCoord: '',
+      slideStartNum:'0',
+      slideMiddleNum:'1',
+      slideEmdNum:'2',
+      resetNum:'0',
     }
   },
   // async
   created(){
-    this.reservationDataCall(this.pageNowNum)
+    this.reservationDataCall()
   },
   methods: {
     // 데이터 API로 불러오기
-    async reservationDataCall(pageNowNum){
-      console.log(pageNowNum)
+    async reservationDataCall(){
       const responce = recommendSpaceDumy
       this.spaceItems = responce
+      this.recommendViewCheck()
       /*
       const responce = await spaceAll()
       this.spaceItems = responce.data
       */
     },
-    itemLink(spaceName, spaceId, spaceType){
-      return '/spaceOne/'+spaceName+'/'+ spaceId + '/' + spaceType
+    recommendViewCheck(){
+      this.spaceViewItems = []
+      this.spaceViewItems.push(this.spaceItems[this.slideStartNum])
+      this.spaceViewItems.push(this.spaceItems[this.slideMiddleNum])
+      this.spaceViewItems.push(this.spaceItems[this.slideEmdNum])
     },
     movePrev(){
-      setTimeout(this.resetCardArrayToLeft, 500)
+      this.slideStartNum --
+      this.slideMiddleNum --
+      this.slideEmdNum --
+      this.minusNumCheck(this.slideStartNum, this.slideMiddleNum, this.slideEmdNum)
+      this.recommendViewCheck()
+    },
+    minusNumCheck(slideStartNum,slideMiddleNum,slideEmdNum){
+      if (slideStartNum < 0){
+        this.slideStartNum = this.spaceItems.length - 1
+      }
+      if (slideMiddleNum < 0){
+        this.slideMiddleNum = this.spaceItems.length - 1
+      }
+      if (slideEmdNum < 0){
+        this.slideEmdNum = this.spaceItems.length - 1
+      }
     },
     moveNext(){
-      this.slideCoord = this.slideCoord -26
-      this.transitionOn = true
-      setTimeout(this.resetCardArrayToRight, 500)
+      this.slideStartNum ++
+      this.slideMiddleNum ++
+      this.slideEmdNum ++
+      this.overNumCheck(this.slideStartNum, this.slideMiddleNum, this.slideEmdNum)
+      this.recommendViewCheck()
     },
-    resetCardArrayToRight(){
-      this.spaceItems.splice(this.spaceItems.length, 0, this.spaceItems[0])
-      this.spaceItems.splice(0, 1)
-      this.transitionOn = false
-      this.slideCoord = ''
-    },
-    resetCardArrayToLeft(){
-      this.spaceItems.unshift(this.spaceItems[this.spaceItems.length-1])
-      this.spaceItems.pop()
-      this.transitionOn = false
-      this.slideCoord = ''
+    overNumCheck(slideStartNum,slideMiddleNum,slideEmdNum){
+      if (slideStartNum == this.spaceItems.length){
+        this.slideStartNum = 0
+      }
+      if (slideMiddleNum == this.spaceItems.length){
+        this.slideMiddleNum = 0
+      }
+      if (slideEmdNum == this.spaceItems.length){
+        this.slideEmdNum = 0
+      }
     },
   },
 }
@@ -90,30 +99,9 @@ export default {
   font-size: 0.9rem;
   display: flex;
   align-content: center;
-  width: 78vw;
+  width: 74.5vw;
   height: 40vh;
   overflow: hidden;
-}
-.spaceItem {
-  position: relative;
-  width: 24vw;
-  height: 28vh;
-  margin: 15px;
-}
-.spaceImg img {
-  width: 24vw;
-  height: 20vh;
-}
-.spaceTitle {
-  font-size: 1.1rem;
-  font-weight: bold;
-}
-.linkBox {
-  padding: 10px;
-  border-bottom: 1px solid gray;
-}
-.spaceGradeReview {
-  float: right;
 }
 .prevBtn, .nextBtn{
   color: rgba(128, 128, 128, 0.411);

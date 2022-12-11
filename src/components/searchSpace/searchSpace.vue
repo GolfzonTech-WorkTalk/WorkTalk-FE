@@ -1,57 +1,59 @@
 <template>
   <div class="spaceItems" @scroll="listScroll">
     <span class="moveTopBtn" @click="moveTop">TOP</span>
-    <div v-for="(item, index) in spaceItems" :id="index" :key="item.spaceName" class="spaceItem">
-      <div class="spaceImg">
-        <img :src="require(`@/assets/${item.spaceImg}`)" alt="공간이미지">
-      </div>
-      <div class="linkBox">
-        <router-link :to="itemLink(item.spaceName, item.spaceId, item.spaceType)">
-          <div class="spaceTitle">
-            <span>{{ item.spaceName }}</span>
-          </div>
-          <div class="spaceLocation">
-            <i class="fa-solid fa-map-pin" />
-            <span>{{ item.address }}</span>
-          </div>
-          <div class="spaceGradeReview">
-            <i class="fa-regular fa-star" /> {{ item.grade }} <i class="fa-regular fa-comments" /> {{ item.review }}
-          </div><br>
-        </router-link>
-      </div>
-    </div>
+    <search-space-one v-for="item in spaceItems" :key="item" :item="item" />
   </div>
 </template>
 
 <script>
+import searchSpaceOne from '@/components/searchSpace/spaceModule.vue'
+// import {spaceSearch} from '@/api/user.js'
 import { spaceDumy } from '@/utils/dummy/dummy.js'
 export default {
+  components:{
+    searchSpaceOne,
+  },
   data(){
     return {
       spaceItems: [],
       pageNum:'0',
       scroll:'0',
+      spaceType:'',
+      spaceName:'',
+      address:'',
     }
   },
   created(){
-    this.reservationDataCall(this.pageNum)
+    this.reservationDataCall()
   },
   methods: {
     // 데이터 API로 불러오기
-    async reservationDataCall(pageNum){
-      console.log(pageNum)
+    async reservationDataCall(){
+      this.routerCheck()
+      // console.log(this.pageNum,this.spaceType,this.spaceName,this.address)
       try {
-        const responce = await spaceDumy
-        for (let i = 0; i < responce.length; i++){
-          this.spaceItems.push(responce[i])
-        }
+        const response = await spaceDumy
+        // const response = await spaceSearch(this.pageNum,this.spaceType,this.spaceName,this.address)
+        this.spaceItems = response
       } catch (error){
         console.log(error)
       }
       this.$store.dispatch('SPINNERVIEW', false)
     },
-    itemLink(spaceName, spaceId, spaceType){
-      return '/spaceOne/'+spaceName+'/'+ spaceId + '/' + spaceType
+    // 주소검증
+    routerCheck(){
+      this.spaceType = this.$route.params.spaceType
+      this.spaceName = this.$route.params.spaceName
+      this.address = this.$route.params.address
+      if (this.spaceType == 'AllType'){
+        this.spaceType = ''
+      }
+      if (this.spaceName == 'AllName'){
+        this.spaceName = ''
+      }
+      if (this.address == 'AllRegions'){
+        this.address = ''
+      }
     },
     // 스크롤체크
     listScroll(e){
@@ -73,6 +75,7 @@ export default {
       for (let i = 0; i < responce.length; i++){
         this.spaceItems.push(responce[i])
       }
+      this.pageNum ++
       this.$store.dispatch('SPINNERVIEW', false)
     },
   },
@@ -92,27 +95,6 @@ export default {
 }
 .spaceItems::-webkit-scrollbar {
   display: none;
-}
-.spaceItem {
-  position: relative;
-  width: 22vw;
-  height: 28vh;
-  margin: 15px;
-}
-.spaceImg img {
-  width: 22vw;
-  height: 20vh;
-}
-.spaceTitle {
-  font-size: 1.1rem;
-  font-weight: bold;
-}
-.linkBox {
-  padding: 10px;
-  border-bottom: 1px solid gray;
-}
-.spaceGradeReview {
-  float: right;
 }
 .moveTopBtn{
   position: absolute;

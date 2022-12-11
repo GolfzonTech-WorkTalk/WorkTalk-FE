@@ -1,12 +1,12 @@
 <template>
   <div class="mainPage">
-    <router-link to="/map">
+    <router-link to="/map/AllType/AllName/AllRegions">
       <i class="mapIcon fa-solid fa-map-location-dot fa-3x" />
     </router-link>
     <div class="spaceType">
       <div class="spaceTypeItems">
         <div v-for="(item, index) in spaceTypeItems" :key="index" class="spaceTypeItem">
-          <router-link :to="searchSpacelink()">
+          <router-link :to="searchSpacelink(item.value)">
             <img class="spaceTypeIcon" :src="require(`@/assets/${item.img}`)" alt="icon">
             <p>{{ item.name }}</p>
           </router-link>
@@ -47,8 +47,8 @@ export default {
     }
   },
   methods: {
-    searchSpacelink(){
-      return '/'
+    searchSpacelink(spaceType){
+      return '/searchSpace/'+spaceType+'/AllName/AllRegions'
     },
   },
 }

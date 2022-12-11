@@ -2,42 +2,40 @@
   <div class="reservationContainer">
     <div v-if="background" class="background" @click="boxClose()" />
     <div class="reservationTitle">
-      <select v-model="sortPayment" class="sortBox" @change="reservationDataCall()">
-        <option value="" hidden>
-          예상상태
+      <select v-model="sortReserveStatus" class="sortBox" @change="reservationDataCall(pageNowNum)">
+        <option value="예약상태" hidden>
+          예약상태
         </option>
-        <option v-for="item in sortPaymentData" :key="item" :value="item.value">
+        <option v-for="item in sortReserveStatusData" :key="item" :value="item.value">
           {{ item.name }}
         </option>
       </select>
-      <select v-model="sortSpace" class="sortBox" @change="reservationDataCall()">
-        <option value="" hidden>
+      <select v-model="sortSpaceType" class="sortBox" @change="reservationDataCall(pageNowNum)">
+        <option value="공간종류" hidden>
           공간종류
         </option>
-        <option v-for="item in sortSpaceData" :key="item" :value="item.value">
+        <option v-for="item in sortSpaceTypeData" :key="item" :value="item.value">
           {{ item.name }}
         </option>
       </select>
     </div>
     <div class="reservationItems">
       <div class="reservationItem">
+        <span class="reserveIdTitle itemTitle">예약번호</span>
         <span class="roomTypeTitle">방종류</span>
         <span class="roomName itemTitle">방이름</span>
         <span class="reserveTimeTitle itemTitle">예약일</span>
         <span class="reservaStatusTitle">예약상태</span>
-        <span class="paymentTypeTitle itemTitle">결제종류</span>
         <span class="amountTitle itemTitle">금액</span>
-        <span class="paymentSatusTitle itemTitle">결제상태</span>
         <span class="reservationCancel itemTitle">비 고</span>
       </div>
       <div v-for="(item, index) in reservationData" :key="item" class="reservationItem">
+        <span class="reserveId" :class="item.paymentStatus">{{ item.reserveId }}</span>
         <span class="roomType" :class="item.roomType">{{ roomTypeRename(item.roomType) }}</span>
         <span class="roomName">{{ item.roomName }}</span>
         <span class="reserveTime">{{ reserveTime(item.bookDate.checkInDate, item.bookDate.checkInTime, item.bookDate.checkOutTime) }}</span>
         <span class="reserveStatus" :class="item.reserveStatus">{{ reserveStatusRename(item.reserveStatus) }}</span>
-        <span class="paymentType" :class="item.paymentStatus">{{ paymentTypeRename(item.paymentStatus) }}</span>
         <span class="amount">{{ item.reserveAmount }}</span>
-        <span class="paymentSatus" :class="(item.paid == '0' && item.paymentStatus != 'REFUND')?'paymentWaiting':'paymentDone'">{{ paymentSatusRename(item.paid, item.paymentStatus) }}</span>
         <span v-if="cancelPossible(item)" class="reservationCancelBtn" @click="boxOpen('cancel', index)">예약취소</span>
         <template v-if="cancelIndex == index">
           <div class="reservationCancelBox">
@@ -84,23 +82,24 @@ export default {
     return {
       reservationData: [],
       // 정렬데이터
-      sortSpaceData:[
-        // api로 받아야 함...
+      sortReserveStatusData: [
+        {'name':'전 체','value':''},
+        {'name':'예약완료','value':'DEPOSIT'},
+        {'name':'이용완료','value':'USED'},
+        {'name':'이용자취소','value':'CANCELED_BY_USER'},
+        {'name':'사용자취소','value':'CANCELED_BY_HOST'},
+        {'name':'노쇼','value':'NOSHOW'},
+        {'name':'취소/환불','value':'REFUND'},
+      ],
+      sortSpaceTypeData: [
         {'name':'전 체','value':''},
         {'name':'오피스','value':'1'},
         {'name':'데스크','value':'2'},
         {'name':'회의실','value':'3'},
       ],
-      sortPaymentData: [
-        {'name':'전 체','value':''},
-        {'name':'보증금','value':'DEPOSIT'},
-        {'name':'선납','value':'PREPAID'},
-        {'name':'후납','value':'POSTPAID'},
-        {'name':'취소/환불','value':'REFUND'},
-      ],
+      sortReserveStatus: '예약상태',
+      sortSpaceType: '공간종류',
       // 페이지 관리데이터
-      sortPayment: '',
-      sortSpace:'',
       pageStartNum: 1,
       pageNowNum:1,
       pageData:[],
@@ -117,25 +116,26 @@ export default {
   },
   created(){
     this.reservationDataCall(this.pageNowNum)
-    this.paging(this.pageNowNum)
   },
   methods: {
     //데이터 API로 불러오기
     async reservationDataCall(pageNowNum){
-      let sortSpace
-      let sortPayment
-      if (this.sortSpace != ''){
-        sortSpace = this.sortSpace
-      }
-      if (this.sortPayment != ''){
-        sortPayment = this.sortPayment
-      }
-      console.log(pageNowNum-1, sortSpace, sortPayment)
-      // this.reservationData = reservationDataDeskMeetingroom
+      this.reservationData = []
+      this.pageNowNum = pageNowNum
+      let sortSpaceType = this.sortSpaceType
+      let sortReserveStatus = this.sortReserveStatus
       try {
-        let response = await reservation(pageNowNum-1)
-        console.log(response.data)
+        if (sortSpaceType == '공간종류'){
+          sortSpaceType = ''
+        }
+        if (sortReserveStatus == '예약상태'){
+          sortReserveStatus = ''
+        }
+        console.log(pageNowNum-1,sortSpaceType,sortReserveStatus)
+        let response = await reservation(pageNowNum-1,sortSpaceType,sortReserveStatus)
         this.reservationData = response.data.data
+        this.pageTotal =  response.data.count
+        this.paging(this.pageNowNum)
       } catch (error){
         console.log(error)
       }
@@ -164,18 +164,6 @@ export default {
         return reserveStatus = '사용완료'
       }
     },
-    paymentTypeRename(status){
-      if (status == 'DEPOSIT'){
-        status = '보증금'
-      } else if (status == 'PREPAID'){
-        status = '선납'
-      } else if (status == 'POSTPAID_BOOKED'){
-        status = '후납'
-      } else {
-        status = '환불'
-      }
-      return status
-    },
     paymentSatusRename(paid, status){
       if (status == 'REFUND'){
         return paid = '-'
@@ -188,7 +176,23 @@ export default {
       return paid
     },
     reserveTime(date, inTime, outTime){
-      return `${date} ${inTime}:00~${outTime}:00`
+      let yearChange = date[0]
+      let monthChange = date[1]
+      let dateChange = date[2]
+      if (monthChange < 10){
+        monthChange = '0'+monthChange
+      }
+      if (dateChange < 10){
+        dateChange = '0'+dateChange
+      }
+      if (inTime < 10){
+        inTime = '0'+inTime
+      }
+      if (outTime < 10){
+        outTime = '0'+outTime
+      }
+      const yyMMdd = yearChange+'-'+monthChange+'-'+dateChange
+      return `${yyMMdd} ${inTime}:00~${outTime}:00`
     },
     cancelPossible(item){
       if (item.reserveStatus == 'BOOKED'){
@@ -228,7 +232,6 @@ export default {
           this.pageData.push({'value':i,'class':''})
         }
       }
-      this.reservationDataCall(this.pageNowNum)
     },
     // 페이지 번호 넘기기
     pageMove(value){
@@ -310,7 +313,7 @@ export default {
 
 <style scoped>
 .reservationTitle{
-  width: 70vw;
+  width: 60vw;
   font-size: 2rem;
   font-weight: bold;
   text-align: right;
@@ -320,7 +323,7 @@ export default {
   letter-spacing: 0.3rem;
   font-size: 1.1rem;
   font-weight: bold;
-  margin-right: 2vw;
+  margin-left: 2vw;
 }
 /* 예약리스트 출력 */
 .reservationItems{
@@ -334,7 +337,7 @@ export default {
   border-left: 0;
   border-right: 0;
   padding: 1.5vh 0vw;
-  width: 66vw;
+  width: 58vw;
 }
 .reservationItem span{
   text-align: center;
@@ -342,6 +345,10 @@ export default {
 }
 .itemTitle{
   font-weight: bold;
+}
+/* 예약번호 */
+.reserveIdTitle, .reserveId{
+  width: 5vw;
 }
 /* 방타입 출려 */
 .roomTypeTitle{
@@ -369,7 +376,7 @@ export default {
 }
 /* 방이름 */
 .roomName{
-  width: 13vw;
+  width: 10vw;
   text-align: center;
 }
 /* 예약상태 */
@@ -401,17 +408,6 @@ export default {
 .reserveTime{
   width: 13vw;
   font-size: 0.8rem;
-  font-weight: bold;
-}
-/* 예약종류,상태 */
-.paymentTypeTitle, .paymentType{
-  width: 6vw;
-}
-.paymentSatusTitle, .paymentSatus{
-  width: 7vw;
-}
-.paymentType, .paymentSatus{
-  font-size: 0.9rem;
   font-weight: bold;
 }
 /* 가격 */

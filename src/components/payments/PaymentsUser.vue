@@ -10,6 +10,14 @@
             {{ item.name }}
           </option>
         </select>
+        <select v-model="spaceType" class="paymentSort" @change="reservationDataCall(pageNowNum)">
+          <option value="공간" hidden>
+            공간종류
+          </option>
+          <option v-for="item in spaceTypeData" :key="item" :value="item.value">
+            {{ item.name }}
+          </option>
+        </select>
       </div>
       <div class="paymentItems">
         <div class="paymentItemTitle">
@@ -17,23 +25,21 @@
           <span class="roomNameTitle">방이름</span>
           <span class="reserveDateTitle">예약일</span>
           <span class="paymentStatusTitle">결제방법</span>
-          <span class="reserveAmountTitle">총금액</span>
-          <span class="reserveAmountTitle">결제금액</span>
-          <span class="reserveAmountTitle">결제예정금액</span>
+          <span class="reserveStatusTitle">예약상태</span>
+          <span class="payAmountTitle">결제금액</span>
         </div>
         <div v-for="item in paymentData" :key="item" class="paymentItem">
           <span class="spaceName">{{ item.spaceName }}</span>
           <span class="roomName">{{ item.roomName }}</span>
           <span class="reserveDate">{{ reserveDateCheck(item.reserveDate) }}</span>
           <span class="paymentStatus" :class="(item.paid=='0')?'paymentIng':'paymentEnd'">{{ paymentStatusCheck(item.payStatus, item.reserveStatus) }}</span>
-          <span class="reserveAmount">{{ item.reserveAmount }}</span>
-          <span class="reserveAmount">{{ item.payAmount }}</span>
-          <span class="reserveAmount">{{ reserveAmoutBalance(item.payStatus, item.reserveAmount, item.payAmount) }}</span>
+          <span class="reserveStatus">{{ reserveStatusRename(item.reserveStatus) }}</span>
+          <span class="payAmount" :class="reserveStatus(item.reserveStatus)">{{ payAmountCheck(item.reserveStatus,item.payAmount) }}</span>
         </div>
       </div>
       <div class="pageNumber">
         <span><i class="fa-solid fa-chevron-left monthMoveBtn" @click="pageMove('pre')" /></span>
-        <span v-for="num in pageData" :key="num" :class="num.class" @click="paging(num.value)">{{ num.value }}</span>
+        <span v-for="num in pageData" :key="num" :class="num.class" @click="paymentDataRequest(num.value)">{{ num.value }}</span>
         <span><i class="fa-solid fa-chevron-right" @click="pageMove('next')" /></span>
       </div>
     </div>
@@ -54,6 +60,13 @@ export default {
         {'name':'1년','value':'12'},
       ],
       paymentSort:'기간',
+      spaceTypeData: [
+        {'name':'전 체','value':''},
+        {'name':'오피스','value':'1'},
+        {'name':'데스크','value':'2'},
+        {'name':'회의실','value':'3'},
+      ],
+      spaceType:'공간',
       paymentData:[],
       // 페이지 관리데이터
       pageStartNum: 1,
@@ -64,14 +77,28 @@ export default {
   },
   created(){
     this.paymentDataRequest(this.pageNowNum)
-    this.paging(this.pageNowNum)
   },
   methods: {
     async paymentDataRequest(pageNowNum){
-      console.log(pageNowNum-1)
-      let response = await paymentHistory(pageNowNum-1)
-      console.log(response)
-      this.paymentData = response.data.data
+      this.paymentData = []
+      let spaceType = this.spaceType
+      let paymentSortData = this.paymentSortData
+      this.pageNowNum = pageNowNum
+      try {
+        if (spaceType == '공간종류'){
+          spaceType = ''
+        }
+        if (paymentSortData == '기간'){
+          paymentSortData = ''
+        }
+        let response = await paymentHistory(pageNowNum-1)
+        // let response = await paymentHistory(pageNowNum-1, spaceType, paymentSortData)
+        this.paymentData = response.data.data
+        this.pageTotal =  response.data.count
+        this.paging(this.pageNowNum)
+      } catch (error){
+        console.log(error)
+      }
       this.$store.dispatch('SPINNERVIEW', false)
     },
     roomTypeCheck(roomType){
@@ -97,31 +124,65 @@ export default {
       }
       return payStatus
     },
-    reserveDateCheck(reserveDate){
-      return reserveDate.slice(0,10)+' '+reserveDate.slice(11,-3)
-    },
-    reserveAmoutBalance(payStatus, reserveAmount, payAmount){
-      if (payStatus == 'POSTPAID_DONE' || payStatus == 'PREPAID'){
-        return 0
+    reserveStatusRename(reserveStatus){
+      if (reserveStatus == 'BOOKED'){
+        return reserveStatus = '예약완료'
+      } else if (reserveStatus == 'CANCELED_BY_USER'){
+        return reserveStatus = '사용자취소'
+      } else if (reserveStatus == 'CANCELED_BY_HOST'){
+        return reserveStatus = '호스트취소'
+      } else if (reserveStatus == 'NOSHOW'){
+        return reserveStatus = '노쇼'
       } else {
-        return reserveAmount-payAmount
+        return reserveStatus = '사용완료'
+      }
+    },
+    reserveDateCheck(reserveDate){
+      let year = reserveDate[0]
+      let month = reserveDate[1]
+      let date = reserveDate[2]
+      let hour = reserveDate[3]
+      let minute = reserveDate[4]
+      if (hour < 10){
+        hour = '0'+hour
+      }
+      if (minute < 10){
+        minute = '0'+minute
+      }
+      return year+'-'+month+'-'+date+' '+hour+':'+minute
+    },
+    payAmountCheck(reserveStatus,payAmount){
+      if (reserveStatus == 'CANCELED_BY_USER' || reserveStatus == 'CANCELED_BY_HOST'){
+        return '+'+payAmount
+      } else {
+        return '-'+payAmount
+      }
+    },
+    reserveStatus(reserveStatus){
+      if (reserveStatus == 'CANCELED_BY_USER' || reserveStatus == 'CANCELED_BY_HOST'){
+        return 'minus'
+      } else {
+        return 'plus'
       }
     },
     // 페이징
     paging(pageNowNum){
       this.pageData = []
       this.pageNowNum = pageNowNum
-      // 전체 데이터의 길이... this.reservationData.length
-      let total = 111
+      let total = this.pageTotal
       if (total%10 != 0){
         this.pageTotal = parseInt(total/10)+1
       } else { 
         this.pageTotal = total/10
       }
-      // console.log(this.pageTotal)
-      let lastPage = this.pageStartNum+5
-      if (lastPage >= this.pageTotal ){
-        lastPage = this.pageTotal
+      let lastPage
+      if (this.pageTotal < 6){
+        lastPage = this.pageTotal+1
+      } else { 
+        lastPage = this.pageStartNum+5
+        if (lastPage >= this.pageTotal ){
+          lastPage = this.pageTotal+1
+        }
       }
       for (let i = this.pageStartNum; i < lastPage; i++){
         if (pageNowNum == i){
@@ -130,7 +191,6 @@ export default {
           this.pageData.push({'value':i,'class':''})
         }
       }
-      this.paymentDataRequest(this.pageNowNum)
     },
     // 페이지 번호 넘기기
     pageMove(value){
@@ -192,23 +252,30 @@ export default {
   text-align: center;
 }
 .spaceNameTitle, .spaceName {
-  width: 7vw;
+  width: 8vw;
 }
 .roomNameTitle, .roomName{
-  width: 7vw;
+  width: 10vw;
 }
 .reserveDateTitle, .reserveDate{
-  width: 9vw;
+  width: 10vw;
 }
 .paymentStatusTitle, .paymentStatus{
-  width: 7vw;
+  width: 8vw;
 }
-.reserveAmountTitle,.reserveAmount{
-  width: 6.5vw;
+.reserveStatusTitle, .reserveStatus{
+  width: 8vw;
 }
-.paymentIng{
+.payAmountTitle,.payAmount{
+  width: 8vw;
+}
+.minus{
   font-weight: bold;
-  color: rgb(33, 119, 33);
+  color: rgb(119, 33, 33);
+}
+.plus{
+  font-weight: bold;
+  color: rgb(33, 42, 119);
 }
 /* 페이징 */
 .pageNumber{
