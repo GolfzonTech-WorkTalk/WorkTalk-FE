@@ -2,7 +2,7 @@
   <div class="QnAcontainer">
     <div class="QnAcreate">
       <i class="fa-solid fa-pen-to-square" />
-      <span @click="emitOpen">문의작성</span>
+      <span @click="emitOpenCheck">문의작성</span>
     </div>
     <div v-for="item in QnAList" :key="item" class="QnAitem">
       <div>
@@ -12,7 +12,7 @@
           {{ item.content }}
         </p>
       </div>
-      <div v-if="item.qnacomment" class="hostAnswer">
+      <div v-if="item.qnacomment != null" class="hostAnswer">
         <img src="@/assets/down-right.png" class="answerArrow">
         <span class="answerTitle">호스트의 답글</span>
         <span class="date">{{ dateCheck(item.qclastModifiedDate) }}</span>
@@ -25,7 +25,8 @@
 </template>
 
 <script>
-import { QnAdummy } from '@/utils/dummy/QnAReviewdummy.js'
+// import { QnAdummy } from '@/utils/dummy/QnAReviewdummy.js'
+import { spaceQnAList } from '@/api/QnA.js'
 export default {
   emits: [ 'qna:open' ],
   data(){
@@ -34,9 +35,20 @@ export default {
     }
   },
   created(){
-    this.QnAList = QnAdummy
+    this.spaceQnAListCall()
   },
   methods: {
+    async spaceQnAListCall(){
+      const spaceId = this.$route.params.spaceId
+      console.log(spaceId)
+      try {
+        const response = await spaceQnAList(spaceId)
+        // console.log(response)
+        this.QnAList = response.data
+      } catch (error){
+        console.log(error)
+      }
+    },
     typeCheck(value){
       if (value == 'RESERVE'){
         return '예약'
@@ -47,9 +59,27 @@ export default {
       }
     },
     dateCheck(value){
-      let date = value.slice(0,10)
-      let time = value.slice(11,16)
+      let date = value[0]+'-'+value[1]+'-'+value[2]
+      let hour = value[3]
+      let minute = value[3]
+      if (hour < 10){
+        hour = '0'+hour
+      }
+      if (minute < 10){
+        minute = '0'+minute
+      }
+      let time = hour+':'+minute
       return `${date} ${time}`
+    },
+    emitOpenCheck(){
+      if (!this.$store.state.token){
+        let message = '로그인을 해주세요'
+        this.$store.dispatch('MODALVIEWCLICK', true)
+        this.$store.dispatch('MODALMESSAGE', message)
+        this.$router.push('/login')
+      } else {
+        this.emitOpen()
+      }
     },
     emitOpen(){
       let value = true

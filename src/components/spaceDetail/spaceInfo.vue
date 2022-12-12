@@ -99,9 +99,10 @@ export default {
   async created(){
     try {
       const spaceId = this.$route.params.spaceId
+      // console.log(spaceId)
       let spaceResponce = await spaceOne(spaceId)
-      // console.log(spaceResponce.data)
-      this.spaceItems = spaceResponce.data
+      // console.log(spaceResponce.data[0])
+      this.spaceItems = spaceResponce.data[0]
       this.memberItems = spaceResponce.data.member
     } catch (error){
       console.log(error)      
@@ -121,13 +122,13 @@ export default {
     },
     movePrev(){
       if (this.spaceImgListNum == '0'){
-        this.spaceImgListNum = this.item.spaceImgList.length -1  
+        this.spaceImgListNum = this.spaceItems.spaceImgList.length -1  
       } else {
         this.spaceImgListNum --
       }
     },
     moveNext(){
-      if (this.spaceImgListNum == this.item.spaceImgList.length -1 ){
+      if (this.spaceImgListNum == this.spaceItems.spaceImgList.length -1 ){
         this.spaceImgListNum = 0
       } else {
         this.spaceImgListNum ++

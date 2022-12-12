@@ -16,7 +16,7 @@
 </template>
 
 <script>
-// import {reviewCreate} from '@/api/review.js'
+import {reviewUpdata} from '@/api/review.js'
 export default {
   props: {
     item: {
@@ -69,22 +69,18 @@ export default {
       }
     },
     async reviewSubmit(){
-      this.reviewSubmitCheck()
       let reviewData = {
-        reviewContent:this.reviewContent,
-        grade:this.grade,
-        reserveId: this.reserveId,
+        'grade':this.grade,
+        'content':this.content,
       }
       console.log(reviewData)
-      this.$emit('reviewupdate:close')
-      /*
       try {
-        let response = await reviewCreate(reviewData)
+        let response = await reviewUpdata(this.reviewId, reviewData)
         console.log(response)
+        this.$emit('reviewupdate:close')
       } catch (error){
         console.log(error)
       }
-      */
     },
   },
 }

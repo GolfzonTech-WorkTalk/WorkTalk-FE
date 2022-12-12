@@ -64,10 +64,16 @@ export default {
   },
   methods: {
     async spaceAllCall(){
-      const responce = await spaceAll()
-      console.log(responce)
-      this.spaceItems = responce.data
-      this.$store.dispatch('SPINNERVIEW')
+      try {
+        let nickName = this.$store.state.nickName
+        console.log(nickName)
+        const responce = await spaceAll(nickName)
+        console.log(responce)
+        this.spaceItems = responce.data
+      } catch (error){
+        console.log(error)
+      }
+      this.$store.dispatch('SPINNERVIEW', false)
     },
     itemLink(spaceStatus, title, spaceType, spaceName, spaceId){
       if (spaceStatus == 'waiting'){

@@ -35,7 +35,8 @@ export default {
       // const responce = spaceDumy
       // this.spaceItems = responce
       try {
-        const responce = await spaceSearch()
+        const responce = await spaceSearch(0,'','','','','','','')
+        console.log(responce)
         this.spaceItems = responce.data.data
       } catch (error){
         console.log(error)

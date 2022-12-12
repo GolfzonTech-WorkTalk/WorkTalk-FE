@@ -31,12 +31,6 @@ import {mileageList} from '@/api/user.js'
 export default {
   data(){
     return {
-      mileageSortData: [
-        {'name':'1개월','value':'1'},
-        {'name':'3개월','value':'3'},
-        {'name':'6개월','value':'6'},
-        {'name':'1년','value':'12'},
-      ],
       mileageSort:'기간',
       mileageOwn:'0',
       mileageData:'',

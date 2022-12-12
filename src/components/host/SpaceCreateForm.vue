@@ -1,6 +1,6 @@
 <template>
   <div class="createBox">
-    <form class="createFrom" @submit.prevent="spaceCreate">
+    <form class="createFrom" enctype="multipart/form-data" @submit.prevent="spaceCreate">
       <div class="spaceType">
         <span>공간생성</span>
         <div class="spaceTypeItems">
@@ -40,7 +40,7 @@
       <div class="spaceImg boxName">
         <span>공간대표사진</span>
         <label for="imgBtn" class="imgBtn">사진등록</label>
-        <input id="imgBtn" ref="spaceImg" type="file" multiple accept="image/*" hidden @change="fileUpload">
+        <input id="imgBtn" ref="spaceImg" type="file" multiple accept="image/*" hidden @change="fileUpload($event)">
       </div>
       <button class="submit">
         공간생성
@@ -79,10 +79,11 @@ export default {
   computed: {
   },
   methods: {
-    fileUpload(e){
-      // console.log(e.target.files)
-      // console.log(this.$refs.spaceImg.files)
-      this.spaceImg = e.target.files
+    fileUpload(event){
+      this.spaceImg = event.target.files
+      // console.log(event)
+      // console.log(event.target.files)
+      // console.log(this.spaceImg)
     },
     //타입 선택
     spaceTypeSelect(item){
@@ -176,9 +177,15 @@ export default {
         formData.append('detailAddress', this.detailAddress)
         formData.append('regCode', this.regCode)
         if (this.spaceImg != null){
-          formData.append('spaceImg', this.spaceImg)
+          // for (let i = 0; i < this.spaceImg.length; i++){
+          //   formData.append('multiPartList', this.spaceImg[i])
+          //   console.log(this.spaceImg[i])
+          // }
+          formData.append('multipartFileList', this.spaceImg)
         }
-        console.log(formData)
+        for (let key of formData.keys()){
+          console.log(`${key}:${formData.get(key)}`)
+        }
         const createDataResponse = await spaceCreate(formData)
         console.log(createDataResponse)
         // this.$router.push('/host')

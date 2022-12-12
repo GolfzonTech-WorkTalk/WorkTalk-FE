@@ -27,8 +27,8 @@ function userData(){
 }
 
 // 프로필수정
-function profileUpdate(){
-  return posts.get('profileUpdate')
+function profileUpdate(updateData){
+  return posts.get('update',updateData)
 }
 
 export {

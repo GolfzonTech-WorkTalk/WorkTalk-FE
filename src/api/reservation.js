@@ -30,12 +30,12 @@ function reservationReserve(reservationData){
 }
 
 // 예약리스트조회
-function reservation(pageNum, spaceType, paymentSortData){
+function reservation(pageNum, spaceType, paymentStatus){
   return posts.get('/reservation/find',{
     params:{
       pageNum,
       spaceType,
-      paymentSortData,
+      paymentStatus,
     },
   })
 }

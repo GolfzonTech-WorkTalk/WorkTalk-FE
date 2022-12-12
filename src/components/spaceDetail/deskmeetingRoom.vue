@@ -7,7 +7,7 @@
       <input v-model="roomReservationView" type="radio" :value="item.roomId" @click="reservationReset(item)">
       <span class="roomName">{{ item.roomName }}</span>
       <p class="roomTypePrice">
-        운용시간 : {{ item.workStart }}:00 ~ {{ item.workEnd }}:00
+        운용시간 : {{ timeCheck(item.workStart, item.workEnd) }}
       </p>
       <p class="roomTypePrice">
         수용인원 : {{ useNumber(item.roomType) }}
@@ -42,7 +42,7 @@
         <div class="reservationResult">
           <p>예약날짜 : {{ reservationDay }} </p>
           <span>예약시간 : </span>
-          <span v-if="(initTime != null)">{{ timeCheck() }}</span>
+          <span v-if="(initTime != null)">{{ timeCheck(initTime, endTime) }}</span>
         </div>
         <div v-if="amount != ''" class="reservationType">
           <!-- <div class="paymentTypeBox"> -->
@@ -207,30 +207,16 @@ export default {
     // 시간출력 async
     async createTime(){
       this.timeDatas = []
-
-      // 시간생성
       let workStart = Number(this.workStart)
       let workEnd = Number(this.workEnd)
-      // console.log(workStart, workEnd)
-      for (let i = workStart; i < workEnd; i++){
-        if (i < 10){
-          this.timeDatas.push({'name':'0'+i, 'value':i, 'class':'timeItem'})
-        } else {
-          this.timeDatas.push({'name':i, 'value':i, 'class':'timeItem'})
-        }
-      }
-      // 현재시간 예외처리
+      // 시간생성
+      await this.time(workStart, workEnd)
+      // 오늘일 경우
       const today = new Date()
       const CurrentDate = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate()
-      // console.log(CurrentDate)
       const CurrentTime = today.getHours()
       if (CurrentDate == this.reservationDay){
-        for (let j = 0; j < workEnd - workStart + 1; j++){
-          let time = this.timeDatas[j].value
-          if (time <= CurrentTime){
-            this.timeDatas[j].class = 'timeItem reserved'
-          }
-        }
+        await this.todayCheck(CurrentTime)
       }
       // 예약날짜 제외처리
       this.reserveCheck(workStart, workEnd)
@@ -243,13 +229,32 @@ export default {
         this.amount = (this.endTime - this.initTime) *  this.price
       }
     },
+    // 시간생성
+    time(workStart, workEnd){
+      // console.log(workStart, workEnd)
+      for (let i = workStart; i < workEnd; i++){
+        if (i < 10){
+          this.timeDatas.push({'name':'0'+i, 'value':i, 'class':'timeItem'})
+        } else {
+          this.timeDatas.push({'name':i, 'value':i, 'class':'timeItem'})
+        }
+      }
+    },
+    // 오늘일 경우 현재시간 예외처리
+    todayCheck(CurrentTime){
+      for (let j = 0; j < this.timeDatas.length; j++){
+        let time = this.timeDatas[j].value
+        if (time <= CurrentTime){
+          this.timeDatas[j].class = 'timeItem reserved'
+        }
+      }
+    },
     // 예약날짜 제외처리 함수
-    reserveCheck(workStart, workEnd){
+    reserveCheck(){
       for (let i = 0; i < this.reservation.length; i++){
         let initTime = this.reservation[i].initTime
         let endTime = this.reservation[i].endTime
-        // console.log(initTime, endTime)
-        for (let j = 0; j < workEnd - workStart + 1; j++){
+        for (let j = 0; j < this.timeDatas.length; j++){
           let time = this.timeDatas[j].value
           if (time == initTime || time > initTime && time < endTime){
             this.timeDatas[j].class = 'timeItem reserved'
@@ -306,9 +311,7 @@ export default {
       this.createTime()
     },
     // 시간출력
-    timeCheck(){
-      let initTime = this.initTime
-      let endTime = this.endTime
+    timeCheck(initTime, endTime){
       if (initTime < 10){
         initTime = '0'+initTime
       }

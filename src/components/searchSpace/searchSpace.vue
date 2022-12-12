@@ -1,14 +1,13 @@
 <template>
   <div class="spaceItems" @scroll="listScroll">
-    <span class="moveTopBtn" @click="moveTop">TOP</span>
     <search-space-one v-for="item in spaceItems" :key="item" :item="item" />
   </div>
 </template>
 
 <script>
 import searchSpaceOne from '@/components/searchSpace/spaceModule.vue'
-// import {spaceSearch} from '@/api/user.js'
-import { spaceDumy } from '@/utils/dummy/dummy.js'
+import {spaceSearch} from '@/api/user.js'
+// import { spaceDumy } from '@/utils/dummy/dummy.js'
 export default {
   components:{
     searchSpaceOne,
@@ -30,11 +29,11 @@ export default {
     // 데이터 API로 불러오기
     async reservationDataCall(){
       this.routerCheck()
-      // console.log(this.pageNum,this.spaceType,this.spaceName,this.address)
+      console.log(this.pageNum,this.spaceType,this.spaceName,this.address)
       try {
-        const response = await spaceDumy
-        // const response = await spaceSearch(this.pageNum,this.spaceType,this.spaceName,this.address)
-        this.spaceItems = response
+        // const response = await spaceDumy
+        const response = await spaceSearch(this.pageNum,this.spaceType,this.spaceName,this.address)
+        this.spaceItems = response.data.data
       } catch (error){
         console.log(error)
       }
@@ -71,11 +70,11 @@ export default {
     },
     async reservationDataADD(pageNum){
       console.log(pageNum)
-      const responce = await spaceDumy
-      for (let i = 0; i < responce.length; i++){
-        this.spaceItems.push(responce[i])
+      // const responce = await spaceDumy
+      const response = await spaceSearch(this.pageNum,this.spaceType,this.spaceName,this.address)
+      for (let i = 0; i < response.length; i++){
+        this.spaceItems.push(response[i])
       }
-      this.pageNum ++
       this.$store.dispatch('SPINNERVIEW', false)
     },
   },

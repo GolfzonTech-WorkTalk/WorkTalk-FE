@@ -27,8 +27,8 @@
           </option>
         </select>
         <input v-model="searchWord" type="text" class="selectTermsTextBox">
-        <div class="selectTermsClearBtn">
-          <i class="fa-solid fa-rotate-right fa-lg" @click="selectTermsClear" />
+        <div class="selectTermsClearBtn" @click="selectTermsClear">
+          <i class="fa-solid fa-rotate-right fa-lg" />
           <span>초기화</span>
         </div>
       </div>
@@ -152,7 +152,8 @@ export default {
         address = 'AllRegions'
       }
       if (this.selectCityDetailName != '세부지역'){
-        address = address + this.selectCityDetailName
+        address = address +' '+ this.selectCityDetailName
+        console.log(address)
       }
       return spaceType+'/'+spaceName+'/'+address
     },

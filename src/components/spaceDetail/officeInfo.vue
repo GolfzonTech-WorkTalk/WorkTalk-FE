@@ -91,9 +91,9 @@ export default {
       // console.log(spaceResponce)
       // this.roomItems = spaceResponce.data
       /* 더미 */
-      
       const spaceId = this.$route.params.spaceId
       const response = await roomOne(spaceId)
+      console.log(response)
       this.roomItems = response.data[0]
       this.price = response.data[0].roomPrice
       this.roomId = response.data[0].roomId

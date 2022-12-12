@@ -9,7 +9,7 @@
         </p>
       </div>
       <template v-if="userType == 'ROLE_MASTER'">
-        <textarea v-model="CCcomment" class="CCcontent" placeholder="답변을 작성해주세요." />
+        <textarea v-model="ccContent" class="CCcontent" placeholder="답변을 작성해주세요." />
         <span class="CCbtn closeBtn" @click="emitClose(false)">닫기</span>
         <span class="CCbtn updateBtn" @click="CCupdate">수정</span>
       </template>
@@ -23,7 +23,7 @@
 </template>
 
 <script>
-import {CCUpdata} from '@/api/customerCenter.js'
+import {cccommentUpdate, ccUpdata} from '@/api/customerCenter.js'
 export default {
   props: {
     item: {
@@ -40,22 +40,22 @@ export default {
         {'name':'결제관련','value':'PAYMENT'},
       ],
       // 제출데이터
-      cc_id : '',
+      ccId : '',
       type : '',
       title:'',
       content : '',
-      CCcomment:'',
+      ccContent:'',
       // userType
       userType: '',
     }
   },
   created(){
     // console.log(this.item)
-    this.cc_id = this.item.cc_id
+    this.ccId = this.item.ccId
     this.type = this.item.type
     this.title = this.item.title
     this.content = this.item.content
-    this.CCcomment = this.item.CCcomment
+    this.ccContent = this.item.ccContent
     this.userType = this.$store.state.role
   },
   methods: {
@@ -73,25 +73,35 @@ export default {
       this.$emit('CC:close', value)
     },
     async CCupdate(){
-      if (this.contentCount.length == ''){
+      if (this.content.length == ''){
         let message = '내용이 없습니다.'
         this.$store.dispatch('MODALVIEWCLICK', true)
         this.$store.dispatch('MODALMESSAGE', message)
-      } else if (this.contentCount.length > 100){
+      } else if (this.content.length > 100){
         let message = '내용이 100자를 초과하였습니다.'
         this.$store.dispatch('MODALVIEWCLICK', true)
         this.$store.dispatch('MODALMESSAGE', message)
       } else {
+        let updateContnet
+        if (this.userType == 'ROLE_MASTER'){
+          updateContnet = this.ccContent
+        } else {
+          updateContnet = this.content
+        }
         const CCUpdataData = {
-          'cc_id': this.cc_id,
-          'type': this.type,
-          'title':this.title,
-          'content': this.content,
-          'CCcomment':this.CCcomment,
+          'content': updateContnet,
         }
         console.log(CCUpdataData)
         try {
-          let response = await CCUpdata(this.cc_id, CCUpdataData)
+          let ccId = Number(this.ccId)
+          console.log(ccId)
+          console.log(typeof(ccId))
+          let response
+          if (this.userType == 'ROLE_MASTER'){
+            response = await cccommentUpdate(ccId, CCUpdataData)
+          } else {
+            response = await ccUpdata(ccId, CCUpdataData)
+          }
           console.log(response)
           this.emitClose(false)
         } catch (error){

@@ -47,6 +47,7 @@
 
 <script>
 // import {userData, profileUpdate} from '@/api/auth.js'
+import { profileUpdate } from '@/api/auth.js'
 import { autoHypenPhone } from '@/utils/phoneCheck.js'
 export default {
   data(){
@@ -127,13 +128,17 @@ export default {
       else if (title == '비밀번호수정'){this.userData.pw = this.updateInputData}
       const updateData = {
         memberId:this.userData.memberId,
-        email:this.userData.email,
         pw:this.userData.pw,
-        name:this.userData.name,
         tel:this.userData.tel,
-        imgName:this.userData.imgName,
       }
       console.log(updateData)
+      try {
+        const response = await profileUpdate(updateData)
+        console.log(response)
+        this.updateCancel()
+      } catch (error){
+        console.log(error)
+      }
     },
   },
 }

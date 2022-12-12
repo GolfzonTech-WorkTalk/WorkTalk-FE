@@ -1,13 +1,15 @@
-import store from "@/store"
 import { posts } from "./index"
 
 function spaceAll(){
-  return posts.get('host/spaceAll/'+store.state.nickName)
+  return posts.get('host/spaceAll')
 }
 
-function spaceCreate(createData){
-  return posts.post('host/spaceCreate', createData)
-  // {headers: {'Content-Type':'application/json'},}
+function spaceCreate(SpaceInsertDto){
+  return posts.post('host/spaceCreate', SpaceInsertDto, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  })
 }
 
 function roomCreate(formData, spaceId){

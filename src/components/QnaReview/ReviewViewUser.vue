@@ -35,9 +35,9 @@
 </template>
 
 <script>
-import {reviewDelete} from '@/api/review.js'
+import {mypageReviewList, reviewDelete} from '@/api/review.js'
 import FormReviewUpdate from '@/components/Form/FormReviewUpdate.vue'
-import { ReviewDummy } from '@/utils/dummy/QnAReviewdummy.js'
+// import { ReviewDummy } from '@/utils/dummy/QnAReviewdummy.js'
 export default {
   components: {
     FormReviewUpdate,
@@ -47,9 +47,10 @@ export default {
       ReviewList: [],
       Reviewtype:'문의종류',
       ReviewtypeData: [
-        {'name':'예약','value':'RESERVE'},
-        {'name':'결제','value':'PAY'},
-        {'name':'이용','value':'USING'},
+        {'name':'전 체','value':''},
+        {'name':'오피스','value':'1'},
+        {'name':'데스크','value':'2'},
+        {'name':'회의실','value':'3'},
       ],
       deleteReviewNum:'후기삭제',
       updateReviewNum:'후기수정',
@@ -61,8 +62,9 @@ export default {
   },
   methods: {
     async reviewListCall(){
-      const response = await ReviewDummy
-      this.ReviewList = response
+      // const response = await ReviewDummy
+      const response = await mypageReviewList()
+      this.ReviewList = response.data
       this.$store.dispatch('SPINNERVIEW', false)
     },
     testRangeCheck(value){
@@ -88,10 +90,19 @@ export default {
         return '회의실'
       }
     },
-    dateCheck(value){
-      let date = value.slice(0,10)
-      let time = value.slice(11,16)
-      return `${date} ${time}`
+    dateCheck(dateData){
+      let year = dateData[0]
+      let month = dateData[1]
+      let date = dateData[2]
+      let hour = dateData[3]
+      let minute = dateData[4]
+      if (hour < 10){
+        hour = '0'+hour
+      }
+      if (minute < 10){
+        minute = '0'+minute
+      }
+      return year+'-'+month+'-'+date+' '+hour+':'+minute
     },
     deleteReview(item){
       this.deleteReviewNum = item.reviewId
@@ -105,8 +116,10 @@ export default {
     },
     async deleteReviewSubmit(item){
       try {
-        let response = await reviewDelete(item.qnaId)
+        let response = await reviewDelete(item.reviewId)
         console.log(response)
+        this.deleteReviewCancel()
+        this.reviewListCall()
       } catch (error){
         console.log(error)
       }

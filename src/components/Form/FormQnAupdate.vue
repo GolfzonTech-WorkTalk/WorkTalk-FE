@@ -28,7 +28,7 @@ export default {
       required: true,
     },
   },
-  emits: [ 'qnaupdate:close' ],
+  emits: [ 'qnaupdate:close', 'qnaupdate-data:call' ],
   data(){
     return {
       // 제출데이터
@@ -65,8 +65,6 @@ export default {
     },
     async QnAupdate(){
       const qnaUpdataData = {
-        'qnaId': this.qnaId,
-        'type': this.type,
         'content': this.content,
       }
       console.log(qnaUpdataData)
@@ -79,14 +77,13 @@ export default {
     },
     async QnAcommentupdate(){
       const qnaUpdataData = {
-        'qnaId': this.qnaId,
-        'type': this.type,
         'qnacomment': this.qnacomment,
       }
       console.log(qnaUpdataData)
       try {
         let response = await qnacommentUpdate(this.qnaId, qnaUpdataData)
         console.log(response)
+        this.$emit('qnaupdate-data:call')
         this.$emit('qnaupdate:close')
       } catch (error){
         console.log(error)

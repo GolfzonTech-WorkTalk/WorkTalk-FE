@@ -150,7 +150,7 @@ export default {
           console.log(this.emailVerificationCodeCheck)
           console.log(typeof(responce.data))
         } catch (error){
-          console.log(error.request.status)
+          console.log(error)
           this.emailVerificationCodeCheck = error.request.status
         }
         this.$store.dispatch('SPINNERVIEW')
