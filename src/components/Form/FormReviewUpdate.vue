@@ -24,7 +24,7 @@ export default {
       required: true,
     },
   },
-  emits: ['reviewupdate:close'],
+  emits: ['reviewupdate:close', 'reviewupdate:submit'],
   data(){
     return {
       reviewId:'',
@@ -77,6 +77,7 @@ export default {
       try {
         let response = await reviewUpdata(this.reviewId, reviewData)
         console.log(response)
+        this.$emit('reviewupdate:submit')
         this.$emit('reviewupdate:close')
       } catch (error){
         console.log(error)

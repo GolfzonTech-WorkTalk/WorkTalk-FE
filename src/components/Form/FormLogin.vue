@@ -1,27 +1,62 @@
 <template>
-  <form class="loginForm" @submit.prevent="loginOk">
-    <div class="loginFromItems">
-      <input id="email" v-model="email" type="text" placeholder="이메일">
-      <span v-if="!userEmailValid && email" class="warning">이메일 형식이 아닙니다.</span>
+  <div>
+    <div v-if="findBoxType != ''" class="background" />
+    <div v-if="findBoxType == 'email'" class="findBoxEmail">
+      <i class="fa-solid fa-xmark findBoxClose fa-lg" @click="findBoxClose" />
+      <input v-model="findEmail" class="findEmail" type="text" placeholder="가입한 이메일을 입력해주세요.">
+      <input class="findEmailBtn" type="button" value="조회" @click="emailVeificaionSend">
+      <template v-if="(emailVerificationCodeCheck == 500)">
+        <p class="approve">
+          가입된 이메일입니다.
+        </p>
+      </template>
+      <template v-if="(emailVerificationCodeCheck == 200)">
+        <p class="warning">
+          가입되지 않은 이메일입니다.
+        </p>
+      </template>
     </div>
-    <div class="loginFromItems">
-      <input id="pw" v-model="pw" type="password" placeholder="비밀번호">
+    <div v-if="findBoxType == 'pw'" class="findBoxPw">
+      <i class="fa-solid fa-xmark findBoxClose fa-lg" @click="findBoxClose" />
+      <input v-model="findEmail" class="findEmail" type="text" placeholder="가입한 이메일을 입력해주세요.">
+      <input class="findEmailBtn" type="button" value="임시비밀번호발급" @click="emailVeificaionSend">
+      <template v-if="(emailVerificationCodeCheck == 200)">
+        <p class="approve">
+          임시비밀번호가 발급되었습니다.
+        </p>
+      </template>
+      <template v-if="(emailVerificationCodeCheck == 500)">
+        <p class="warning">
+          가입되지 않은 이메일입니다.
+        </p>
+      </template>
     </div>
-    <div class="loginFromItems">
-      <button id="submit" :disabled="!userEmailValid || !pw || !email">
-        로그인
-      </button>
-    </div>
-    <div>
-      <span>워크토크 이용자/공급자가 아니십니까?</span>
-      <router-link to="/join">
-        <span>회원가입</span>
-      </router-link>
-    </div>
-  </form>
+    <form class="loginForm" @submit.prevent="loginCkeck">
+      <div class="loginFromItems">
+        <input id="email" v-model="email" type="text" placeholder="이메일">
+        <span v-if="!userEmailValid && email" class="warning">이메일 형식이 아닙니다.</span>
+      </div>
+      <div class="loginFromItems">
+        <input id="pw" v-model="pw" type="password" placeholder="비밀번호">
+      </div>
+      <div class="loginFromItems">
+        <button id="submit">
+          로그인
+        </button>
+      </div>
+      <div class="helpBox">
+        <span @click="findBoxOpen('email')">이메일확인</span>
+        <span @click="findBoxOpen('pw')">비밀번호찾기</span>
+        <router-link to="/join">
+          <span>회원가입</span>
+        </router-link>
+      </div>
+    </form>
+  </div>
 </template>
 
 <script>
+import { mailCheck } from '@/api/auth.js'
 import {emailCheck} from '@/utils/emailCheck'
 import jwt_decode from 'jwt-decode'
 export default {
@@ -29,6 +64,9 @@ export default {
     return {
       email: '',
       pw: '',
+      findEmail:'',
+      emailVerificationCodeCheck:'',
+      findBoxType:'',
     }
   },
   computed: {
@@ -37,6 +75,26 @@ export default {
     },
   },
   methods: {
+    // 로그인검증
+    loginCkeck(){
+      let message = ''
+      if (!this.email){
+        message = '이메일을 입력해주세요.'
+        this.$store.dispatch('MODALVIEWCLICK', true)
+        this.$store.dispatch('MODALMESSAGE', message)
+      } else if (!this.userEmailValid){
+        message = '이메일 형식으로 입력해주세요.'
+        this.$store.dispatch('MODALVIEWCLICK', true)
+        this.$store.dispatch('MODALMESSAGE', message)
+      } else if (!this.pw){
+        message = '비밀번호를 입력해주세요.'
+        this.$store.dispatch('MODALVIEWCLICK', true)
+        this.$store.dispatch('MODALMESSAGE', message)
+      } else {
+        this.loginOk()
+      }
+    },
+    // 로그인
     async loginOk(){
       const loginData = {
         email: this.email,
@@ -66,11 +124,42 @@ export default {
     pwClear(){
       this.pw = ''
     },
+    // 찾기 박스열기
+    findBoxOpen(value){
+      this.findBoxType = value
+    },
+    findBoxClose(){
+      this.findBoxType = ''
+      this.findEmail = ''
+    },
+    // 이메일확인
+    async emailVeificaionSend(){
+      this.$store.dispatch('SPINNERVIEW', true)
+      try {
+        const findEmail = {
+          email : this.findEmail,
+        }
+        let responce = await mailCheck(findEmail)
+        console.log(responce)
+        this.emailVerificationCodeCheck = responce.status
+      } catch (error){
+        console.log(error)
+        this.emailVerificationCodeCheck = error.request.status
+      }
+      this.$store.dispatch('SPINNERVIEW', false)
+    },
   },
 }
 </script>
 
 <style scoped>
+.background{
+  position: absolute;
+  background: rgba(0, 0, 0, 0.137);
+  border-radius: 15px;
+  height: 43vh;
+  width: 46vw;
+}
 .loginForm {
   background: white;
   border-radius: 15px;
@@ -103,5 +192,53 @@ export default {
   font-weight: bold;
   color: brown;
   float: right;
+}
+/* 이메일,비밀번호찾기 */
+.helpBox span{
+  padding: 0 1vw;
+  cursor: pointer;
+}
+.helpBox span:not(:last-child){
+  border-right: 2px solid gray;
+}
+.findBoxEmail, .findBoxPw{
+  background: white;
+  border-radius: 15px;
+  position: absolute;
+  top: 30vh;
+  padding: 3vh 2vw;
+}
+.findBoxEmail{
+  left: 38vw;
+  height: 10vh;
+  width: 20vw;
+}
+.findBoxPw{
+  left: 35vw;
+  height: 10vh;
+  width: 25vw;
+}
+.findEmail{
+  height: 5vh;
+  width: 15vw;
+  border-radius: 5px;
+  padding-left: 1vw;
+  margin-right: 0.5vw;
+}
+.findEmailBtn{
+  border-radius: 5px;
+  background: white;
+  cursor: pointer;
+  padding: 1vh 0.5vw;
+}
+.findEmailBtn:hover{
+  color: white;
+  background: rgb(153, 153, 218);
+}
+.findBoxClose{
+  position: absolute;
+  top: 2vh;
+  right: 1vw;
+  cursor: pointer;
 }
 </style>

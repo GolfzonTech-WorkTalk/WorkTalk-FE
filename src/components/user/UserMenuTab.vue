@@ -78,7 +78,7 @@ export default {
       this.$store.commit('setlogoutUser')
       deleteCookie('token')
       this.$store.dispatch('MENUTABCLOSE', false)
-      this.$router.push('/')
+      this.$router.push('/login')
     },
   },
 }

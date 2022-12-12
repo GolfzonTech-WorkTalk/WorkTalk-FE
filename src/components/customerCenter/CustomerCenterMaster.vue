@@ -2,13 +2,22 @@
   <div class="CCContainer">
     <div v-if="deleteCCNum != '답변삭제' || updateCCNum != '답변수정' || createCCNum != '답변작성'" class="backgroundCC" @click="deleteCCCancel" />
     <div class="SortCCBox">
-      <select v-model="CCtype" class="SortCCtype" @change="customerCenterCall()">
-        <option value="" hidden>
-          문의종류
-        </option>
-        <option v-for="item in CCtypeData" :key="item" :value="item.value">
+      <select v-model="memberType" class="SortCCtype" @change="memberTypeChenge()">
+        <option v-for="item in memberTypeData" :key="item" :value="item.value">
           {{ item.name }}
         </option>
+      </select>
+      <select v-model="CCtype" class="SortCCtype" @change="customerCenterCall()">
+        <template v-if="memberType == 'ROLE_USER'">
+          <option v-for="item in userTypeData" :key="item" :value="item.value">
+            {{ item.name }}
+          </option>
+        </template>
+        <template v-if="memberType == 'ROLE_HOST'">
+          <option v-for="item in hostTypeData" :key="item" :value="item.value">
+            {{ item.name }}
+          </option>       
+        </template>
       </select>
     </div>
     <div v-for="item in CCData" :key="item" class="CCitem">
@@ -72,10 +81,19 @@ export default {
   },
   data(){
     return {
-      CCtype:'',
-      CCtypeData: [
+      memberType:'ROLE_USER',
+      CCtype:'ACCOUNT',
+      memberTypeData: [
+        {'name':'이용자','value':'ROLE_USER'},
+        {'name':'공급자','value':'ROLE_HOST'},
+      ],
+      userTypeData: [
         {'name':'계정','value':'ACCOUNT'},
         {'name':'예약','value':'RESERVATION'},
+        {'name':'결제','value':'PAYMENT'},
+      ],
+      hostTypeData: [
+        {'name':'계정','value':'ACCOUNT'},
         {'name':'결제','value':'PAYMENT'},
         {'name':'공간','value':'SPACE'},
       ],
@@ -85,7 +103,6 @@ export default {
       createCCNum : '답변작성',
       content:'',
       ccContent:'',
-      memberType:'ROLE_HOST',
     }
   },
   created(){
@@ -102,6 +119,10 @@ export default {
         console.log(error)
       }
       this.$store.dispatch('SPINNERVIEW', false)
+    },
+    memberTypeChenge(){
+      this.CCtype = 'ACCOUNT'
+      this.customerCenterCall()
     },
     // 출력데이터 수정
     typeCheck(value){
@@ -207,6 +228,7 @@ export default {
   letter-spacing: 0.3rem;
   font-size: 1.1rem;
   font-weight: bold;
+  margin-left: 1vw;
 }
 /* 아이템 박스 틀 */
 .CCitem{

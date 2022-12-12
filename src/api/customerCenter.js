@@ -31,8 +31,12 @@ function cccommentDelete(CCId){
 }
 
 // 마이페이지에서 cc 리스트
-function mypageCCList(){
-  return posts.get('myCustomerCenter')
+function mypageCCList(searchccType){
+  return posts.get('myCustomerCenter',{
+    params:{
+      searchccType,
+    },
+  })
 }
 
 // 마스터페이지 cc 리스트

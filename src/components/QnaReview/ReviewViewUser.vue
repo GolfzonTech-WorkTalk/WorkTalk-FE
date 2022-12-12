@@ -23,7 +23,7 @@
             </div>
           </template>
           <template v-if="updateReviewNum == item.reviewId">
-            <form-review-update :item="item" @reviewupdate:close="deleteReviewCancel" />
+            <form-review-update :item="item" @reviewupdate:close="deleteReviewCancel" @reviewupdate:submit="reviewListCall" />
           </template>
           <p class="date">
             {{ dateCheck(item.lastModifiedDate) }}

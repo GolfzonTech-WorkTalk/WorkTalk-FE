@@ -84,7 +84,7 @@ export default {
     // API 호출
     async customerCenterCall(){
       try {
-        const response = await mypageCCList()
+        const response = await mypageCCList(this.CCtype)
         console.log(response)
         this.CCData = response.data
       } catch (error){
@@ -245,6 +245,7 @@ export default {
   padding: 0 0.5vw;
   color: white;
   margin-top: 3vh;
+  cursor: pointer;
 }
 /* 수정 */
 .updateBox{

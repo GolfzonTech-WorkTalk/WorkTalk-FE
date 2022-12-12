@@ -191,6 +191,7 @@ export default {
   font-weight: bold;
   color: rgba(0, 0, 0, 0.521);
   margin-left: 0.5vw;
+  width: 28vw;
 }
 /* 답변 */
 .hostAnswer{
