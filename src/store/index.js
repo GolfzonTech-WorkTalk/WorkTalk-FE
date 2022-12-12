@@ -82,7 +82,6 @@ export default createStore({
     },
     // 로그인 처리
     async LOGIN(context, loginData){
-    // LOGIN(context, loginData){
       console.log(loginData)
       try {
         const { data } = await loginMember(loginData) // api
@@ -96,24 +95,6 @@ export default createStore({
       } catch (error){
         console.log(error)
       }
-      // 유저더미
-      // const dumydata = {
-      //   "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiLsgqzsmqnsnpAiLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNjY5Mjg5MDc5fQ.6TrAQK1Ts5XFtwrwjTsFTrgdUk4BcwT8WNCt8GUaOrQJTRFzBy01ttkwJC0JbO2IZxr1eKh590bZbgeU151_-Q",
-      // }
-      // 호스트더미
-      // const dumydata = {
-      //   "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiLsgqzsmqnsnpAiLCJhdXRoIjoiUk9MRV9IT1NUIiwiZXhwIjoxNjY5Mjg5MDc5fQ.sVyrbk8A9lkSh_RCxWPKfBPtts3wrw6jaDZwyGy6UnPEcinXpPeQtJoDr5qq-0pY1SxDHTQ1EG3VIyNhZjRvEg",
-      // }
-      // 마스터더미
-      // const dumydata = {
-      //   "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiLsgqzsmqnsnpAiLCJhdXRoIjoiUk9MRV9NQVNURVIiLCJleHAiOjE2NjkyODkwNzl9.CljqifTj5RJ9A6vOex7YxYv2IYLPkiGnbQuZg8wKSCTkbSgS4AIs_UmE9gN0pZp15Fl9zfMiDBqfyOaVF9dVGg",
-      // }
-      // const decode = jwt_decode(dumydata.token)
-      // context.commit('setToken', dumydata.token)
-      // context.commit('setNickName', decode.sub)
-      // context.commit('setRole', decode.auth)
-      // saveTokenToCookie(dumydata.token)
-      // return dumydata
     },
     // 모달찰 끄기
     MODALVIEWCLICK(context, click){

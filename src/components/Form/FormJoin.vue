@@ -1,10 +1,8 @@
 <template>
   <form class="joinForm" @submit.prevent="joinCheck">
-    <div class="roleSelectBox" :class="(role=='0')?'selectRole':'noSelectRole'">
-      <span @click="roleSelect('0')">이용자</span>
-    </div>
-    <div class="roleSelectBox" :class="(role=='1')?'selectRole':'noSelectRole'">
-      <span class="roleHost" @click="roleSelect('1')">공급자</span>
+    <div class="roleSelectBox">
+      <span :class="(role=='0')?'selectRole':'noSelectRole'" @click="roleSelect('0')">이용자</span>
+      <span :class="(role=='1')?'selectRole':'noSelectRole'" @click="roleSelect('1')">공급자</span>
     </div>
     <div>
       <input v-model="email" class="emailBox joinFormItem" type="text" placeholder="이메일" @keyup="emailChange">
@@ -143,7 +141,11 @@ export default {
         }
         try {
           console.log(sendEmail)
+          this.$store.dispatch('SPINNERVIEW', true)
           let responce = await mailCheck(sendEmail)
+          let message = '이메일로 인증번호가 전송되었습니다.'
+          this.$store.dispatch('MODALVIEWCLICK', true)
+          this.$store.dispatch('MODALMESSAGE', message)
           console.log(responce)
           this.emailVeificaion = false
           this.emailVerificationCodeCheck = responce.data
@@ -153,7 +155,7 @@ export default {
           console.log(error)
           this.emailVerificationCodeCheck = error.request.status
         }
-        this.$store.dispatch('SPINNERVIEW')
+        this.$store.dispatch('SPINNERVIEW', false)
       }
     },
     // 비밀번호 일치여부 확인
@@ -252,25 +254,24 @@ export default {
   position: relative;
   background: white;
   border-radius: 15px;
-  height: 50vh;
-  width: 50vw;
-  padding: 5vw 3vw;
+  height: 63vh;
+  width: 45vw;
+  padding: 5vh 2.5vw;
   text-align: left;
 }
+.roleSelectBox {
+  margin-bottom: 2vh;
+}
 .roleSelectBox span {
-  position: absolute;
-  top: 3vh;
-  border: 1px solid gray;
-  border-radius: 10px;
-  padding: 0.3vw 1vw;
-  font-size: 1.3rem;
+  border: 2px solid gray;
+  border-radius: 20px;
+  padding: 0.3vw 3vw;
+  margin: 0 3.5vw;
   letter-spacing: 1rem;
+  font-size: 1.3rem;
   font-weight: bold;
   text-align: center;
   width: 20vw;
-}
-.roleHost{
-  margin-left: 25vw;
 }
 .selectRole span{
   color: white;
@@ -311,7 +312,7 @@ export default {
   background: rgb(103, 139, 218);
   color: white;
   letter-spacing: 1rem;
-  width: 50vw;
+  width: 45vw;
   cursor: pointer;
 }
 .warning {

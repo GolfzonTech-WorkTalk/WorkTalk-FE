@@ -19,6 +19,7 @@ export default {
 
 <style scoped>
 .loginPage {
+  position: relative;
   background: rgb(230, 230, 230);
   width: 100vw;
   height: 110vh;
