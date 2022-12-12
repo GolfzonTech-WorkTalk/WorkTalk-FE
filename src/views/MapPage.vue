@@ -73,7 +73,8 @@ export default {
       // 공간 검색 데이터
       this.cityAddressData = cityAddress
       const response = await spaceSearch(this.pageNum,this.spaceType,this.spaceName,this.address)
-      this.spaceItems = response.data
+      // console.log(response.data.data)
+      this.spaceItems = response.data.data
     } catch (error){
       console.log(error)
     }
@@ -192,7 +193,10 @@ export default {
       let infowindowArray = []
       for (let i = 0; i < this.spaceItems.length; i++){
         // 마커를 생성합니다
-        let addressData = this.spaceItems[i].address + this.spaceItems[i].detailAddress
+        let addressData = this.spaceItems[i].address
+        // if (this.spaceItems[i].detailAddress != null){
+        //   addressData = this.spaceItems[i].address +' '+ this.spaceItems[i].detailAddress
+        // }
         let coords = await this.getCoordsByAddress(addressData)
         let marker = new kakao.maps.Marker({
           map: this.map, // 마커를 표시할 지도
@@ -217,6 +221,7 @@ export default {
     },
     // 주소-좌표 변환 함수
     getCoordsByAddress(address){
+      console.log(address)
       let geocoder = new kakao.maps.services.Geocoder()
       return new Promise((resolve, reject) => {
         // 주소로 좌표를 검색합니다
@@ -225,6 +230,7 @@ export default {
           if (status === kakao.maps.services.Status.OK){
             var coords = new kakao.maps.LatLng(result[0].y, result[0].x)
             resolve(coords)
+            // console.log(coords)
             return
           }
           reject(new Error("getCoordsByAddress Error: not Vaild Address"))
@@ -239,8 +245,8 @@ export default {
         <a href="${this.itemLink(spaceItems.spaceName, spaceItems.spaceId, spaceItems.spaceType)}">
           <p>${spaceItems.spaceName}</p>
         </a>
-        <span class="kakaoInfoGrade">평점(${spaceItems.grade})</span>
-        <span class="kakaoInfoReview">리뷰(${spaceItems.review}건)</span>
+        <span class="kakaoInfoGrade">평점(${spaceItems.gradeAvg})</span>
+        <span class="kakaoInfoReview">리뷰(${spaceItems.count}건)</span>
         <p class="kakaoInfoAddress">${spaceItems.address+spaceItems.detailAddress}</p>
       </div>
       `

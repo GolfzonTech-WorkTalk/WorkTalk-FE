@@ -218,7 +218,7 @@ export default {
       return false
     },
     reviewPossible(item){
-      if (item.reserveStatus == 'END'){
+      if (item.reserveStatus == 'USED'){
         return true
       } 
       return false
@@ -290,6 +290,7 @@ export default {
         this.reserveId = item.reserveId
       }
       this.background = true
+      this.reservationDataCall(this.pageNowNum)
     },
     boxClose(){
       this.cancelIndex = '취소'

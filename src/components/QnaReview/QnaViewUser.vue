@@ -49,9 +49,9 @@
 </template>
 
 <script>
-import {qnaDelete} from '@/api/QnA.js'
+import {mypageQnAList, qnaDelete} from '@/api/QnA.js'
 import FormQnAupdate from '@/components/Form/FormQnAupdate.vue'
-import { QnAdummy } from '@/utils/dummy/QnAReviewdummy.js'
+// import { QnAdummy } from '@/utils/dummy/QnAReviewdummy.js'
 export default {
   components: {
     FormQnAupdate,
@@ -74,8 +74,9 @@ export default {
   },
   methods: {
     async qnaListCall(){
-      const response = await QnAdummy
-      this.QnAList = response
+      // const response = await QnAdummy
+      const response = await mypageQnAList()
+      this.QnAList = response.data
       this.$store.dispatch('SPINNERVIEW', false)
     },
     typeCheck(value){
@@ -87,10 +88,19 @@ export default {
         return '이용'
       }
     },
-    dateCheck(value){
-      let date = value.slice(0,10)
-      let time = value.slice(11,16)
-      return `${date} ${time}`
+    dateCheck(dateData){
+      let year = dateData[0]
+      let month = dateData[1]
+      let date = dateData[2]
+      let hour = dateData[3]
+      let minute = dateData[4]
+      if (hour < 10){
+        hour = '0'+hour
+      }
+      if (minute < 10){
+        minute = '0'+minute
+      }
+      return year+'-'+month+'-'+date+' '+hour+':'+minute
     },
     deleteQnA(item){
       this.deleteQnANum = item.qnaId
@@ -106,6 +116,8 @@ export default {
       try {
         let response = await qnaDelete(item.qnaId)
         console.log(response)
+        this.qnaListCall()
+        this.deleteQnACancel()
       } catch (error){
         console.log(error)
       }

@@ -29,7 +29,7 @@ export default {
       typeData: [
         {'name':'예약관련','value':'RESERVE'},
         {'name':'결제관련','value':'PAY'},
-        {'name':'이용관련','value':'USING'},
+        {'name':'이용관련','value':'USE'},
       ],
       // 제출데이터
       spaceId : this.$route.params.spaceId,
@@ -51,6 +51,7 @@ export default {
       try {
         let response = await qnaCreate(qnaData)
         console.log(response)
+        this.emitClose()
       } catch (error){
         console.log(error)
       }

@@ -23,29 +23,29 @@
       <div class="updateDeleteBox">
         <i class="fa-solid fa-pen-to-square" @click="updateCC(item)" />
         <i class="fa-solid fa-trash" @click="deleteCC(item)" />
-        <template v-if="deleteCCNum == item.cc_id">
+        <template v-if="deleteCCNum == item.ccId">
           <div class="deleteBox">
             <p>해당 문의를 삭제하시겠습니까?</p>
-            <span class="deleteBtn deleteCCDo" @click="deleteCCCancel(item)">삭 제</span>
+            <span class="deleteBtn deleteCCDo" @click="deleteCCSubmit(item)">삭 제</span>
             <span class="deleteBtn deleteCCCancel" @click="deleteCCCancel">취 소</span>
           </div>
         </template>
-        <template v-if="(updateCCNum == item.cc_id)">
+        <template v-if="(updateCCNum == item.ccId)">
           <FormCCupdate :item="item" @c-c:close="deleteCCCancel" />
         </template>
         <p class="CCdate">
-          {{ dateCheck(item.cc_date) }}
+          {{ dateCheck(item.lastModifiedDate) }}
         </p>
       </div>
       <div class="contentBox">
         <p>{{ item.content }}</p>
       </div>
-      <div v-if="item.CCcomment != ''" class="masterAnswer">
+      <div v-if="item.ccContent != null" class="masterAnswer">
         <img src="@/assets/down-right.png" class="answerArrow">
         <span class="answerTitle">마스터의 답글</span>
-        <span class="CCdate">{{ dateCheck(item.qclastModifiedDate) }}</span>
+        <span class="CCdate">{{ dateCheck(item.ccLastModifiedDate) }}</span>
         <p class="CCcontent">
-          {{ item.CCcomment }}
+          {{ item.ccContent }}
         </p>
       </div>
     </div>
@@ -53,8 +53,8 @@
 </template>
 
 <script>
-import {CCDelete} from '@/api/customerCenter.js'
-import {customerCenterDummy} from '@/utils/dummy/customerCenterDummy.js'
+import {ccDelete, mypageCCList} from '@/api/customerCenter.js'
+// import {customerCenterDummy} from '@/utils/dummy/customerCenterDummy.js'
 import FormCCcreate from '../Form/FormCCcreate.vue'
 import FormCCupdate from '../Form/FormCCupdate.vue'
 export default {
@@ -83,7 +83,14 @@ export default {
   methods: {
     // API 호출
     async customerCenterCall(){
-      this.CCData = customerCenterDummy
+      try {
+        const response = await mypageCCList()
+        console.log(response)
+        this.CCData = response.data
+      } catch (error){
+        console.log(error)
+      }
+      this.$store.dispatch('SPINNERVIEW', false)
     },
     // 출력데이터 수정
     typeCheck(value){
@@ -96,16 +103,24 @@ export default {
       }
     },
     dateCheck(value){
-      let date = value.slice(0,10)
-      let time = value.slice(11,16)
+      let date = value[0]+'-'+value[1]+'-'+value[2]
+      let hour = value[3]
+      let minute = value[3]
+      if (hour < 10){
+        hour = '0'+hour
+      }
+      if (minute < 10){
+        minute = '0'+minute
+      }
+      let time = hour+':'+minute
       return `${date} ${time}`
     },
     // 삭제수정작성
     deleteCC(item){
-      this.deleteCCNum = item.cc_id
+      this.deleteCCNum = item.ccId
     },
     updateCC(item){
-      this.updateCCNum = item.cc_id
+      this.updateCCNum = item.ccId
       this.content = item.content
     },
     createCC(){
@@ -115,11 +130,13 @@ export default {
       this.deleteCCNum = '문의삭제'
       this.updateCCNum = '문의수정'
       this.createCCNum = '문의작성'
+      this.customerCenterCall()
     },
-    async deleteQnASubmit(item){
+    async deleteCCSubmit(item){
       try {
-        let response = await CCDelete(item.cc_id)
+        let response = await ccDelete(item.ccId)
         console.log(response)
+        this.deleteCCCancel()
       } catch (error){
         console.log(error)
       }

@@ -1,20 +1,24 @@
 import { instance, posts } from "./index"
 
 // 전체공간조회
-function spaceSearch(pageNum,searchSpaceType,searchSpaceName,searchAddress){
+function spaceSearch(pageNum,searchSpaceType,searchSpaceName,searchAddress,searchStartDate,searchEndDate,searchStartTime,searchEndTime){
   return instance.get('main',{
     params:{
       pageNum,
       searchSpaceType,
       searchSpaceName,
       searchAddress,
+      searchStartDate,
+      searchEndDate,
+      searchStartTime,
+      searchEndTime,
     },
   })
 }
 
 // 공간조회
 function spaceOne(spaceId){
-    return instance.get('spaceOne/'+spaceId+'/rooms')
+    return instance.get('spaceOne/'+spaceId)
 }
 
 // 룸조회

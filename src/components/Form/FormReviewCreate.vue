@@ -16,7 +16,7 @@
 </template>
 
 <script>
-// import {reviewCreate} from '@/api/review.js'
+import {reviewCreate} from '@/api/review.js'
 export default {
   props: {
     reserveId: {
@@ -64,22 +64,19 @@ export default {
       }
     },
     async reviewSubmit(){
-      this.reviewSubmitCheck()
       let reviewData = {
-        reviewContent:this.reviewContent,
-        grade:this.grade,
-        reserveId: this.reserveId,
+        'reserveId': this.reserveId,
+        'content':this.reviewContent,
+        'grade':this.grade,
       }
       console.log(reviewData)
-      this.$emit('box-close:box-close-click')
-      /*
       try {
         let response = await reviewCreate(reviewData)
         console.log(response)
       } catch (error){
         console.log(error)
       }
-      */
+      this.$emit('box-close:box-close-click')
     },
   },
 }

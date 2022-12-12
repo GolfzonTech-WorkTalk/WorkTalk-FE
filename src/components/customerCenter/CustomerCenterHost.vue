@@ -23,14 +23,14 @@
       <div class="updateDeleteBox">
         <i class="fa-solid fa-pen-to-square" @click="updateCC(item)" />
         <i class="fa-solid fa-trash" @click="deleteCC(item)" />
-        <template v-if="deleteCCNum == item.cc_id">
+        <template v-if="deleteCCNum == item.ccId">
           <div class="deleteBox">
             <p>해당 문의를 삭제하시겠습니까?</p>
             <span class="deleteBtn deleteCCDo" @click="deleteCCCancel(item)">삭 제</span>
             <span class="deleteBtn deleteCCCancel" @click="deleteCCCancel">취 소</span>
           </div>
         </template>
-        <template v-if="(updateCCNum == item.cc_id)">
+        <template v-if="(updateCCNum == item.ccId)">
           <FormCCupdate :item="item" @c-c:close="deleteCCCancel" />
         </template>
         <p class="CCdate">
@@ -53,8 +53,8 @@
 </template>
 
 <script>
-import {CCDelete} from '@/api/customerCenter.js'
-import {customerCenterDummy} from '@/utils/dummy/customerCenterDummy.js'
+import {ccDelete, mypageCCList} from '@/api/customerCenter.js'
+// import {customerCenterDummy} from '@/utils/dummy/customerCenterDummy.js'
 import FormCCcreate from '../Form/FormCCcreate.vue'
 import FormCCupdate from '../Form/FormCCupdate.vue'
 export default {
@@ -83,7 +83,14 @@ export default {
   methods: {
     // API 호출
     async customerCenterCall(){
-      this.CCData = customerCenterDummy
+      try {
+        const response = mypageCCList()
+        console.log(response)
+        this.CCData = response.data
+      } catch (error){
+        console.log(error)
+      }
+      this.$store.dispatch('SPINNERVIEW', false)
     },
     // 출력데이터 수정
     typeCheck(value){
@@ -102,10 +109,10 @@ export default {
     },
     // 삭제수정작성
     deleteCC(item){
-      this.deleteCCNum = item.cc_id
+      this.deleteCCNum = item.ccId
     },
     updateCC(item){
-      this.updateCCNum = item.cc_id
+      this.updateCCNum = item.ccId
       this.content = item.content
     },
     createCC(){
@@ -118,7 +125,7 @@ export default {
     },
     async deleteQnASubmit(item){
       try {
-        let response = await CCDelete(item.cc_id)
+        let response = await ccDelete(item.ccId)
         console.log(response)
       } catch (error){
         console.log(error)

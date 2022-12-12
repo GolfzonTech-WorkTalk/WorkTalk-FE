@@ -1,40 +1,57 @@
 import { posts } from "./index"
 
-// QnA작성
-function CCCreate(CCData){
-  return posts.get('CCCreate', CCData)
+// cc작성
+function ccCreate(CCData){
+  return posts.post('ccCreate', CCData)
 }
 
-// QnA수정
-function CCUpdata(CCId, CCUpdataData){
-  return posts.get('CCUpdate/'+{CCId}, CCUpdataData)
+// cc수정
+function ccUpdata(CCId, CCUpdataData){
+  return posts.post('ccUpdate/'+CCId, CCUpdataData)
 }
 
-// QnA삭제
-function CCDelete(CCId){
-  return posts.get('CCDelete/'+{CCId})
+// cc삭제
+function ccDelete(CCId){
+  return posts.delete('ccDelete/'+CCId)
 }
 
-// QnA 답글작성
-function CCcommentCreate(CCCommentData){
-  return posts.get('CCcommentCreate', CCCommentData)
+// cc 답글작성
+function cccommentCreate(CCCommentData){
+  return posts.post('customercommentCreate', CCCommentData)
 }
 
-// QnA 답글수정
-function CCcommentUpdate(CCId, CCCommentData){
-  return posts.get('CCcommentUpdate'+'/'+CCId, CCCommentData)
+// cc 답글수정
+function cccommentUpdate(CCId, CCCommentData){
+  return posts.post('customercommentUpdate/'+CCId, CCCommentData)
 }
 
-// 마이페이지에서 QnA 리스트
-function mypageReviewList(){
-  return posts.get('myCCs')
+// cc 답글삭제
+function cccommentDelete(CCId){
+  return posts.delete('customercommentDelete/'+CCId)
+}
+
+// 마이페이지에서 cc 리스트
+function mypageCCList(){
+  return posts.get('myCustomerCenter')
+}
+
+// 마스터페이지 cc 리스트
+function masterCCList(searchMemberType, searchccType){
+  return posts.get('customerCenter', {
+    params:{
+      searchMemberType,
+      searchccType,
+    },
+  })
 }
 
 export {
-  CCCreate,
-  CCUpdata,
-  CCDelete,
-  CCcommentCreate,
-  CCcommentUpdate,
-  mypageReviewList,
+  ccCreate,
+  ccUpdata,
+  ccDelete,
+  cccommentCreate,
+  cccommentUpdate,
+  mypageCCList,
+  cccommentDelete,
+  masterCCList,
 }

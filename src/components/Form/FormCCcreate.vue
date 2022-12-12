@@ -9,7 +9,7 @@
           {{ item.name }}
         </option>
       </select>
-      <p class="contentCount" :class="(title.length > 100)?'warning':''">
+      <p class="contentCount" :class="(title.length > 20)?'warning':''">
         {{ title.length }}/20자
       </p>
       <input v-model="title" class="CCtitle" type="text" placeholder="문의제목을 작성해주세요.">
@@ -18,13 +18,13 @@
       </p>
       <textarea v-model="content" class="CCcontent" placeholder="문의내용을 작성해주세요." />
       <span class="CCbtn" @click="emitClose(false)">닫기</span>
-      <span class="CCbtn" @click="CCCreate">작성</span>
+      <span class="CCbtn" @click="ccCreateCheck">작성</span>
     </div>
   </div>
 </template>
 
 <script>
-import {CCCreate} from '@/api/customerCenter.js'
+import {ccCreate} from '@/api/customerCenter.js'
 export default {
   emits: [ 'CC:close' ],
   data(){
@@ -44,41 +44,48 @@ export default {
     emitClose(value){
       this.$emit('CC:close', value)
     },
-    async CCCreate(){
+    ccCreateCheck(){
+      let message
       if (this.type == '문의종류'){
-        let message = '문의종류를 선택해 주세요.'
+        message = '문의종류를 선택해 주세요.'
         this.$store.dispatch('MODALVIEWCLICK', true)
         this.$store.dispatch('MODALMESSAGE', message)
       } else if (this.title.length == ''){
-        let message = '문의제목이 없습니다.'
+        message = '문의제목이 없습니다.'
         this.$store.dispatch('MODALVIEWCLICK', true)
         this.$store.dispatch('MODALMESSAGE', message)
       } else if (this.title.length > 20){
-        let message = '문의제목이 20자를 초과하였습니다.'
+        message = '문의제목이 20자를 초과하였습니다.'
         this.$store.dispatch('MODALVIEWCLICK', true)
         this.$store.dispatch('MODALMESSAGE', message)
-      } else if (this.contentCount.length == ''){
-        let message = '문의내용이 없습니다.'
+      } else if (this.content.length == ''){
+        message = '문의내용이 없습니다.'
         this.$store.dispatch('MODALVIEWCLICK', true)
         this.$store.dispatch('MODALMESSAGE', message)
-      } else if (this.contentCount.length > 100){
-        let message = '문의내용이 100자를 초과하였습니다.'
+      } else if (this.content.length > 100){
+        message = '문의내용이 100자를 초과하였습니다.'
         this.$store.dispatch('MODALVIEWCLICK', true)
         this.$store.dispatch('MODALMESSAGE', message)
       } else {
-        const CCData = {
-          'type': this.type,
-          'title':this.title,
-          'content': this.content,
-        }
-        console.log(CCData)
-        try {
-          let response = await CCCreate(CCData)
-          console.log(response)
+        console.log('실행')
+        this.ccCreate()
+      }
+    },
+    async ccCreate(){
+      const CCData = {
+        'type': this.type,
+        'title':this.title,
+        'content': this.content,
+      }
+      console.log(CCData)
+      try {
+        let response = await ccCreate(CCData)
+        console.log(response)
+        if (response.status == 200){
           this.emitClose(false)
-        } catch (error){
-          console.log(error)
         }
+      } catch (error){
+        console.log(error)
       }
     },
   },

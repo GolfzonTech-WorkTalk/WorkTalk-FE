@@ -2,7 +2,7 @@
   <div class="ReviewContainer">
     <div v-for="item in ReviewList" :key="item" class="Reviewitem">
       <div>
-        <span class="spacetypelabel" :class="item.spacetype">{{ spacetypeCheck(item.spacetype) }}</span>
+        <span class="spacetypelabel">{{ item.memberId }}</span>
         <span class="roomName">{{ item.roomName }}</span>
         <div class="gradeBox">
           <i v-for="gradeitem in gradeCheck(item.grade)" :key="gradeitem" :class="gradeitem.star" />
@@ -21,10 +21,9 @@
 </template>
 
 <script>
-import { ReviewDummy } from '@/utils/dummy/QnAReviewdummy.js'
+// import { ReviewDummy } from '@/utils/dummy/QnAReviewdummy.js'
+import {spaceReviewList} from '@/api/review.js'
 export default {
-  components: {
-  },
   data(){
     return {
       ReviewList: [],
@@ -40,11 +39,18 @@ export default {
     }
   },
   created(){
-    this.ReviewList = ReviewDummy
+    this.spaceReviewListCall()
   },
   methods: {
-    testRangeCheck(value){
-      console.log(value)
+    async spaceReviewListCall(){
+      const spaceId = this.$route.params.spaceId
+      try {
+        const response = await spaceReviewList(spaceId)
+        // console.log(response)
+        this.ReviewList = response.data
+      } catch (error){
+        console.log(error)
+      }
     },
     gradeCheck(grade){
       let starData = []
@@ -67,8 +73,16 @@ export default {
       }
     },
     dateCheck(value){
-      let date = value.slice(0,10)
-      let time = value.slice(11,16)
+      let date = value[0]+'-'+value[1]+'-'+value[2]
+      let hour = value[3]
+      let minute = value[3]
+      if (hour < 10){
+        hour = '0'+hour
+      }
+      if (minute < 10){
+        minute = '0'+minute
+      }
+      let time = hour+':'+minute
       return `${date} ${time}`
     },
   },
@@ -123,22 +137,5 @@ export default {
 }
 .fa-trash:hover{
   color: red;
-}
-.spacetypelabel{
-  border-radius: 10px;
-  color: white;
-  font-size: 0.8rem;
-  width: 4vw;
-  padding: 0 0.5vw;
-  margin-right: 0.5vw;
-}
-.DESK{
-  background: rgba(218, 166, 54, 0.527);
-}
-.OFFICE{
-  background: rgba(4, 90, 4, 0.527);
-}
-.MEETING4, .MEETING6, .MEETING8, .MEETING20{
-  background: rgba(9, 44, 139, 0.527);
 }
 </style>

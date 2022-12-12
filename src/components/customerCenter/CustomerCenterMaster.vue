@@ -2,8 +2,8 @@
   <div class="CCContainer">
     <div v-if="deleteCCNum != '답변삭제' || updateCCNum != '답변수정' || createCCNum != '답변작성'" class="backgroundCC" @click="deleteCCCancel" />
     <div class="SortCCBox">
-      <select v-model="CCtype" class="SortCCtype" @change="CCDataCall()">
-        <option value="문의종류" hidden>
+      <select v-model="CCtype" class="SortCCtype" @change="customerCenterCall()">
+        <option value="" hidden>
           문의종류
         </option>
         <option v-for="item in CCtypeData" :key="item" :value="item.value">
@@ -18,42 +18,42 @@
       </div>
       <div class="updateDeleteBox">
         <p class="CCdate">
-          {{ dateCheck(item.cc_date) }}
+          {{ dateCheck(item.lastModifiedDate) }}
         </p>
       </div>
       <div class="contentBox">
         <p>{{ item.content }}</p>
       </div>
-      <div v-if="item.CCcomment != ''" class="masterAnswer">
+      <div v-if="item.ccContent != null" class="masterAnswer">
         <img src="@/assets/down-right.png" class="answerArrow">
         <span class="answerTitle">마스터의 답글</span>
-        <span class="CCdate">{{ dateCheck(item.qclastModifiedDate) }}</span>
+        <span class="CCdate">{{ dateCheck(item.ccLastModifiedDate) }}</span>
         <p class="CCcontent">
-          {{ item.CCcomment }}
+          {{ item.ccContent }}
         </p>
         <i class="fa-solid fa-pen-to-square updateI" @click="updateCC(item)" />
         <i class="fa-solid fa-trash deleteI" @click="deleteCC(item)" />
-        <template v-if="deleteCCNum == item.cc_id">
+        <template v-if="deleteCCNum == item.ccId">
           <div class="deleteBox">
             <p>답변을 삭제하시겠습니까?</p>
-            <span class="deleteBtn deleteCCDo" @click="deleteQnASubmit(item)">삭 제</span>
+            <span class="deleteBtn deleteCCDo" @click="deleteCCSubmit(item)">삭 제</span>
             <span class="deleteBtn deleteCCCancel" @click="deleteCCCancel">취 소</span>
           </div>
         </template>
-        <template v-if="(updateCCNum == item.cc_id)">
+        <template v-if="(updateCCNum == item.ccId)">
           <FormCCupdate :item="item" @c-c:close="deleteCCCancel" />
         </template>
       </div>
       <div v-else>
-        <span class="CCcommentCreateBtn" @click="createCC(item)">답변작성</span>
-        <template v-if="createCCNum == item.cc_id">
-          <div class="CCcommentCreateBox">
+        <span class="ccContentCreateBtn" @click="createCC(item)">답변작성</span>
+        <template v-if="createCCNum == item.ccId">
+          <div class="ccContentCreateBox">
             <span>답글작성</span>
-            <span class="contentCount" :class="(CCcomment.length > 100)?'warning':''">
-              {{ CCcomment.length }}/100자
+            <span class="contentCount" :class="(ccContent.length > 100)?'warning':''">
+              {{ ccContent.length }}/100자
             </span>
-            <textarea v-model="CCcomment" class="qnacommentBox" placeholder="답변을 작성해주세요." />
-            <span class="createBtn createQnADo" @click="createCCcommentSubmit(item)">작 성</span>
+            <textarea v-model="ccContent" class="qnacommentBox" placeholder="답변을 작성해주세요." />
+            <span class="createBtn createQnADo" @click="createccContentSubmit(item)">작 성</span>
             <span class="createBtn createQnACancel" @click="deleteCCCancel">취 소</span>
           </div>
         </template>
@@ -63,8 +63,8 @@
 </template>
 
 <script>
-import {CCDelete} from '@/api/customerCenter.js'
-import {customerCenterDummy} from '@/utils/dummy/customerCenterDummy.js'
+import {cccommentCreate, cccommentDelete, masterCCList} from '@/api/customerCenter.js'
+// import {customerCenterDummy} from '@/utils/dummy/customerCenterDummy.js'
 import FormCCupdate from '../Form/FormCCupdate.vue'
 export default {
   components: {
@@ -72,18 +72,20 @@ export default {
   },
   data(){
     return {
-      CCtype:'문의종류',
+      CCtype:'',
       CCtypeData: [
         {'name':'계정','value':'ACCOUNT'},
         {'name':'예약','value':'RESERVATION'},
         {'name':'결제','value':'PAYMENT'},
+        {'name':'공간','value':'SPACE'},
       ],
       CCData:[],
       deleteCCNum : '답변삭제',
       updateCCNum : '답변수정',
       createCCNum : '답변작성',
       content:'',
-      CCcomment:'',
+      ccContent:'',
+      memberType:'ROLE_HOST',
     }
   },
   created(){
@@ -92,7 +94,14 @@ export default {
   methods: {
     // API 호출
     async customerCenterCall(){
-      this.CCData = customerCenterDummy
+      try {
+        const response = await masterCCList(this.memberType, this.CCtype)
+        console.log(response.data)
+        this.CCData = response.data
+      } catch (error){
+        console.log(error)
+      }
+      this.$store.dispatch('SPINNERVIEW', false)
     },
     // 출력데이터 수정
     typeCheck(value){
@@ -105,29 +114,38 @@ export default {
       }
     },
     dateCheck(value){
-      let date = value.slice(0,10)
-      let time = value.slice(11,16)
+      let date = value[0]+'-'+value[1]+'-'+value[2]
+      let hour = value[3]
+      let minute = value[3]
+      if (hour < 10){
+        hour = '0'+hour
+      }
+      if (minute < 10){
+        minute = '0'+minute
+      }
+      let time = hour+':'+minute
       return `${date} ${time}`
     },
     // 삭제수정작성
     deleteCC(item){
-      this.deleteCCNum = item.cc_id
+      this.deleteCCNum = item.ccId
     },
     updateCC(item){
-      this.updateCCNum = item.cc_id
+      this.updateCCNum = item.ccId
       this.content = item.content
     },
     createCC(item){
-      this.createCCNum = item.cc_id
+      this.createCCNum = item.ccId
     },
     deleteCCCancel(){
       this.deleteCCNum = '답변삭제'
       this.updateCCNum = '답변수정'
       this.createCCNum = '답변작성'
+      this.customerCenterCall()
     },
-    async deleteQnASubmit(item){
+    async deleteCCSubmit(item){
       try {
-        let response = await CCDelete(item.cc_id)
+        let response = await cccommentDelete(item.ccId)
         console.log(response)
         this.deleteCCCancel()
         this.customerCenterCall()
@@ -135,22 +153,23 @@ export default {
         console.log(error)
       }
     },
-    async createCCcommentSubmit(item){
-      if (this.qnacomment.length == ''){
+    async createccContentSubmit(item){
+      if (this.ccContent.length == ''){
         let message = '답글 내용이 없습니다.'
         this.$store.dispatch('MODALVIEWCLICK', true)
         this.$store.dispatch('MODALMESSAGE', message)
-      } else if (this.qnacomment.length > 100){
+      } else if (this.ccContent.length > 100){
         let message = '답글이 100자를 초과하였습니다.'
         this.$store.dispatch('MODALVIEWCLICK', true)
         this.$store.dispatch('MODALMESSAGE', message)
       } else {
-        const CCcommentData = {
-          cc_id:item.cc_id,
-          CCcomment:this.CCcomment,
+        const ccContentData = {
+          'ccId':item.ccId,
+          'content':this.ccContent,
         }
+        console.log(ccContentData)
         try {
-          let response = await CCDelete(CCcommentData)
+          let response = await cccommentCreate(ccContentData)
           console.log(response)
           this.deleteCCCancel()
           this.customerCenterCall()
@@ -313,7 +332,7 @@ export default {
   right: 0vw;
 }
 /* 답변작성 */
-.CCcommentCreateBtn{
+.ccContentCreateBtn{
   position: absolute;
   bottom: 1vh;
   right: 1vw;
@@ -323,7 +342,7 @@ export default {
   padding: 0 0.5vw;
   cursor: pointer;
 }
-.CCcommentCreateBox{
+.ccContentCreateBox{
   position: absolute;
   top: 0vh;
   left: 10vw;

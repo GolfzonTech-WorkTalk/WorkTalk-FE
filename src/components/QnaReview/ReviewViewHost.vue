@@ -2,7 +2,7 @@
   <div class="ReviewContainer">
     <div v-if="deleteReviewNum != '후기삭제' || updateReviewNum != '후기수정'" class="backgroundReview" @click="deleteReviewCancel" />
     <div class="ReviewTitle">
-      <select v-model="sortSpace" class="sortBox" @change="ReviewDataCall()">
+      <select v-model="sortSpace" class="sortBox" @change="reviewListCall()">
         <option value="" hidden>
           공간종류
         </option>
@@ -33,8 +33,8 @@
 </template>
 
 <script>
-import {reviewDelete} from '@/api/review.js'
-import { ReviewDummy } from '@/utils/dummy/QnAReviewdummy.js'
+import {mypageReviewList} from '@/api/review.js'
+// import { ReviewDummy } from '@/utils/dummy/QnAReviewdummy.js'
 export default {
   data(){
     return {
@@ -43,8 +43,9 @@ export default {
       sortSpaceData:[
         // api로 받아야 함...
         {'name':'전 체','value':''},
-        {'name':'데스크','value':'DESK'},
-        {'name':'오피스','value':'OFFICE'},
+        {'name':'오피스','value':'1'},
+        {'name':'데스크','value':'2'},
+        {'name':'회의실','value':'3'},
       ],
       Reviewtype:'문의종류',
       deleteReviewNum:'후기삭제',
@@ -57,22 +58,10 @@ export default {
   },
   methods: {
     async reviewListCall(){
-      const response = await ReviewDummy
-      this.ReviewList = response
+      // const response = await ReviewDummy
+      const response = await mypageReviewList()
+      this.ReviewList = response.data
       this.$store.dispatch('SPINNERVIEW', false)
-    },
-    //데이터 API로 불러오기
-    async ReviewDataCall(pageNowNum){
-      let sortSpace
-      if (this.sortSpace != ''){
-        sortSpace = this.sortSpace
-      }
-      console.log(pageNowNum, sortSpace)
-      this.reservationData = ReviewDummy
-      /*
-      let response = await reservationData(pageNowNum)
-      this.reservationData = response.data
-      */
     },
     testRangeCheck(value){
       console.log(value)
@@ -97,10 +86,19 @@ export default {
         return '회의실'
       }
     },
-    dateCheck(value){
-      let date = value.slice(0,10)
-      let time = value.slice(11,16)
-      return `${date} ${time}`
+    dateCheck(dateData){
+      let year = dateData[0]
+      let month = dateData[1]
+      let date = dateData[2]
+      let hour = dateData[3]
+      let minute = dateData[4]
+      if (hour < 10){
+        hour = '0'+hour
+      }
+      if (minute < 10){
+        minute = '0'+minute
+      }
+      return year+'-'+month+'-'+date+' '+hour+':'+minute
     },
     deleteReview(item){
       this.deleteReviewNum = item.reviewId
@@ -112,14 +110,14 @@ export default {
       this.deleteReviewNum = '후기삭제'
       this.updateReviewNum = '후기수정'
     },
-    async deleteReviewSubmit(item){
-      try {
-        let response = await reviewDelete(item.qnaId)
-        console.log(response)
-      } catch (error){
-        console.log(error)
-      }
-    },
+    // async deleteReviewSubmit(item){
+    //   try {
+    //     let response = await reviewDelete(item.qnaId)
+    //     console.log(response)
+    //   } catch (error){
+    //     console.log(error)
+    //   }
+    // },
   },
 }
 </script>
