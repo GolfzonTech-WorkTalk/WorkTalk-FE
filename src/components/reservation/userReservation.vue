@@ -60,7 +60,9 @@
             <span class="closeBtn" @click="boxClose()">닫기</span>
           </div>
         </template>
-        <span v-if="reviewPossible(item)" class="reviewBtn" @click="boxOpen('review', index, item)">후기작성</span>
+        <template v-if="reviewPossible(item)">
+          <span class="reviewBtn" @click="boxOpen('review', index, item)">후기작성</span>
+        </template>
         <template v-if="reviewIndex == index">
           <form-review :reserve-id="reserveId" @box-close:box-close-click="boxClose" />
         </template>
@@ -89,16 +91,15 @@ export default {
       reservationData: [],
       // 정렬데이터
       sortReserveStatusData: [
-        {'name':'전 체','value':''},
-        {'name':'예약완료','value':'DEPOSIT'},
+        {'name':'전 체','value':'예약상태'},
+        {'name':'예약완료','value':'BOOKED'},
         {'name':'이용완료','value':'USED'},
         {'name':'이용자취소','value':'CANCELED_BY_USER'},
         {'name':'사용자취소','value':'CANCELED_BY_HOST'},
         {'name':'노쇼','value':'NOSHOW'},
-        {'name':'취소/환불','value':'REFUND'},
       ],
       sortSpaceTypeData: [
-        {'name':'전 체','value':''},
+        {'name':'전 체','value':'공간종류'},
         {'name':'오피스','value':'1'},
         {'name':'데스크','value':'2'},
         {'name':'회의실','value':'3'},
@@ -219,7 +220,11 @@ export default {
     },
     reviewPossible(item){
       if (item.reserveStatus == 'USED'){
-        return true
+        if (item.reviewId != null){
+          return false
+        } else {
+          return true
+        }
       } 
       return false
     },

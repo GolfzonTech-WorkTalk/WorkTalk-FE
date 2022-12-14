@@ -6,7 +6,7 @@
         <span>프로필 관리</span>
       </div>
       <div>
-        <profile-view />
+        <profile-view @member-id:call="memberIdCall" />
       </div>
       <div class="goodByeBox">
         <span class="goodByeBtn" @click="goodByeWorkTalk">탈퇴하기</span>
@@ -20,18 +20,20 @@
         <p class="goodByeExplain">
           탈퇴하실 경우 기존에 이용한 모든 데이터는 삭제됩니다
         </p>
-        <P class="goodByeCancel" @click="goodByeWorkTalkCancel">
+        <p class="goodByeCancel" @click="goodByeWorkTalkCancel">
           아니요
-        </P>
-        <P class="goodByeDone" @click="goodByeWorkTalkDone">
+        </p>
+        <p class="goodByeDone" @click="goodByeWorkTalkDone">
           예,탈퇴하겠습니다
-        </P>
+        </p>
       </div>
     </template>
   </div>
 </template>
 
 <script>
+import { deleteCookie } from '@/utils/cookies'
+import {memberLeave} from '@/api/auth.js'
 import ProfileView from '@/components/profile/profileView.vue'
 export default {
   components: {
@@ -40,9 +42,13 @@ export default {
   data(){
     return {
       goodByeView:false,
+      memberId:'',
     }
   },
   methods: {
+    memberIdCall(memberId){
+      this.memberId = memberId
+    },
     goodByeWorkTalk(){
       this.goodByeView = true
     },
@@ -50,7 +56,22 @@ export default {
       this.goodByeView = false
     },
     async goodByeWorkTalkDone(){
-      
+      try {
+        const response = await memberLeave(this.memberId)
+        // console.log(response)
+        if (response.status == 200){
+          this.$store.commit('setlogoutUser')
+          deleteCookie('token')
+          deleteCookie('email')
+          deleteCookie('userType')
+          let message = '회원 탈퇴처리가 완료되었습니다.'
+          this.$store.dispatch('MODALVIEWCLICK', true)
+          this.$store.dispatch('MODALMESSAGE', message)
+          this.$router.push('/')
+        }
+      } catch (error){
+        console.log(error)
+      }
     },
   },
 }

@@ -1,5 +1,11 @@
 export default [
   {
+    path: '/masterJoin',
+    name: 'masterJoin',
+    component: () => import('@/views/JoinPage.vue'),
+    meta: {auth:true},
+  },
+  {
     path: '/master',
     name: 'masterPage',
     component: () => import('@/views/masterView/masterMain.vue'),

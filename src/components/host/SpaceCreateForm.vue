@@ -37,10 +37,18 @@
         <span>사업자번호</span><br>
         <input v-model="regCode" class="inputBox" maxlength="12" type="text" placeholder="사업자번호" @keypress="regCodeKeypress">
       </div>
-      <div class="spaceImg boxName">
-        <span>공간대표사진</span>
-        <label for="imgBtn" class="imgBtn">사진등록</label>
-        <input id="imgBtn" ref="spaceImg" type="file" multiple accept="image/*" hidden @change="fileUpload($event)">
+      <span class="boxName">공간사진등록</span>
+      <div class="imgBox">
+        <div v-if="!spaceImg.length" class="spaceImg">
+          <label for="imgBtn" class="imgBtn">사진추가</label>
+          <input id="imgBtn" ref="spaceImg" type="file" multiple accept="image/*" hidden @change="fileUpload($event)">
+        </div>
+        <div v-for="file in spaceImgPreview" :key="file" class="file-preview-wrapper">
+          <div class="file-close-button" @click="fileDeleteButton(file.num)">
+            x
+          </div>
+          <img :src="file.url">
+        </div>
       </div>
       <button class="submit">
         공간생성
@@ -62,7 +70,10 @@ export default {
       address:'',
       detailAddress:'',
       regCode:'',
-      spaceImg:null,
+      // 업로드용
+      spaceImg:[],
+      // 업로드용
+      spaceImgPreview:[],
       // 텍스트 관리
       spaceNameCount: '0',
       spaceDetailCount: '0',
@@ -79,11 +90,20 @@ export default {
   computed: {
   },
   methods: {
+    // 사진등록삭제
     fileUpload(event){
+      console.log(event.target.files[0])
+      console.log(event.target.files[1])
       this.spaceImg = event.target.files
-      // console.log(event)
-      // console.log(event.target.files)
-      // console.log(this.spaceImg)
+      for (let i = 0; i < event.target.files.length; i++){
+        this.spaceImgPreview.push({
+          'url':URL.createObjectURL(this.target.files[i]),
+          'num':i,
+        })
+      }
+    },
+    fileDeleteButton(index){
+      this.spaceImg.splice(index, 1)
     },
     //타입 선택
     spaceTypeSelect(item){
@@ -155,18 +175,6 @@ export default {
     // async 
     async spaceCreate(){
       try {
-        // const createData = {
-        //   'name': this.$store.state.nickName,
-        //   'spaceType': this.spaceType,
-        //   'spaceName': this.spaceName,
-        //   'spaceDetail': this.spaceDetail,
-        //   'postcode': this.postcode,
-        //   'address': this.address,
-        //   'detailAddress': this.detailAddress,
-        //   'regCode': this.regCode,
-        //   'spaceImg': this.spaceImg,
-        // }
-        // console.log(createData)
         let formData = new FormData()
         formData.append('name', this.$store.state.nickName)
         formData.append('spaceType', this.spaceType)
@@ -176,21 +184,23 @@ export default {
         formData.append('address', this.address)
         formData.append('detailAddress', this.detailAddress)
         formData.append('regCode', this.regCode)
-        if (this.spaceImg != null){
-          // for (let i = 0; i < this.spaceImg.length; i++){
-          //   formData.append('multiPartList', this.spaceImg[i])
-          //   console.log(this.spaceImg[i])
-          // }
-          formData.append('multipartFileList', this.spaceImg)
+        if (this.spaceImg != []){
+          for (let i = 0; i < this.spaceImg.length; i++){
+            formData.append('multipartFileList', this.spaceImg[i])
+            console.log(this.spaceImg[i])
+          }
+        } else {
+          formData.append('multipartFileList', null)
         }
         for (let key of formData.keys()){
           console.log(`${key}:${formData.get(key)}`)
         }
         const createDataResponse = await spaceCreate(formData)
         console.log(createDataResponse)
-        // this.$router.push('/host')
-        // alert('공간이 생성되었습니다. 방을 생성해 주세요.')
-        // this.$router.push(`/host/roomCreate/${this.spaceName}/${this.spaceType}`)  
+        if (createDataResponse.status == 200){
+          alert('공간이 생성되었습니다. 방을 생성해 주세요.')
+          this.$router.push('/host')
+        }
       } catch (error){
         console.log(error)
       }
@@ -285,17 +295,27 @@ export default {
   width: 20vw;
 }
 /* 사진 선택 */
-.spaceImg {
+.imgBox{
+  position: relative;
+  margin-left: 2vw;
   margin-bottom: 1vh;
+  width: 50vw;
+  height: 15vh;
+  border: 1px solid gray;
+  padding: 1vh 1vw;
+  overflow-y: scroll;
+  overflow-x: unset;
+}
+.spaceImg {
+  border: 1px solid gray;
+  width: 10vw;
+  height: 15vh;
+  text-align: center;
+  line-height: 15vh;
 }
 .imgBtn {
-  margin: 1vh 0 2vh 2vw;
   font-size: 1rem;
-  font-weight: none;
-  border: 1px solid gray;
-  border-radius: 5px;
   background: white;
-  width: 10vw;
   cursor: pointer;
 }
 /* 제출 */

@@ -82,17 +82,19 @@ export default {
   data(){
     return {
       memberType:'ROLE_USER',
-      CCtype:'ACCOUNT',
+      CCtype:'',
       memberTypeData: [
         {'name':'이용자','value':'ROLE_USER'},
         {'name':'공급자','value':'ROLE_HOST'},
       ],
       userTypeData: [
+        {'name':'전체','value':''},
         {'name':'계정','value':'ACCOUNT'},
         {'name':'예약','value':'RESERVATION'},
         {'name':'결제','value':'PAYMENT'},
       ],
       hostTypeData: [
+        {'name':'전체','value':''},
         {'name':'계정','value':'ACCOUNT'},
         {'name':'결제','value':'PAYMENT'},
         {'name':'공간','value':'SPACE'},
@@ -112,6 +114,7 @@ export default {
     // API 호출
     async customerCenterCall(){
       try {
+        console.log(this.memberType, this.CCtype)
         const response = await masterCCList(this.memberType, this.CCtype)
         console.log(response.data)
         this.CCData = response.data
@@ -121,7 +124,7 @@ export default {
       this.$store.dispatch('SPINNERVIEW', false)
     },
     memberTypeChenge(){
-      this.CCtype = 'ACCOUNT'
+      this.CCtype = ''
       this.customerCenterCall()
     },
     // 출력데이터 수정

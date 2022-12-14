@@ -14,7 +14,7 @@
       </p>
       <textarea v-model="content" class="QnAcontent" placeholder="문의내용을 작성해주세요." />
       <span class="QnAbtn" @click="emitClose(false)">닫기</span>
-      <span class="QnAbtn" @click="QnACreate">작성</span>
+      <span class="QnAbtn" @click="QnACreateCheck">작성</span>
     </div>
     <div class="background" @click="emitClose(false)" />
   </div>
@@ -23,7 +23,7 @@
 <script>
 import {qnaCreate} from '@/api/QnA.js'
 export default {
-  emits: [ 'qna:open' ],
+  emits: [ 'qna:open', 'qnacreate:create' ],
   data(){
     return {
       typeData: [
@@ -41,6 +41,20 @@ export default {
     emitClose(value){
       this.$emit('qna:open', value)
     },
+    QnACreateCheck(){
+      let message
+      if (this.type == '문의종류'){
+        message = '문의종류를 선택해주세요.'
+        this.$store.dispatch('MODALVIEWCLICK', true)
+        this.$store.dispatch('MODALMESSAGE', message)
+      } else if (!this.content){
+        message = '문의내용을 작성해주세요.'
+        this.$store.dispatch('MODALVIEWCLICK', true)
+        this.$store.dispatch('MODALMESSAGE', message)
+      } else {
+        this.QnACreate()
+      }
+    },
     async QnACreate(){
       const qnaData = {
         'spaceId': this.spaceId,
@@ -51,7 +65,9 @@ export default {
       try {
         let response = await qnaCreate(qnaData)
         console.log(response)
-        this.emitClose()
+        if (response.status == 200){
+          this.$emit('qnacreate:create')
+        }
       } catch (error){
         console.log(error)
       }

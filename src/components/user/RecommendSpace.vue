@@ -93,13 +93,15 @@ export default {
 /* 데이터 디자인 */
 .recommendSpaceContainer{
   position: relative;
+  display: flex;
+  justify-content: center;
+  width: 78vw;
 }
 .recommendSpaceItems {
   position: relative;
   font-size: 0.9rem;
   display: flex;
   align-content: center;
-  width: 74.5vw;
   height: 40vh;
   overflow: hidden;
 }
@@ -110,10 +112,12 @@ export default {
   cursor: pointer;
 }
 .prevBtn{
-  left: -1vw;
+  left: 0vw;
 }
 .nextBtn{
-  right: -1vw;
+  right: 0vw;
 }
-/* 슬라이드 */
+.prevBtn:hover, .nextBtn:hover{
+  color: rgb(44, 67, 141);
+}
 </style>

@@ -1,6 +1,22 @@
 import { posts } from "./index"
 
 // 유저관리
+function spaceAll(spaceStatus, spaceType){
+  return posts.get('master/spaceAll',{
+    params:{
+      spaceStatus,
+      spaceType,
+    },
+  })
+}
+function spaceApprove(spaceId){
+  return posts.post('spaceApproved/'+spaceId)
+}
+function spaceRejected(spaceId){
+  return posts.post('spaceRejected/'+spaceId)
+}
+
+// 유저관리
 function deactivatedHost(){
   return posts.get('member/deactivated')
 }
@@ -23,6 +39,9 @@ function memberApprove(memberId){
 }
 
 export {
+  spaceAll,
+  spaceApprove,
+  spaceRejected,
   deactivatedHost,
   penaltyUser,
   penaltyRemove,

@@ -3,7 +3,7 @@
     <form @submit.prevent="officeRoomSubmit">
       <div class="inputBox">
         <p>가격설정</p>
-        <input class="officeTitle" type="text" placeholder="숫자만 입력해 주세요.">
+        <input v-model="officeRoom.roomPrice" class="officeTitle" type="text" placeholder="숫자만 입력해 주세요.">
       </div>
       <div class="inputBox">
         <span>오피스 설명</span>
@@ -37,8 +37,8 @@ export default {
         roomName: this.$route.params.name,
         roomImg: '',
         roomPrice: '',
-        workStart: '',
-        workEnd:'',
+        workStart: '8',
+        workEnd:'23',
         roomDetail:'',
       },
       officeDetail: '',
@@ -53,28 +53,23 @@ export default {
       try {
         const officeRoom = this.officeRoom
         let formData = new FormData()
-        formData.append('roomId', officeRoom.spaceId)
+        formData.append('spaceId', officeRoom.spaceId)
         formData.append('roomType', officeRoom.roomType)
         formData.append('roomName', officeRoom.roomName)
-        if (!officeRoom.spaceImg){
-          formData.append('roomImg', officeRoom.roomImg)
-        }
+        formData.append('roomDetail', officeRoom.roomDetail)
         formData.append('roomPrice', officeRoom.roomPrice)
         formData.append('workStart', officeRoom.workStart)
         formData.append('workEnd', officeRoom.workEnd)
-        formData.append('roomDetail', officeRoom.roomDetail)
-        console.log(officeRoom.spaceId)
-        // const createData = {
-        //   'spaceId': officeRoom.spaceId,
-        //   'roomType': officeRoom.roomType,
-        //   'roomName': officeRoom.roomName,
-        //   'roomImg': officeRoom.roomImg,
-        //   'roomPrice': officeRoom.roomPrice,
-        //   'workStart': officeRoom.workStart,
-        //   'workEnd': officeRoom.workEnd,
-        //   'roomDetail': officeRoom.roomDetail,
-        // }
-        const responce = await roomCreate(formData, officeRoom.spaceId)
+        if (this.roomImg != null){
+          for (let i = 0; i < this.roomImg.length; i++){
+            formData.append('multipartFileList', this.roomImg[i])
+            console.log(this.roomImg[i])
+          }
+        }
+        for (let key of formData.keys()){
+          console.log(`${key}:${formData.get(key)}`)
+        }
+        const responce = await roomCreate(formData)
         console.log(responce)
         alert('방이 생성되었습니다.')
         this.$router.push('/host')

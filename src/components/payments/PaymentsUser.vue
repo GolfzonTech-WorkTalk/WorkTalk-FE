@@ -2,7 +2,7 @@
   <div class="paymentContainer">
     <div>
       <div class="paymentSortBox">
-        <select v-model="paymentSort" class="paymentSort">
+        <select v-model="paymentSort" class="paymentSort" @change="paymentDataRequest(pageNowNum)">
           <option value="기간" hidden>
             결제기간
           </option>
@@ -10,11 +10,11 @@
             {{ item.name }}
           </option>
         </select>
-        <select v-model="spaceType" class="paymentSort" @change="reservationDataCall(pageNowNum)">
-          <option value="공간" hidden>
-            공간종류
+        <select v-model="paymentStatus" class="paymentSort payStatus" @change="paymentDataRequest(pageNowNum)">
+          <option value="결제" hidden>
+            결제상태
           </option>
-          <option v-for="item in spaceTypeData" :key="item" :value="item.value">
+          <option v-for="item in paymentStatusData" :key="item" :value="item.value">
             {{ item.name }}
           </option>
         </select>
@@ -53,20 +53,22 @@ export default {
   data(){
     return {
       paymentSortData: [
-        {'name':'전체','value':''},
+        {'name':'전체','value':'기간'},
         {'name':'1개월','value':'1'},
         {'name':'3개월','value':'3'},
         {'name':'6개월','value':'6'},
         {'name':'1년','value':'12'},
       ],
       paymentSort:'기간',
-      spaceTypeData: [
-        {'name':'전 체','value':''},
-        {'name':'오피스','value':'1'},
-        {'name':'데스크','value':'2'},
-        {'name':'회의실','value':'3'},
+      paymentStatusData: [
+        {'name':'전 체','value':'결제'},
+        {'name':'보증금결제','value':'DEPOSIT'},
+        {'name':'선결제(완납)','value':'PREPAID'},
+        {'name':'후결제(예정)','value':'POSTPAID_BOOKED'},
+        {'name':'후결제(완납)','value':'POSTPAID_DONE'},
+        {'name':'환불','value':'REFUND'},
       ],
-      spaceType:'공간',
+      paymentStatus:'결제',
       paymentData:[],
       // 페이지 관리데이터
       pageStartNum: 1,
@@ -81,18 +83,20 @@ export default {
   methods: {
     async paymentDataRequest(pageNowNum){
       this.paymentData = []
-      let spaceType = this.spaceType
-      let paymentSortData = this.paymentSortData
+      let paymentStatus = this.paymentStatus
+      let paymentSort = this.paymentSort
       this.pageNowNum = pageNowNum
       try {
-        if (spaceType == '공간종류'){
-          spaceType = ''
+        if (paymentStatus == '결제'){
+          paymentStatus = ''
         }
-        if (paymentSortData == '기간'){
-          paymentSortData = ''
+        if (paymentSort == '기간'){
+          paymentSort = ''
+        } else {
+          paymentSort = this.paymentSortChange(paymentSort)
         }
-        let response = await paymentHistory(pageNowNum-1)
-        // let response = await paymentHistory(pageNowNum-1, spaceType, paymentSortData)
+        console.log(pageNowNum-1, paymentStatus, paymentSort)
+        let response = await paymentHistory(pageNowNum-1, paymentStatus, paymentSort)
         this.paymentData = response.data.data
         this.pageTotal =  response.data.count
         this.paging(this.pageNowNum)
@@ -100,6 +104,16 @@ export default {
         console.log(error)
       }
       this.$store.dispatch('SPINNERVIEW', false)
+    },
+    paymentSortChange(paymentSort){
+      const today = new Date()
+      let thisYear = today.getFullYear()
+      let thisMonth = today.getMonth()
+      let month = thisMonth - paymentSort
+      let findDate = new Date(thisYear, month).toISOString()
+      findDate = findDate.slice(0,-5)
+      console.log(findDate)
+      return findDate
     },
     roomTypeCheck(roomType){
       let result
@@ -114,11 +128,13 @@ export default {
     },
     paymentStatusCheck(payStatus){
       if (payStatus == 'DEPOSIT'){
-        payStatus = '보증금'
+        payStatus = '보증금결제'
       } else if (payStatus == 'PREPAID'){
-        payStatus = '선납'
-      } else if (payStatus == 'POSTPAID' || payStatus == 'POSTPAID_BOOKED' || payStatus == 'POSTPAID_DONE'){
-        payStatus = '후납'
+        payStatus = '선결제(완납)'
+      } else if (payStatus == 'POSTPAID_BOOKED'){
+        payStatus = '후결제(예정)'
+      } else if (payStatus == 'POSTPAID_DONE'){
+        payStatus = '후결제(완납)'
       } else {
         payStatus = '환불'
       }
@@ -230,8 +246,14 @@ export default {
   margin: 2vh 0;
 }
 .paymentSort{
-  font-size: 1rem;
-  width: 6vw;
+  width: 8vw;
+  letter-spacing: 0.1rem;
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin-left: 2vw;
+}
+.payStatus{
+  width: 10vw;
 }
 /* 결제내역출력 */
 .paymentContainer::-webkit-scrollbar{

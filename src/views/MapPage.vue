@@ -17,7 +17,7 @@
           {{ item.name }}
         </option>
       </select>
-      <select v-model="selectSpaceType" class="mapLocationSort" @change="selectCityDetailOne">
+      <select v-model="selectSpaceType" class="mapLocationSort" @change="spaceInfoSearch">
         <option value="공간타입" hidden>
           공간타입
         </option>
@@ -64,20 +64,9 @@ export default {
     }
   },
   // 공간정보 출력
-  async created(){
+  created(){
     this.paramsCheck()
-    try {
-      /* 더미 */
-      // let spaceResponce = mapDummy
-      // this.spaceItems = spaceResponce
-      // 공간 검색 데이터
-      this.cityAddressData = cityAddress
-      const response = await spaceSearch(this.pageNum,this.spaceType,this.spaceName,this.address)
-      // console.log(response.data.data)
-      this.spaceItems = response.data.data
-    } catch (error){
-      console.log(error)
-    }
+    this.spaceInfoSearch()
     this.$store.dispatch('SPINNERVIEW', false)
   },
   mounted(){
@@ -126,6 +115,14 @@ export default {
         if (this.selectCityCode == this.cityAddressData[i].typeCode){
           this.selectCityName = this.cityAddressData[i].name
         }
+      }
+    },
+    async spaceInfoSearch(){
+      try {
+        const response = await spaceSearch(this.pageNum,this.spaceType,this.spaceName,this.address)
+        this.spaceItems = response.data.data
+      } catch (error){
+        console.log(error)
       }
     },
     // 지역선택
