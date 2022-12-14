@@ -53,8 +53,8 @@
         <p id="spaceQNA" class="contentTitle">
           [ Q & A ]
         </p>
-        <qn-a-vue @qna:open="QnAFormOpenClose" />
-        <form-qn-a-vue v-if="QnAFormView" @qna:open="QnAFormOpenClose" />
+        <qn-a-vue ref="QnAVue" @qna:open="QnAFormOpenClose" />
+        <form-qn-a-vue v-if="QnAFormView" @qna:open="QnAFormOpenClose" @qnacreate:create="QnACreate" />
       </div>
       <div class="contentBox">
         <p id="spaceReview" class="contentTitle">
@@ -133,6 +133,10 @@ export default {
       } else {
         this.spaceImgListNum ++
       }
+    },
+    QnACreate(){
+      this.QnAFormOpenClose(false)
+      this.$refs.QnAVue.spaceQnAListCall()
     },
   },
 }

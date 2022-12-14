@@ -2,8 +2,10 @@
   <div id="mapContainer">
     <div id="map" />
     <div class="hostInfo">
-      <p>{{ memberItems.name }}</p>
-      <p>{{ memberItems.tel }}</p>
+      <p>[ 공급자정보 ]</p>
+      <p>닉네임 : {{ memberItems.name }}</p>
+      <p>이메일 : {{ memberItems.email }}</p>
+      <p>전화번호 : {{ memberItems.tel }}</p>
     </div>
   </div>
 </template>
@@ -24,17 +26,12 @@ export default {
       const spaceId = this.$route.params.spaceId
       let spaceResponce = await spaceOne(spaceId)
       console.log(spaceResponce)
-      this.spaceItems = spaceResponce.data
-      this.memberItems = spaceResponce.data.member
-      /* 더미 */
-      // let spaceResponce = selectOneSpaceDumy
-      // console.log(spaceResponce)
-      // console.log(spaceResponce[0].member)
-      // this.spaceItems = spaceResponce
-      // this.memberItems = spaceResponce[0].member
+      this.spaceItems = spaceResponce.data[0]
+      this.memberItems = spaceResponce.data[0]
     } catch (error){
       console.log(error)
     }
+    this.initMap()
   },
   mounted(){
     if (window.kakao && window.kakao.maps){
@@ -69,9 +66,11 @@ export default {
       // console.log(this.spaceItems)
       // console.log(this.spaceItems[0].address)
 
-      let addressData = this.spaceItems.address + this.spaceItems.detailAddress
+      let addressData = this.spaceItems.address +' '+this.spaceItems.detailAddress
+      console.log(addressData)
 
       geocoder.addressSearch(addressData, function(result, status){
+        console.log(result)
         if (status === kakao.maps.services.Status.OK){
           let coords = new kakao.maps.LatLng(result[0].y, result[0].x)
           let marker = new kakao.maps.Marker({
@@ -98,14 +97,13 @@ export default {
   z-index: 0;
 }
 #map{
-  margin: 6vh 1vw 1vh 1vw;
+  margin: 8vh 1vw 1vh 1vw;
   width: 18vw;
   height: 25vh;
   border: 0;
 }
 .hostInfo{
   margin-left: 1vw;
-  font-size: 1rem;
-
+  font-size: 0.8rem;
 }
 </style>

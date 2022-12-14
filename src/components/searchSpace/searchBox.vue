@@ -10,7 +10,7 @@
             {{ item.name }}
           </option>
         </select>
-        <select v-model="selectCityDetailName" class="selectTermsBox" :class="{'selectTerms':selectCityDetailName!='세부지역'}" @change="selectCityDetailOne">
+        <select v-model="selectCityDetailName" class="selectTermsBox" :class="{'selectTerms':selectCityDetailName!='세부지역'}">
           <option value="세부지역" hidden>
             세부지역
           </option>
@@ -18,15 +18,17 @@
             {{ item.name }}
           </option>
         </select>
-        <select v-model="selectSpaceType" class="selectTermsBox" :class="{'selectTerms':selectSpaceType!='공간타입'}" @change="selectCityDetailOne">
+        <input v-model="searchWord" type="text" class="selectTermsTextBox" :class="{'selectTerms':searchWord!=''}" placeholder="키워드검색" @keyup.enter="searchSubmit">
+        <select v-model="selectSpaceType" class="selectTermsBox" :class="{'selectTerms':selectSpaceType!='공간타입'}">
           <option value="공간타입" hidden>
             공간타입
           </option>
-          <option v-for="item in selectSpaceTypeData" :key="item" :value="item.value" @keyup.enter="searchSubmit">
+          <option v-for="item in selectSpaceTypeData" :key="item" :value="item.value">
             {{ item.name }}
           </option>
         </select>
-        <input v-model="searchWord" type="text" class="selectTermsTextBox">
+        <searchBoxDate v-if="selectSpaceType == '1'" :select-space-type="selectSpaceType" @search-office-date="searchDate" />
+        <searchBoxDateTime v-if="selectSpaceType == '2' || selectSpaceType == '3'" :select-space-type="selectSpaceType" @search-date="searchDate" @search-time="searchTime" />
         <div class="selectTermsClearBtn" @click="selectTermsClear">
           <i class="fa-solid fa-rotate-right fa-lg" />
           <span>초기화</span>
@@ -45,8 +47,14 @@
 </template>
 
 <script>
+import searchBoxDate from '@/components/searchSpace/searchBoxDate.vue'
+import searchBoxDateTime from '@/components/searchSpace/searchBoxDateTime.vue'
 import { cityAddress, cityAddressDetail } from '@/utils/addressCity.js'
 export default {
+  components:{
+    searchBoxDate,
+    searchBoxDateTime,
+  },
   emits: ['searchSubmit'],
   data(){
     return {
@@ -63,6 +71,11 @@ export default {
       ],
       cityAddressData:[],
       cityDetailAddressData:[],
+      // 날짜 시간변수
+      startDate:'',
+      endDate:'',
+      startTime:'',
+      endTime:'',
     }
   },
   created(){
@@ -84,6 +97,23 @@ export default {
       if (this.$route.params.address == 'AllRegions'){
         this.selectCityName = '지역'
       }
+      this.startDate = this.$route.params.startDate
+      if (this.$route.params.startDate == 'noDate'){
+        this.startDate = ''
+      }
+      this.endDate = this.$route.params.endDate
+      if (this.$route.params.endDate == 'noDate'){
+        this.endDate = ''
+      }
+      this.startTime = this.$route.params.startTime
+      if (this.$route.params.startTime == 'noTime'){
+        this.startTime = ''
+      }
+      this.endTime = this.$route.params.endTime
+      if (this.$route.params.endTime == 'noTime'){
+        this.endTime = ''
+      }
+      // 주소로 지역코드, 세부지역 선택
       for (let i = 0; i < this.cityAddressData.length; i++){
         if (this.selectCityName.indexOf(this.cityAddressData[i].name) != '-1'){
           this.selectCityCode = this.cityAddressData[i].typeCode
@@ -125,8 +155,11 @@ export default {
     // 조건 초기화
     selectTermsClear(){
       this.selectCityCode = '지역코드'
+      this.selectCityName='지역'
       this.selectCityDetailName = '세부지역'
       this.selectSpaceType = '공간타입'
+      this.searchWord=''
+      this.searchSubmit()
     },
     // 조건 검색
     searchSubmit(){
@@ -139,9 +172,13 @@ export default {
     },
     // 링크체크
     linkCheck(){
-      let spaceType = this.selectSpaceType
-      let spaceName = this.searchWord
       let address = this.selectCityName
+      let spaceName = this.searchWord
+      let spaceType = this.selectSpaceType
+      let startDate = this.startDate
+      let endDate = this.endDate
+      let startTime = this.startTime
+      let endTime = this.endTime
       if (this.selectSpaceType == '공간타입'){
         spaceType = 'AllType'
       }
@@ -153,9 +190,33 @@ export default {
       }
       if (this.selectCityDetailName != '세부지역'){
         address = address +' '+ this.selectCityDetailName
-        console.log(address)
+        // console.log(address)
       }
-      return spaceType+'/'+spaceName+'/'+address
+      if (this.selectSpaceType == 1){
+        startTime = 'noTime'
+        endTime = 'noTime'
+      } else if (this.selectSpaceType == 2 || this.selectSpaceType == 3){
+        endDate = 'noDate'
+      }
+      return spaceType+'/'+spaceName+'/'+address+'/'+startDate+'/'+endDate+'/'+startTime+'/'+endTime
+    },
+    // 시간 날짜 선택
+    searchDate(selectDate){
+      console.log(selectDate)
+      if (selectDate.value == 'startDate'){
+        this.startDate = selectDate.date
+      } else {
+        this.endDate = selectDate.date
+      }
+    },
+    searchTime(selectTime){
+      console.log(selectTime)
+      if (selectTime.value == 'startTime'){
+        this.startTime = selectTime.time
+      } else {
+        this.endTime = selectTime.time
+      }
+      console.log(this.startTime, this.endTime)
     },
   },
 }
@@ -168,7 +229,7 @@ export default {
 }
 .searchItems{
   display: flex;
-  width: 60vw;
+  width: 70vw;
   padding: 3vh;
   justify-content: space-between;
 }
@@ -186,8 +247,16 @@ export default {
   width: 17vw;
   height: 5vh;
   padding: 0 5px;
-  margin-top: 1vh;
   margin-right: 1vw;
+  color: gray;
+  font-size: 1rem;
+  border: 1px solid gray;
+  border-radius: 10px;
+}
+.selectTermsDateBox{
+  display: inline;
+  padding: 5px;
+  margin-right: 0.5vw;
   color: gray;
   font-size: 1rem;
   border: 1px solid gray;

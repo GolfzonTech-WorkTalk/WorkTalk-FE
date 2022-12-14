@@ -46,10 +46,11 @@
 </template>
 
 <script>
-// import {userData, profileUpdate} from '@/api/auth.js'
-import { profileUpdate } from '@/api/auth.js'
+import {userData, profileUpdate} from '@/api/auth.js'
 import { autoHypenPhone } from '@/utils/phoneCheck.js'
+import { deleteCookie } from '@/utils/cookies'
 export default {
+  emits:['member-id:call'],
   data(){
     return {
       userData: {},
@@ -67,15 +68,12 @@ export default {
   },
   methods: {
     async callUserData(){
-      // const response = await userData()
-      // this.userData = response.data
-      this.userData = {
-        memberId:'더미',
-        email:'더미@더미.com',
-        pw:'',
-        name:'더미',
-        tel:'010-1234-5678',
-        imgName:'',
+      try {
+        const response = await userData()
+        this.userData = response.data
+        this.$emit('member-id:call', this.userData.id)
+      } catch (error){
+        console.log(error)
       }
       this.$store.dispatch('SPINNERVIEW', false)
     },
@@ -127,7 +125,7 @@ export default {
       if (title == '연락처수정'){this.userData.tel = this.updateInputData}
       else if (title == '비밀번호수정'){this.userData.pw = this.updateInputData}
       const updateData = {
-        memberId:this.userData.memberId,
+        id:this.userData.id,
         pw:this.userData.pw,
         tel:this.userData.tel,
       }
@@ -136,6 +134,16 @@ export default {
         const response = await profileUpdate(updateData)
         console.log(response)
         this.updateCancel()
+        this.$store.commit('setlogoutUser')
+        deleteCookie('token')
+        deleteCookie('email')
+        deleteCookie('userType')
+        if (title == '비밀번호수정'){
+          let message = '변경된 비밀번호로 로그인해주세요.'
+          this.$store.dispatch('MODALVIEWCLICK', true)
+          this.$store.dispatch('MODALMESSAGE', message)
+        }
+        this.$router.push('/login')
       } catch (error){
         console.log(error)
       }

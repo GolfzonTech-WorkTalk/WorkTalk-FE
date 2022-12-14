@@ -190,28 +190,19 @@ export default {
       try {
         for (let i = 0; i < roomCreateData.length; i++){
           let formData = new FormData()
-          formData.append('roomId', roomCreateData[i].spaceId)
+          formData.append('spaceId', roomCreateData[i].spaceId)
           formData.append('roomType', roomCreateData[i].roomType)
           formData.append('roomName', roomCreateData[i].roomName)
-          if (!roomCreateData[i].roomImg){
-            formData.append('roomImg', roomCreateData[i].roomImg)
+          if (this.roomImg != null){
+            for (let i = 0; i < this.roomImg.length; i++){
+              formData.append('multipartFileList', this.roomImg[i])
+              console.log(this.roomImg[i])
+            }
           }
           formData.append('roomPrice', roomCreateData[i].roomPrice)
           formData.append('workStart', roomCreateData[i].workStart)
           formData.append('workEnd', roomCreateData[i].workEnd)
           formData.append('roomDetail', roomCreateData[i].roomDetail)
-          console.log(roomCreateData[i].spaceId)
-          // const createData = {
-          //   'spaceId': roomCreateData[i].spaceId,
-          //   'roomType': roomCreateData[i].roomType,
-          //   'roomName': roomCreateData[i].roomName,
-          //   'roomImg': roomCreateData[i].roomImg,
-          //   'roomPrice': roomCreateData[i].roomPrice,
-          //   'workStart': roomCreateData[i].workStart,
-          //   'workEnd': roomCreateData[i].workEnd,
-          //   'roomDetail': roomCreateData[i].roomDetail,
-          // }
-          // console.log(createData)
           const responce = await roomCreate(formData, roomCreateData[i].spaceId)
           console.log(responce)
         }

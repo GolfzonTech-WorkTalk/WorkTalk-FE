@@ -2,11 +2,19 @@
   <div class="spaceManagementBox">
     <div v-if="spaceStatusUpdate" class="Background" />
     <div class="spaceListSortBox">
-      <select v-model="spaceListSort">
-        <option value="" hidden>
+      <select v-model="spaceType" @change="spaceListCall()">
+        <option value="공간타입" hidden>
+          공간타입
+        </option>
+        <option v-for="item in spaceTypeData" :key="item" :value="item.value">
+          {{ item.name }}
+        </option>
+      </select>
+      <select v-model="spaceListSort" @change="spaceListCall()">
+        <option value="공간상태" hidden>
           공간상태
         </option>
-        <option v-for="item in spaceListSortData" :key="item" :value="item.valeu">
+        <option v-for="item in spaceListSortData" :key="item" :value="item.value">
           {{ item.name }}
         </option>
       </select>
@@ -20,19 +28,20 @@
         <span class="spaceStatusTitle listTitle">공간상태</span>
       </div>
       <div v-for="item in spaceList" :key="item" class="spaceListItem">
-        <span class="spaceHost">{{ item.host }}</span>
+        <span class="spaceHost">{{ item.hostName }}</span>
         <span class="spaceType" :class="spaceTypeCheckClass(item.spaceType)">{{ spaceTypeCheck(item.spaceType) }}</span>
         <span class="spaceName">{{ item.spaceName }}</span>
         <span class="spaceRegCode">{{ item.regCode }}</span>
         <span class="spaceStatus" :class="item.spaceStatus" @click="spaceStatus(item)">{{ spaceStatusCheck(item.spaceStatus) }}</span>
       </div>
     </div>
-    <space-status-update v-if="spaceStatusUpdate" :space-status-update="spaceStatusUpdate" @update-cancel="updateCancel" />
+    <space-status-update v-if="spaceStatusUpdate" :space-status-update="spaceStatusUpdate" @update-cancel="updateCancel" @update-status="spaceListCall" />
   </div>
 </template>
 
 <script>
-import { spaceDumy } from '@/utils/dummy/dummy'
+// import { spaceDumy } from '@/utils/dummy/dummy'
+import { spaceAll } from '@/api/master.js'
 import SpaceStatusUpdate from '@/components/master/SpaceStatusUpdate.vue'
 export default {
   components: {
@@ -42,13 +51,20 @@ export default {
     return {
       spaceList:[],
       spaceListSortData:[
-        {'name':'전체','value':''},
-        {'name':'방등록중','value':'NoSetting'},
+        {'name':'전체','value':'공간상태'},
+        {'name':'방등록중','value':'no_setting'},
         {'name':'운용중','value':'approved'},
         {'name':'검수대기','value':'waiting'},
-        {'name':'운용정지','value':'suspension'},
+        {'name':'운용정지','value':'rejected'},
       ],
-      spaceListSort:'',
+      spaceTypeData:[
+        {'name':'전체','value':'공간타입'},
+        {'name':'오피스','value':'1'},
+        {'name':'데스크','value':'2'},
+        {'name':'회의실','value':'3'},
+      ],
+      spaceListSort:'공간상태',
+      spaceType:'공간타입',
       spaceStatusUpdate:'',
     }
   },
@@ -57,9 +73,19 @@ export default {
   },
   methods:{
     async spaceListCall(){
-      const response = await spaceDumy
-      this.spaceList = response
-      this.$store.dispatch('SPINNERVIEW')
+      let spaceListSort = this.spaceListSort
+      let spaceType = this.spaceType
+      if (this.spaceListSort == '공간상태'){
+        spaceListSort = ''
+      }
+      if (this.spaceType == '공간타입'){
+        spaceType = ''
+      }
+      // const response = await spaceDumy
+      console.log(spaceListSort,spaceType)
+      const response = await spaceAll(spaceListSort, spaceType)
+      this.spaceList = response.data
+      this.$store.dispatch('SPINNERVIEW', false)
     },
     spaceTypeCheck(value){
       if (value == '1'){
@@ -82,13 +108,13 @@ export default {
       return value
     },
     spaceStatusCheck(value){
-      if (value == 'NoSetting'){
+      if (value == 'no_setting'){
         value = '방등록중'
       } else if (value == 'approved'){
         value = '운용중'
       } else if (value == 'waiting'){
         value = '검수대기'
-      } else if (value == 'suspension'){
+      } else if (value == 'rejected'){
         value = '운용정지'
       }
       return value
@@ -189,7 +215,7 @@ export default {
   color: rgb(108, 214, 214);
   cursor: pointer;
 }
-.suspension{
+.rejected{
   border: 2px solid red;
   color: red;
   cursor: pointer;

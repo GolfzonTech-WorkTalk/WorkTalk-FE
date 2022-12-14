@@ -1,6 +1,6 @@
 export default [
   {
-    path: '/searchSpace/:spaceType/:spaceName/:address',
+    path: '/searchSpace/:spaceType/:spaceName/:address/:startDate/:endDate/:startTime/:endTime',
     name: 'searchSpace',
     component: () => import('@/views/SearchSpace.vue'),
   },

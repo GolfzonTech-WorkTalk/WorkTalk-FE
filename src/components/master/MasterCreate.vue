@@ -1,9 +1,5 @@
 <template>
   <form class="joinForm" @submit.prevent="joinCheck">
-    <div class="roleSelectBox">
-      <span :class="(role=='0')?'selectRole':'noSelectRole'" @click="roleSelect('0')">이용자</span>
-      <span :class="(role=='1')?'selectRole':'noSelectRole'" @click="roleSelect('1')">공급자</span>
-    </div>
     <div>
       <input v-model="email" class="emailBox joinFormItem" type="text" placeholder="이메일" @keyup="emailChange">
       @
@@ -74,7 +70,7 @@ export default {
   data(){
     return {
       // 로그인 데이터
-      role: '',
+      role: '2',
       email: '',
       emailDomain:'',
       emailDomains: [
@@ -206,17 +202,9 @@ export default {
         'role': this.role,
       }
       // console.log(joinData)
-      try {
-        const responce = await registerMember(joinData)
-        if (responce.status == 200){
-          let message = '워크토크에 가입하신 것을 환영합니다.'
-          this.$store.dispatch('MODALVIEWCLICK', true)
-          this.$store.dispatch('MODALMESSAGE', message)
-          return this.$router.push('/login')
-        }
-      } catch (error){
-        console.log(error)
-      }
+      const { data } = await registerMember(joinData)
+      console.log(data)
+      return this.$router.push('/login')
     },
     // 회원가입 검증
     joinCheck(){
@@ -269,7 +257,6 @@ export default {
 }
 .roleSelectBox {
   margin-bottom: 2vh;
-  cursor: pointer;
 }
 .roleSelectBox span {
   border: 2px solid gray;
@@ -282,11 +269,11 @@ export default {
   text-align: center;
   width: 20vw;
 }
-.selectRole{
+.selectRole span{
   color: white;
   background: rgba(42, 75, 165, 0.473);
 }
-.noSelectRole{
+.noSelectRole span{
   background: white;
 }
 .joinFormItem{

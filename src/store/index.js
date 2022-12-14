@@ -82,10 +82,10 @@ export default createStore({
     },
     // 로그인 처리
     async LOGIN(context, loginData){
-      console.log(loginData)
+      // console.log(loginData)
       try {
         const { data } = await loginMember(loginData) // api
-        console.log(data)
+        // console.log(data)
         const decode = jwt_decode(data.token)
         context.commit('setToken', data.token)
         context.commit('setNickName', decode.sub)

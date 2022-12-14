@@ -30,12 +30,12 @@ function reservationReserve(reservationData){
 }
 
 // 예약리스트조회
-function reservation(pageNum, spaceType, paymentStatus){
+function reservation(pageNum, spaceType, reserveStatus){
   return posts.get('/reservation/find',{
     params:{
       pageNum,
       spaceType,
-      paymentStatus,
+      reserveStatus,
     },
   })
 }
@@ -55,7 +55,7 @@ function reservationPrepaid(paymentData){
   return posts.post('/payments/prepaid', paymentData)
 }
 
-// 결제내역
+// 유저결제내역
 function paymentHistory(pageNum, payStatus, reserveDate){
   return posts.get('/payments/history',{
     params: {

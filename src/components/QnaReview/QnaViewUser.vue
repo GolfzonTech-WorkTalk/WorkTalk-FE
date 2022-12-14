@@ -2,7 +2,7 @@
   <div class="QnAContainer">
     <div v-if="deleteQnANum != '문의삭제' || updateQnANum != '문의수정'" class="backgroundQnA" @click="deleteQnACancel" />
     <div class="SortQnAtypeBox">
-      <select v-model="QnAtype" class="SortQnAtype">
+      <select v-model="QnAtype" class="SortQnAtype" @change="qnaListCall(QnAtype)">
         <option value="문의종류" hidden>
           문의종류
         </option>
@@ -61,6 +61,7 @@ export default {
       QnAList: [],
       QnAtype:'문의종류',
       QnAtypeData: [
+        {'name':'전체','value':'문의종류'},
         {'name':'예약','value':'RESERVE'},
         {'name':'결제','value':'PAY'},
         {'name':'이용','value':'USING'},
@@ -70,12 +71,15 @@ export default {
     }
   },
   created(){
-    this.qnaListCall()
+    this.qnaListCall(this.QnAtype)
   },
   methods: {
-    async qnaListCall(){
-      // const response = await QnAdummy
-      const response = await mypageQnAList()
+    async qnaListCall(QnAtype){
+      if (QnAtype == '문의종류'){
+        QnAtype = ''
+      }
+      console.log(QnAtype)
+      const response = await mypageQnAList(QnAtype)
       this.QnAList = response.data
       this.$store.dispatch('SPINNERVIEW', false)
     },

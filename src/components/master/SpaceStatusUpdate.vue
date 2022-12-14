@@ -2,7 +2,7 @@
   <div class="spaceStatusUpdateBox">
     <div class="updateTitleBox">
       <p class="updateTitleSpaceName">
-        '{{ spaceStatusUpdate.spaceName }}' 공간을
+        '{{ spaceStatusUpdate.spaceName }}'
       </p>
       <template v-if="spaceStatusUpdate.spaceStatus == 'approved'">
         <p>운용정지 하시겠습니까?</p>
@@ -10,18 +10,18 @@
       <template v-if="spaceStatusUpdate.spaceStatus == 'waiting'">
         <p>검수승인 하시겠습니까?</p>
       </template>
-      <template v-if="spaceStatusUpdate.spaceStatus == 'suspension'">
+      <template v-if="spaceStatusUpdate.spaceStatus == 'rejected'">
         <p>운용정지를 해제하시겠습니까?</p>
       </template>
     </div>
     <div class="updateBtnBox">
       <template v-if="spaceStatusUpdate.spaceStatus == 'approved'">
-        <span class="updateBtn suspension" @click="updateSpace(spaceStatusUpdate, 'suspension')">정지</span>
+        <span class="updateBtn suspension" @click="updateSpace(spaceStatusUpdate, 'rejected')">정지</span>
       </template>
       <template v-if="spaceStatusUpdate.spaceStatus == 'waiting'">
         <span class="updateBtn approved" @click="updateSpace(spaceStatusUpdate, 'approved')">승인</span>
       </template>
-      <template v-if="spaceStatusUpdate.spaceStatus == 'suspension'">
+      <template v-if="spaceStatusUpdate.spaceStatus == 'rejected'">
         <span class="updateBtn remove" @click="updateSpace(spaceStatusUpdate, 'approved')">해제</span>
       </template>
       <span class="updateBtn" @click="updateCancel">닫기</span>
@@ -30,6 +30,7 @@
 </template>
 
 <script>
+import {spaceApprove, spaceRejected} from '@/api/master.js'
 export default {
   props: {
     spaceStatusUpdate: {
@@ -37,17 +38,19 @@ export default {
       required: true,
     },
   },
-  emits:['updateCancel'],
+  emits:['updateCancel','update-status'],
   methods: {
     async updateSpace(spaceStatusUpdate, Status){
       // console.log(spaceStatusUpdate)
-      const data = {
-        spaceId:spaceStatusUpdate.spaceId,
-        spaceStatus:Status,
+      let response
+      if (Status == 'approved'){
+        response = await spaceApprove(spaceStatusUpdate.spaceId)
+      } else {
+        response = await spaceRejected(spaceStatusUpdate.spaceId)
       }
-      const response = await data
       console.log(response)
       this.updateCancel()
+      this.$emit('update-status')
     },
     updateCancel(){
       this.$emit('updateCancel')

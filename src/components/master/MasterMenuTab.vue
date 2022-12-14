@@ -27,9 +27,9 @@
         </router-link>
       </div>
       <div>
-        <router-link to="/master/space">
+        <router-link to="/masterJoin">
           <i class="fa-solid fa-headset fa-lg" />
-          <span>1:1문의</span>
+          <span>마스터계정 생성</span>
         </router-link>
       </div>
     </div>

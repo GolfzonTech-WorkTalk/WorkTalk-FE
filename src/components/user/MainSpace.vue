@@ -1,7 +1,7 @@
 <template>
   <div class="spaceAllContainer">
     <div class="moreButton">
-      <router-link to="/searchSpace/AllType/AllName/AllRegions">
+      <router-link to="/searchSpace/AllType/AllName/AllRegions/noDate/noDate/noTime/noTime">
         <span>more</span>
       </router-link>
     </div>
@@ -36,7 +36,7 @@ export default {
       // this.spaceItems = responce
       try {
         const responce = await spaceSearch(0,'','','','','','','')
-        console.log(responce)
+        // console.log(responce)
         this.spaceItems = responce.data.data
       } catch (error){
         console.log(error)
@@ -50,6 +50,9 @@ export default {
 <style scoped>
 /* 데이터 디자인 */
 .spaceAllContainer {
+  position: relative;
+  display: flex;
+  justify-content: center;
   width: 78vw;
   height: 80vh;
 }
@@ -58,13 +61,14 @@ export default {
   display: flex;
   flex-wrap: wrap;
   align-content: flex-start;
-  width: 78vw;
+  width: 72vw;
   height: 80vh;
 }
 /* more버튼 */
 .moreButton{
   position: absolute;
-  right: 12vw;
+  right: 5vw;
+  top: -3vh;
   font-size: 1rem;
   font-weight: bold;
   cursor: pointer;

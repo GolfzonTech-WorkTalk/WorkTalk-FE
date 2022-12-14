@@ -20,6 +20,10 @@ export default {
       spaceType:'',
       spaceName:'',
       address:'',
+      startDate:'',
+      endDate:'',
+      startTime:'',
+      endTime:'',
     }
   },
   created(){
@@ -29,7 +33,7 @@ export default {
     // 데이터 API로 불러오기
     async reservationDataCall(){
       this.routerCheck()
-      console.log(this.pageNum,this.spaceType,this.spaceName,this.address)
+      console.log(this.pageNum,this.spaceType,this.spaceName,this.address,this.startDate,this.endDate,this.startTime,this.endTime)
       try {
         // const response = await spaceDumy
         const response = await spaceSearch(this.pageNum,this.spaceType,this.spaceName,this.address)
@@ -44,6 +48,10 @@ export default {
       this.spaceType = this.$route.params.spaceType
       this.spaceName = this.$route.params.spaceName
       this.address = this.$route.params.address
+      this.startDate = this.$route.params.startDate
+      this.endDate = this.$route.params.endDate
+      this.startTime = this.$route.params.startTime
+      this.endTime = this.$route.params.endTime
       if (this.spaceType == 'AllType'){
         this.spaceType = ''
       }
@@ -52,6 +60,18 @@ export default {
       }
       if (this.address == 'AllRegions'){
         this.address = ''
+      }
+      if (this.startDate == 'noDate'){
+        this.startDate = ''
+      }
+      if (this.endDate == 'noDate'){
+        this.endDate = ''
+      }
+      if (this.startTime == 'noTime'){
+        this.startTime = ''
+      }
+      if (this.endTime == 'noTime'){
+        this.endTime = ''
       }
     },
     // 스크롤체크

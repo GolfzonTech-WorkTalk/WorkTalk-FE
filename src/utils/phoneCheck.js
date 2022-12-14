@@ -11,9 +11,9 @@ function autoHypenPhone(str){
   } else if (str.length < 11){
       tmp += str.substr(0, 3)
       tmp += '-'
-      tmp += str.substr(3, 3)
+      tmp += str.substr(3, 4)
       tmp += '-'
-      tmp += str.substr(6)
+      tmp += str.substr(7)
       return tmp
   } else {              
       tmp += str.substr(0, 3)

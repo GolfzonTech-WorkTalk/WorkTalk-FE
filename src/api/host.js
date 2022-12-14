@@ -12,8 +12,12 @@ function spaceCreate(SpaceInsertDto){
   })
 }
 
-function roomCreate(formData, spaceId){
-  return posts.post('host/'+spaceId+'/roomCreate', formData)
+function roomCreate(formData){
+  return posts.post('host/roomCreate', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  })
 }
 
 export {

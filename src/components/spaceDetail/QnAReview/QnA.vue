@@ -39,6 +39,7 @@ export default {
   },
   methods: {
     async spaceQnAListCall(){
+      console.log('1234')
       const spaceId = this.$route.params.spaceId
       console.log(spaceId)
       try {
@@ -54,7 +55,7 @@ export default {
         return '예약'
       } else if (value == 'PAY'){
         return '결제'
-      } else if (value == 'USING'){
+      } else if (value == 'USE'){
         return '이용'
       }
     },
@@ -113,7 +114,7 @@ export default {
 .PAY{
   background: rgb(131, 131, 226)
 }
-.USING{
+.USE{
   background: rgb(224, 182, 135);
 }
 .date{

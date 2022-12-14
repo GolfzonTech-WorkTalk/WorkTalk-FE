@@ -4,13 +4,13 @@
     <div v-if="findBoxType == 'email'" class="findBoxEmail">
       <i class="fa-solid fa-xmark findBoxClose fa-lg" @click="findBoxClose" />
       <input v-model="findEmail" class="findEmail" type="text" placeholder="가입한 이메일을 입력해주세요.">
-      <input class="findEmailBtn" type="button" value="조회" @click="emailVeificaionSend">
-      <template v-if="(emailVerificationCodeCheck == 500)">
+      <input class="findEmailBtn" type="button" value="조회" @click="emailVeificaionSend('email')">
+      <template v-if="(emailVerificationCodeCheck == 200)">
         <p class="approve">
           가입된 이메일입니다.
         </p>
       </template>
-      <template v-if="(emailVerificationCodeCheck == 200)">
+      <template v-if="(emailVerificationCodeCheck == 500)">
         <p class="warning">
           가입되지 않은 이메일입니다.
         </p>
@@ -19,7 +19,7 @@
     <div v-if="findBoxType == 'pw'" class="findBoxPw">
       <i class="fa-solid fa-xmark findBoxClose fa-lg" @click="findBoxClose" />
       <input v-model="findEmail" class="findEmail" type="text" placeholder="가입한 이메일을 입력해주세요.">
-      <input class="findEmailBtn" type="button" value="임시비밀번호발급" @click="emailVeificaionSend">
+      <input class="findEmailBtn" type="button" value="임시비밀번호발급" @click="emailVeificaionSend('pw')">
       <template v-if="(emailVerificationCodeCheck == 200)">
         <p class="approve">
           임시비밀번호가 발급되었습니다.
@@ -56,7 +56,7 @@
 </template>
 
 <script>
-import { mailCheck } from '@/api/auth.js'
+import { mailFind, pwFind } from '@/api/auth.js'
 import {emailCheck} from '@/utils/emailCheck'
 import jwt_decode from 'jwt-decode'
 export default {
@@ -131,15 +131,18 @@ export default {
     findBoxClose(){
       this.findBoxType = ''
       this.findEmail = ''
+      this.emailVerificationCodeCheck=''
     },
     // 이메일확인
-    async emailVeificaionSend(){
+    async emailVeificaionSend(value){
       this.$store.dispatch('SPINNERVIEW', true)
       try {
-        const findEmail = {
-          email : this.findEmail,
+        let responce
+        if (value == 'pw'){
+          responce = await pwFind(this.findEmail)
+        } else {
+          responce = await mailFind(this.findEmail)
         }
-        let responce = await mailCheck(findEmail)
         console.log(responce)
         this.emailVerificationCodeCheck = responce.status
       } catch (error){
@@ -187,6 +190,11 @@ export default {
   width: 40vw;
   border-radius: 5px;
   cursor: pointer;
+}
+.approve{
+  font-weight: bold;
+  color: rgb(42, 61, 165);
+  float: right;
 }
 .warning {
   font-weight: bold;
