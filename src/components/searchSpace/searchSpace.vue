@@ -36,7 +36,7 @@ export default {
       console.log(this.pageNum,this.spaceType,this.spaceName,this.address,this.startDate,this.endDate,this.startTime,this.endTime)
       try {
         // const response = await spaceDumy
-        const response = await spaceSearch(this.pageNum,this.spaceType,this.spaceName,this.address)
+        const response = await spaceSearch(this.pageNum,this.spaceType,this.spaceName,this.address,this.startDate,this.endDate,this.startTime,this.endTime)
         this.spaceItems = response.data.data
       } catch (error){
         console.log(error)

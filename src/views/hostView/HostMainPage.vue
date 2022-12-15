@@ -6,7 +6,7 @@
       </router-link>
     </div>
     <div class="spaceAllContainer">
-      <main-page-space-module v-for="spaceItem in spaceItems" :key="spaceItem" :space-item="spaceItem" />
+      <main-page-space-module v-for="spaceItem in spaceItems" :key="spaceItem" :space-item="spaceItem" @space-delete-call="spaceAllCall" />
     </div>
   </div>
 </template>

@@ -52,11 +52,31 @@ export default {
       selectEndTimeData:[],
     }
   },
-  created(){
-    this.makeCalendar()
+  async created(){
+    await this.makeCalendar()
     this.makeStartTime()
+    this.paramCheck()
   },
   methods:{
+    paramCheck(){
+      const startDate = this.$route.params.startDate
+      if (this.$route.params.startDate != 'noDate'){
+        this.selectStartYear = startDate.slice(0,4)
+        this.selectStartMonth = startDate.slice(5,7)
+        this.selectStartDate = startDate.slice(8,10)
+        this.seleteSearchDate('startDate')
+      }
+      const startTime = this.$route.params.startTime
+      if (this.$route.params.startTime != 'noTime'){
+        this.selectStartTime = startTime
+        this.seleteSearchTime('startTime')
+      }
+      const endTime = this.$route.params.endTime
+      if (this.$route.params.endTime != 'noTime'){
+        this.selectEndTime = endTime
+        this.seleteSearchTime('endTime')
+      }
+    },
     // 달력생성
     makeCalendar(){
       const today = new Date()
@@ -119,8 +139,16 @@ export default {
       }
     },
     seleteSearchDate(){
+      let month = this.selectStartMonth
+      let date = this.selectStartDate
+      if (month < 10){
+          month = '0'+month
+        }
+        if (date < 10){
+          date = '0'+date
+        }
       let selectDate = {
-        'date':this.selectStartYear+'-'+this.selectStartMonth+'-'+this.selectStartDate,
+        'date':this.selectStartYear+'-'+month+'-'+date,
         'value':'startDate',
       }
       this.selectStartTime = '0'
@@ -140,7 +168,16 @@ export default {
           'value':value,
         }
       }
-      this.$emit('search-time', selectTime)
+      if (this.selectStartTime >= 0 && this.selectEndTime >= 0){
+        if (this.selectStartTime > this.selectEndTime){
+          let message = '시작시간이 종료시간과 같거나 큽니다.'
+          this.$store.dispatch('MODALVIEWCLICK', true)
+          this.$store.dispatch('MODALMESSAGE', message)
+          this.selectStartTime = this.selectEndTime
+        } else {
+          this.$emit('search-time', selectTime)
+        }
+      }
     },
   },
 }
