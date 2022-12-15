@@ -159,6 +159,10 @@ export default {
       this.selectCityDetailName = '세부지역'
       this.selectSpaceType = '공간타입'
       this.searchWord=''
+      this.startDate = 'noDate'
+      this.endDate = 'noDate'
+      this.startTime = 'noTime'
+      this.endTime = 'noTime'
       this.searchSubmit()
     },
     // 조건 검색
@@ -202,7 +206,7 @@ export default {
     },
     // 시간 날짜 선택
     searchDate(selectDate){
-      console.log(selectDate)
+      // console.log(selectDate)
       if (selectDate.value == 'startDate'){
         this.startDate = selectDate.date
       } else {
@@ -210,13 +214,13 @@ export default {
       }
     },
     searchTime(selectTime){
-      console.log(selectTime)
+      // console.log(selectTime)
       if (selectTime.value == 'startTime'){
         this.startTime = selectTime.time
       } else {
         this.endTime = selectTime.time
       }
-      console.log(this.startTime, this.endTime)
+      // console.log(this.startTime, this.endTime)
     },
   },
 }

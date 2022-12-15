@@ -1,6 +1,19 @@
 <template>
   <div class="spaceItem">
-    <div v-if="spaceItem.spaceImgList != null" class="spaceImg">
+    <space-delete v-if="spaceDeleteBox" @space-delte="spaceDelete" @space-delete-cancel="spaceDeleteCheck" />
+    <i class="fa-solid fa-gear fa-lg settingBtn" @click="settingBox = true" />
+    <div v-if="settingBox" class="settingBox" @mouseleave="settingBox = false">
+      <p @click="spaceDeleteCheck(true)">
+        공간삭제
+      </p>
+      <router-link :to="spaceUpdatelink('space')">
+        <p>공간수정</p>
+      </router-link>
+      <router-link :to="spaceUpdatelink('room')">
+        <p>룸수정</p>
+      </router-link>
+    </div>
+    <div v-if="spaceItem.spaceImgList != null" class="mainSpaceImg">
       <div class="moveImgBox leftBox">
         <i class="fa-solid fa-chevron-left fa-lg moveBtn" @click="movePrev" />
       </div>
@@ -9,7 +22,7 @@
         <i class="fa-solid fa-chevron-right fa-lg moveBtn" @click="moveNext" />
       </div>
     </div>
-    <div v-else class="spaceImg">
+    <div v-else class="mainSpaceImg">
       <img :src="require(`@/assets/noImg.gif`)" alt="공간이미지">
     </div>
     <router-link :to="itemLink(spaceItem.spaceStatus, spaceItem.spaceName, spaceItem.spaceType, spaceItem.spaceName, spaceItem.spaceId)" :class="(spaceItem.spaceStatus == 'waiting') ? 'waitingBox' : 'approvedBox'">
@@ -34,7 +47,7 @@
         </div>
       </template>
       <template v-else>
-        <template v-if="spaceItem.spaceType == '3'">
+        <template v-if="spaceItem.spaceType == '1'">
           <div class="spaceStatus spaceNoCreate">
             <span>오피스 설정필요</span>
           </div>
@@ -50,16 +63,24 @@
 </template>
 
 <script>
+import {spaceDelte} from '@/api/host.js'
+import spaceDelete from './spaceDelete.vue'
 export default {
+  components:{
+    spaceDelete,
+  },
   props:{
     spaceItem:{
       type:Object,
       required: true,
     },
   },
+  emits:['space-delete-call'],
   data(){
     return {
       spaceImgListNum:'0',
+      settingBox:false,
+      spaceDeleteBox:false,
     }
   },
   methods:{
@@ -86,6 +107,22 @@ export default {
         this.spaceImgListNum ++
       }
     },
+    spaceDeleteCheck(value){
+      console.log(value)
+      this.spaceDeleteBox = value
+    },
+    async spaceDelete(){
+      let response = await spaceDelte(this.spaceItem.spaceId)
+      console.log(response)
+      this.$emit('space-delete-call')
+    },
+    spaceUpdatelink(value){
+      if (value == 'space'){
+        return `/host/spaceUpdate/${this.spaceItem.spaceName}/${this.spaceItem.spaceType}/${this.spaceItem.spaceId}`
+      } else if (value == 'room'){
+        return `/host/roomUpdate/${this.spaceItem.spaceName}/${this.spaceItem.spaceType}/${this.spaceItem.spaceId}`
+      }
+    },
   },
 }
 </script>
@@ -100,10 +137,16 @@ export default {
   padding: 1vw;
   margin: 1vw 1.3vw;
 }
+.settingBtn{
+  position: absolute;
+  right: 0.5vw;
+  top: 2vh;
+  cursor: pointer;
+}
 .spaceGradeReview {
   float: right;
 }
-.spaceImg img {
+.mainSpaceImg img {
   width: 15vw;
   height: 13vh;
   object-fit: contain;
@@ -148,5 +191,23 @@ export default {
 }
 .rightBox{
   right: 0.5vw;
+}
+/* 세팅박스 */
+.settingBox{
+  position: absolute;
+  background: white;
+  text-align: center;
+  border: 1px solid gray;
+  right: 1vw;
+  top: 2vh;
+  width: 5vw;
+}
+.settingBox p{
+  border: 1px solid gray;
+  cursor: pointer;
+}
+.settingBox p:hover{
+  color: blue;
+  font-size: bold;
 }
 </style>

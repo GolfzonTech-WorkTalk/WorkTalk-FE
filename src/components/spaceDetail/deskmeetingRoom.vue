@@ -6,6 +6,20 @@
     <div v-for="item in roomItems" :key="item" class="roomItems">
       <input v-model="roomReservationView" type="radio" :value="item.roomId" @click="reservationReset(item)">
       <span class="roomName">{{ item.roomName }}</span>
+      <div class="imgContainer">
+        <template v-if="(item.roomImgDtoList == null)">
+          <img class="spaceImg" :src="require(`@/assets/noImg.gif`)" alt="공간이미지">
+        </template>
+        <template v-else>
+          <div class="moveImgBox leftBox">
+            <i class="fa-solid fa-chevron-left fa-lg moveBtn" @click="movePrev(item)" />
+          </div>
+          <img class="spaceImg" :src="item.roomImgDtoList[item.roomImgListNum].roomImgUrl" alt="공간이미지">
+          <div class="moveImgBox rightBox">
+            <i class="fa-solid fa-chevron-right fa-lg moveBtn" @click="moveNext(item)" />
+          </div>
+        </template>
+      </div>
       <p class="roomTypePrice">
         운용시간 : {{ timeCheck(item.workStart, item.workEnd) }}
       </p>
@@ -131,10 +145,11 @@ export default {
     try {
       try {
         const spaceId = this.$route.params.spaceId
-        // console.log(spaceId)
         let spaceResponce = await roomOne(spaceId)
-        // console.log(spaceResponce)
         this.roomItems = spaceResponce.data
+        for (let i = 0; i < this.roomItems.length; i++){
+          this.roomItems[i].roomImgListNum = 0
+        }
       } catch (error){
         console.log(error)
       }
@@ -145,6 +160,20 @@ export default {
     }
   },
   methods: {
+    movePrev(item){
+      if (item.roomImgListNum == '0'){
+        item.roomImgListNum = item.roomImgDtoList.length -1  
+      } else {
+        item.roomImgListNum --
+      }
+    },
+    moveNext(item){
+      if (item.roomImgListNum == item.roomImgDtoList.length -1 ){
+        item.roomImgListNum = 0
+      } else {
+        item.roomImgListNum ++
+      }
+    },
     useNumber(value){
       if (value == 'MEETING4'){
         return this.MEETING4
@@ -624,6 +653,32 @@ export default {
   background: rgb(235, 140, 85);
   color: white;
 }
-/* 결제박스 */
-
+/* 룸이미지 */
+.imgContainer{
+  position: relative;
+  width: 19vw;
+  height: 15vh;
+}
+.spaceImg{
+  width: 19vw;
+  height: 15vh;
+}
+.moveImgBox{
+  position: absolute;
+  height: 15vh;
+  top: 0;
+}
+.moveImgBox:hover{
+  background: rgba(255, 255, 255, 0.301);
+}
+.moveBtn{
+  padding-top: 8vh;
+  color: rgba(128, 128, 128, 0.712);
+}
+.leftBox{
+  left: 0;
+}
+.rightBox{
+  right: 0;
+}
 </style>

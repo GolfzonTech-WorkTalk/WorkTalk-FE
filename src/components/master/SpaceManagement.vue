@@ -2,7 +2,7 @@
   <div class="spaceManagementBox">
     <div v-if="spaceStatusUpdate" class="Background" />
     <div class="spaceListSortBox">
-      <select v-model="spaceType" @change="spaceListCall()">
+      <select v-model="spaceType" class="sortBox" @change="spaceListCall(pageNowNum)">
         <option value="공간타입" hidden>
           공간타입
         </option>
@@ -10,7 +10,7 @@
           {{ item.name }}
         </option>
       </select>
-      <select v-model="spaceListSort" @change="spaceListCall()">
+      <select v-model="spaceListSort" class="sortBox" @change="spaceListCall(pageNowNum)">
         <option value="공간상태" hidden>
           공간상태
         </option>
@@ -36,6 +36,11 @@
       </div>
     </div>
     <space-status-update v-if="spaceStatusUpdate" :space-status-update="spaceStatusUpdate" @update-cancel="updateCancel" @update-status="spaceListCall" />
+    <div class="pageNumber">
+      <span><i class="fa-solid fa-chevron-left monthMoveBtn" @click="pageMove('pre')" /></span>
+      <span v-for="num in pageData" :key="num" :class="num.class" @click="reservationDataCall(num.value)">{{ num.value }}</span>
+      <span><i class="fa-solid fa-chevron-right" @click="pageMove('next')" /></span>
+    </div>
   </div>
 </template>
 
@@ -66,13 +71,19 @@ export default {
       spaceListSort:'공간상태',
       spaceType:'공간타입',
       spaceStatusUpdate:'',
+      // 페이지 관리데이터
+      pageStartNum: 1,
+      pageNowNum:1,
+      pageData:[],
+      pageTotal:'',
     }
   },
   created(){
-    this.spaceListCall()
+    this.spaceListCall(this.pageNowNum)
   },
   methods:{
-    async spaceListCall(){
+    async spaceListCall(pageNowNum){
+      this.spaceList = []
       let spaceListSort = this.spaceListSort
       let spaceType = this.spaceType
       if (this.spaceListSort == '공간상태'){
@@ -81,11 +92,17 @@ export default {
       if (this.spaceType == '공간타입'){
         spaceType = ''
       }
-      // const response = await spaceDumy
-      console.log(spaceListSort,spaceType)
-      const response = await spaceAll(spaceListSort, spaceType)
-      this.spaceList = response.data
-      this.$store.dispatch('SPINNERVIEW', false)
+      try {
+        console.log(pageNowNum-1, spaceListSort, spaceType)
+        const response = await spaceAll(pageNowNum-1, spaceListSort, spaceType)
+        console.log(response)
+        this.spaceList = response.data.data
+        this.pageTotal =  response.data.count
+        this.$store.dispatch('SPINNERVIEW', false)
+        this.paging(this.pageNowNum)
+      } catch (error){
+        console.log(error)
+      }
     },
     spaceTypeCheck(value){
       if (value == '1'){
@@ -125,6 +142,52 @@ export default {
     updateCancel(){
       this.spaceStatusUpdate = ''
     },
+    // 페이징
+    paging(pageNowNum){
+      this.pageData = []
+      this.pageNowNum = pageNowNum
+      let total = this.pageTotal
+      if (total%10 != 0){
+        this.pageTotal = parseInt(total/10)+1
+      } else { 
+        this.pageTotal = total/10
+      }
+      let lastPage
+      if (this.pageTotal < 6){
+        lastPage = this.pageTotal+1
+      } else { 
+        lastPage = this.pageStartNum+5
+        if (lastPage >= this.pageTotal ){
+          lastPage = this.pageTotal+1
+        }
+      }
+      for (let i = this.pageStartNum; i < lastPage; i++){
+        if (pageNowNum == i){
+          this.pageData.push({'value':i,'class':'pageNowNum'})
+        } else {
+          this.pageData.push({'value':i,'class':''})
+        }
+      }
+    },
+    // 페이지 번호 넘기기
+    pageMove(value){
+      if (value == 'next'){
+        if (this.pageStartNum == this.pageTotal-1){
+          this.paging(this.pageStartNum)
+        } else {
+          this.pageStartNum = this.pageStartNum + 5
+          this.paging(this.pageStartNum)
+        }
+      } else {
+        if (this.pageStartNum == 1){
+          this.paging(this.pageStartNum)
+        } else {
+          this.pageStartNum = this.pageStartNum - 5
+          this.paging(this.pageStartNum)
+        }
+      }
+      this.reservationDataCall(this.pageNowNum)
+    },
   },
 }
 </script>
@@ -150,10 +213,13 @@ export default {
 .spaceListSortBox{
   text-align: right;
 }
-.spaceListSortBox select{
-  font-size: 1rem;
-  width: 7vw;
-  margin: 2vh 0;
+.sortBox{
+  width: 8vw;
+  letter-spacing: 0.3rem;
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin-top: 2vh;
+  margin-left: 2vw;
 }
 .spaceListTitle, .spaceListItem{
   border-bottom: 1px solid gray;
@@ -219,5 +285,18 @@ export default {
   border: 2px solid red;
   color: red;
   cursor: pointer;
+}
+/* 넘버링 */
+.pageNumber{
+  text-align: center;
+  font-size: 1rem;
+}
+.pageNumber span{
+  margin: 1vw;
+  cursor: pointer;
+}
+.pageNowNum{
+  font-weight: bold;
+  color: blue;
 }
 </style>

@@ -60,10 +60,28 @@ export default {
       selectEndDateData:[],
     }
   },
-  created(){
-    this.makeCalendar()
+  async created(){
+    await this.makeCalendar()
+    this.paramCheck()
   },
   methods:{
+    // 주소체크
+    paramCheck(){
+      const startDate = this.$route.params.startDate
+      if (this.$route.params.startDate != 'noDate'){
+        this.selectStartYear = startDate.slice(0,4)
+        this.selectStartMonth = startDate.slice(5,7)
+        this.selectStartDate = startDate.slice(8,10)
+        this.seleteSearchDate('startDate')
+      }
+      const endDate = this.$route.params.endDate
+      if (this.$route.params.endDate != 'noDate'){
+        this.selectEndYear = endDate.slice(0,4)
+        this.selectEndMonth = endDate.slice(5,7)
+        this.selectEndDate = endDate.slice(8,10)
+        this.seleteSearchDate('endDate')
+      }
+    },
     // 달력생성
     makeCalendar(){
       const today = new Date()
@@ -109,6 +127,7 @@ export default {
         this.selectStartDateData.push({'name':i})
       }
       this.makeEndYear(this.selectStartYear)
+      this.seleteSearchDate('startDate')
     },
     makeEndYear(year){
       this.selectEndYearData = []
@@ -153,22 +172,57 @@ export default {
       for (let i = lastDate; i > date-1; i--){
         this.selectEndDateData.push({'name':i})
       }
+      this.seleteSearchDate('endDate')
     },
     seleteSearchDate(value){
       let selectDate
       if (value == 'startDate'){
+        let month = this.selectStartMonth
+        let date = this.selectStartDate
+        if (month < 10){
+          month = '0'+month
+        }
+        if (date < 10){
+          date = '0'+date
+        }
         selectDate = {
-          'date':this.selectStartYear+'-'+this.selectStartMonth+'-'+this.selectStartDate,
+          'date':this.selectStartYear+'-'+month+'-'+date,
           'value':value,
         }
       } else {
+        let month = this.selectEndMonth
+        let date = this.selectEndDate
+        if (month < 10){
+          month = '0'+month
+        }
+        if (date < 10){
+          date = '0'+date
+        }
         selectDate = {
-          'date':this.selectEndYear+'-'+this.selectEndMonth+'-'+this.selectEndDate,
+          'date':this.selectEndYear+'-'+month+'-'+date,
           'value':value,
         }
       }
-      // console.log(selectDate)
-      this.$emit('search-office-date', selectDate)
+      let message = '시작일 종료일보다 큽니다.'
+      if (this.selectStartYear <= this.selectEndYear){
+        if (this.selectStartMonth <= this.selectEndMonth){
+          if (this.selectStartDate <= this.selectEndDate){
+            this.$emit('search-office-date', selectDate)
+          } else {
+            this.$store.dispatch('MODALVIEWCLICK', true)
+            this.$store.dispatch('MODALMESSAGE', message)
+            this.selectStartDate = this.selectEndDate
+          }
+        } else {
+          this.$store.dispatch('MODALVIEWCLICK', true)
+          this.$store.dispatch('MODALMESSAGE', message)
+          this.selectStartMonth = this.selectEndMonth
+        }
+      } else {
+        this.$store.dispatch('MODALVIEWCLICK', true)
+        this.$store.dispatch('MODALMESSAGE', message)
+        this.selectStartYear = this.selectEndYear
+      }
     },
   },
 }

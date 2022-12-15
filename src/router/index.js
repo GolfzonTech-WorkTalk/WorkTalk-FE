@@ -30,7 +30,7 @@ const routes = [
     component: () => import('@/views/JoinPage.vue'),
   },
   {
-    path: '/map/:spaceType/:spaceName/:address',
+    path: '/map/:spaceType/:spaceName/:address/:startDate/:endDate/:startTime/:endTime',
     name: 'userMAP',
     component: () => import('@/views/MapPage.vue'),
   },

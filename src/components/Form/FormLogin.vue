@@ -51,6 +51,12 @@
           <span>회원가입</span>
         </router-link>
       </div>
+      <div class="kakaoLogin">
+        <p>또는</p>
+        <a @click="kakaoLogin()">
+          <img src="//k.kakaocdn.net/14/dn/btqCn0WEmI3/nijroPfbpCa4at5EIsjyf0/o.jpg">
+        </a>
+      </div>
     </form>
   </div>
 </template>
@@ -151,6 +157,45 @@ export default {
       }
       this.$store.dispatch('SPINNERVIEW', false)
     },
+    // 카카오 로그인
+    kakaoLogin(){
+      // console.log(window.Kakao)
+      window.Kakao.Auth.login({
+        scope: 'profile_nickname, account_email',
+        success: this.getKakaoAccount,
+      })
+    },
+    getKakaoAccount(){
+      window.Kakao.API.request({
+        url:'/v2/user/me',
+        success: res => {
+          const kakao_account = res.kakao_account
+          const nickname = kakao_account.profile.nickname
+          const email = kakao_account. email
+          console.log(res)
+          console.log('kakao_account',kakao_account)
+          console.log('nickname',nickname)
+          console.log('email',email)
+          let kakaoLogin = {
+            'name':nickname+'_'+res.id,
+            'pw':res.id,
+            'email':email,
+            'member':true, // 회원이면 true 아니면 false 넘기기
+          }
+          let responce = mailFind(email)
+          console.log(responce)
+          if (responce.data == null || responce.status == 'kakao'){
+            console.log(kakaoLogin)
+            console.log('카카오회원 카카오 로그인실행')
+          } else if (responce.status == 'worktalk'){
+            console.log('워크토크회원 이미가입된 메세지 출력')
+          }
+        },
+        fail : error => {
+          console.log(error)
+        },
+      })
+    },
   },
 }
 </script>
@@ -160,19 +205,19 @@ export default {
   position: absolute;
   background: rgba(0, 0, 0, 0.137);
   border-radius: 15px;
-  height: 43vh;
+  height: 43.5vh;
   width: 46vw;
 }
 .loginForm {
   background: white;
   border-radius: 15px;
-  height: 30vh;
+  height: 35vh;
   width: 40vw;
   padding: 3vw;
   text-align: center;
 }
 .loginFromItems {
-  margin-bottom: 4vh;
+  margin-bottom: 3vh;
 }
 #email, #pw {
   height: 5vh;
@@ -247,6 +292,18 @@ export default {
   position: absolute;
   top: 2vh;
   right: 1vw;
+  cursor: pointer;
+}
+.kakaoLogin{
+  margin-top: 1vh;
+  font-size: 0.9rem;
+}
+.kakaoLogin p {
+  color: gray;
+}
+.kakaoLogin img{
+  margin-top: 1vh;
+  width: 15vw;
   cursor: pointer;
 }
 </style>

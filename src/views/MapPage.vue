@@ -1,7 +1,7 @@
 <template>
   <div id="mapContainer">
     <div class="mapLocationSortBox">
-      <select v-model="selectCityCode" class="mapLocationSort" @change="selectCityOne">
+      <select v-model="selectCityCode" class="mapLocationSort" :class="{'selectTerms':selectCityCode!='지역코드'}" @change="selectCityOne">
         <option value="지역코드" hidden>
           지역
         </option>
@@ -9,7 +9,7 @@
           {{ item.name }}
         </option>
       </select>
-      <select v-model="selectCityDetailName" class="mapLocationSort" @change="selectCityDetailOne">
+      <select v-model="selectCityDetailName" class="mapLocationSort" :class="{'selectTerms':selectCityDetailName!='세부지역'}" @change="selectCityDetailOne">
         <option value="세부지역" hidden>
           세부지역
         </option>
@@ -17,7 +17,7 @@
           {{ item.name }}
         </option>
       </select>
-      <select v-model="selectSpaceType" class="mapLocationSort" @change="spaceInfoSearch">
+      <select v-model="selectSpaceType" class="mapLocationSort" :class="{'selectTerms':selectSpaceType!='공간타입'}" @change="spaceInfoSearch">
         <option value="공간타입" hidden>
           공간타입
         </option>
@@ -25,7 +25,11 @@
           {{ item.name }}
         </option>
       </select>
-      <input type="text" placeholder="공간검색" class="mapLocationSort">
+      <input v-model="searchWord" :class="{'selectTerms':searchWord!=''}" type="text" placeholder="키워드검색" class="mapLocationSort">
+      <div class="selectTermsClearBtn" @click="selectTermsClear">
+        <i class="fa-solid fa-rotate-right fa-lg" />
+        <span>초기화</span>
+      </div>
     </div>
     <div id="map" />
   </div>
@@ -34,7 +38,6 @@
 <script>
 import { cityAddress, cityAddressDetail } from '@/utils/addressCity.js'
 import {spaceSearch} from '@/api/user.js'
-// import { mapDummy } from '@/utils/dummy/dummy.js'
 export default {
   data(){
     return {
@@ -45,6 +48,7 @@ export default {
       selectCityName:'지역',
       selectCityDetailName:'세부지역',
       selectSpaceType:'공간타입',
+      searchWord:'',
       selectSpaceTypeData:[
         {'name':'전체','value':'공간타입'},
         {'name':'오피스','value':'1'},
@@ -116,6 +120,15 @@ export default {
           this.selectCityName = this.cityAddressData[i].name
         }
       }
+    },
+    // 조건 초기화
+    selectTermsClear(){
+      this.selectCityCode = '지역코드'
+      this.selectCityName='지역'
+      this.selectCityDetailName = '세부지역'
+      this.selectSpaceType = '공간타입'
+      this.searchWord=''
+      this.spaceInfoSearch()
     },
     async spaceInfoSearch(){
       try {
@@ -304,7 +317,7 @@ export default {
 }
 .mapLocationSortBox{
   position: absolute;
-  width: 22vw;
+  width: 70vw;
   padding: 2vh 0vw;
   z-index: 2;
   left: 10vw;
@@ -318,5 +331,15 @@ export default {
   font-weight: bold;
   margin-right: 1vw;
   margin-bottom: 1vh;
+}
+.selectTerms{
+  color: rgb(108, 108, 209);
+  font-weight: bold;
+}
+.selectTermsClearBtn{
+  display: inline;
+  cursor: pointer;
+  color: gray;
+  font-size: 1rem;
 }
 </style>

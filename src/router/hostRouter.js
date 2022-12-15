@@ -18,21 +18,21 @@ export default [
     meta: {auth:true},
   },
   {
-    path: '/host/spaceUpdate',
+    path: '/host/spaceUpdate/:name/:spaceType/:spaceId',
     name: 'hostSpaceUpdate',
-    component: () => import('@/views/hostView/SpaceCreate.vue'),
-    meta: {auth:true},
-  },
-  {
-    path: '/host/spaceUpdate',
-    name: 'hostSpaceUpdate',
-    component: () => import('@/views/hostView/SpaceCreate.vue'),
+    component: () => import('@/views/hostView/SpaceUpdate.vue'),
     meta: {auth:true},
   },
   {
     path: '/host/roomCreate/:name/:spaceType/:spaceId',
     name: 'hostRoomCreate',
     component: () => import('@/views/hostView/RoomCreatePage.vue'),
+    meta: {auth:true},
+  },
+  {
+    path: '/host/roomUpdate/:name/:spaceType/:spaceId',
+    name: 'hostRoomUpdate',
+    component: () => import('@/views/hostView/RoomUpdatePage.vue'),
     meta: {auth:true},
   },
   {

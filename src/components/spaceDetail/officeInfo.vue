@@ -4,14 +4,14 @@
       오피스 정보
     </p>
     <div class="imgContainer">
-      <template v-if="(roomItems.spaceImgList == null)">
+      <template v-if="(roomItems.roomImgDtoList == null)">
         <img class="spaceImg" :src="require(`@/assets/noImg.gif`)" alt="공간이미지">
       </template>
       <template v-else>
         <div class="moveImgBox leftBox">
           <i class="fa-solid fa-chevron-left fa-lg moveBtn" @click="movePrev" />
         </div>
-        <img class="spaceImg" :src="spaceItems.spaceImgList[spaceImgListNum].spaceImgUrl" alt="공간이미지">
+        <img class="spaceImg" :src="roomItems.roomImgDtoList[roomImgListNum].roomImgUrl" alt="공간이미지">
         <div class="moveImgBox rightBox">
           <i class="fa-solid fa-chevron-right fa-lg moveBtn" @click="moveNext" />
         </div>
@@ -82,6 +82,7 @@ export default {
       // 마일리지
       mileage: '',
       useMileage: '',
+      roomImgListNum:'0',
     }
   },
   // 룸정보 출력
@@ -103,6 +104,20 @@ export default {
     }
   },
   methods: {
+    movePrev(){
+      if (this.roomImgListNum == '0'){
+        this.roomImgListNum = this.roomItems.roomImgDtoList.length -1  
+      } else {
+        this.roomImgListNum --
+      }
+    },
+    moveNext(){
+      if (this.roomImgListNum == this.roomItems.roomImgDtoList.length -1 ){
+        this.roomImgListNum = 0
+      } else {
+        this.roomImgListNum ++
+      }
+    },
     useNumber(value){
       if (value == 'MEETING4'){
         return this.MEETING4

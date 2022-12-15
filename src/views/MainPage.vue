@@ -1,6 +1,6 @@
 <template>
   <div class="mainPage">
-    <router-link to="/map/AllType/AllName/AllRegions">
+    <router-link to="/map/AllType/AllName/AllRegions/noDate/noDate/noTime/noTime">
       <i class="mapIcon fa-solid fa-map-location-dot fa-3x" />
     </router-link>
     <div class="spaceType">
@@ -48,7 +48,7 @@ export default {
   },
   methods: {
     searchSpacelink(spaceType){
-      return '/searchSpace/'+spaceType+'/AllName/AllRegions'
+      return '/searchSpace/'+spaceType+'/AllName/AllRegions/noDate/noDate/noTime/noTime'
     },
   },
 }

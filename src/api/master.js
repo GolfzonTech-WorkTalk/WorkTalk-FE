@@ -1,9 +1,10 @@
 import { posts } from "./index"
 
 // 유저관리
-function spaceAll(spaceStatus, spaceType){
+function spaceAll(pageNum, spaceStatus, spaceType){
   return posts.get('master/spaceAll',{
     params:{
+      pageNum,
       spaceStatus,
       spaceType,
     },

@@ -20,8 +20,13 @@ function roomCreate(formData){
   })
 }
 
+function spaceDelte(spaceId){
+  return posts.get('host/spaceDelete/'+spaceId)
+}
+
 export {
   spaceAll,
   spaceCreate,
   roomCreate,
+  spaceDelte,
 }

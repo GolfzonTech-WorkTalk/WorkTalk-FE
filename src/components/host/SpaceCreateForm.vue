@@ -1,6 +1,6 @@
 <template>
   <div class="createBox">
-    <form class="createFrom" enctype="multipart/form-data" @submit.prevent="spaceCreate">
+    <form class="createFrom" enctype="multipart/form-data" @submit.prevent="spaceCreateCheck">
       <div class="spaceType">
         <span>공간생성</span>
         <div class="spaceTypeItems">
@@ -14,15 +14,15 @@
         공간명
         <span class="textCount" :class="{warning:spaceName.length >= 20}">{{ spaceNameCount }}/20자</span><br>
         <input v-model="spaceName" class="inputBox" type="text" placeholder="공간의 이름을 작성해주세요." @keyup="spaceNameCountCheck">
-        <p v-if="spaceName.length >= 20" class="warning">
+        <p v-if="spaceName.length >= 20" class="warning warningMsg">
           제목은 20자까지 가능합니다.
         </p>
       </div>
       <div class="spaceDetail boxName">
         <span>공간소개</span>
         <span class="textCount" :class="{warning:spaceDetail.length >= 100}">{{ spaceDetailCount }}/100자</span><br>
-        <textarea v-model="spaceDetail" class="inputBox spaceDetailBox" name="" rows="5" placeholder="공간을 소개해 주세요." @keypress="spaceDetailCountCheck" />
-        <p v-if="spaceDetail.length >= 100" class="warning">
+        <textarea v-model="spaceDetail" class="inputBox spaceDetailBox" name="" rows="5" placeholder="공간을 소개해 주세요." @keypress="spaceDetailCountCheck" @keyup="spaceDetailCountCheck" />
+        <p v-if="spaceDetail.length >= 100" class="warning warningMsg">
           설명은 100자까지 가능합니다.
         </p>
       </div>
@@ -39,15 +39,13 @@
       </div>
       <span class="boxName">공간사진등록</span>
       <div class="imgBox">
-        <div v-if="!spaceImg.length" class="spaceImg">
-          <label for="imgBtn" class="imgBtn">사진추가</label>
-          <input id="imgBtn" ref="spaceImg" type="file" multiple accept="image/*" hidden @change="fileUpload($event)">
+        <div v-for="file in spaceImgPreview" :key="file" class="filePreview">
+          <i class="fa-solid fa-xmark previewImgDelete fa-lg" @click="fileDeleteButton(file.num)" />
+          <img class="preViewImg" :src="file.url">
         </div>
-        <div v-for="file in spaceImgPreview" :key="file" class="file-preview-wrapper">
-          <div class="file-close-button" @click="fileDeleteButton(file.num)">
-            x
-          </div>
-          <img :src="file.url">
+        <div class="spaceImg">
+          <label for="imgBtn" class="imgBtn">사진추가</label>
+          <input id="imgBtn" ref="spaceImg" type="file" multiple accept=".jpg, .png" hidden @change="fileUpload($event)">
         </div>
       </div>
       <button class="submit">
@@ -92,18 +90,30 @@ export default {
   methods: {
     // 사진등록삭제
     fileUpload(event){
-      console.log(event.target.files[0])
-      console.log(event.target.files[1])
-      this.spaceImg = event.target.files
+      for (let i = 0; i < event.target.files.length; i++){
+        this.spaceImg = [
+          ...this.spaceImg,
+          {'file':event.target.files[i],'num':i},
+        ]  
+      }
       for (let i = 0; i < event.target.files.length; i++){
         this.spaceImgPreview.push({
-          'url':URL.createObjectURL(this.target.files[i]),
+          'url':URL.createObjectURL(event.target.files[i]),
           'num':i,
         })
       }
     },
     fileDeleteButton(index){
-      this.spaceImg.splice(index, 1)
+      for (let i = 0; i < this.spaceImg.length; i++){
+        if (this.spaceImg[i].num == index){
+          this.spaceImg.splice(i, 1)
+        }
+      }
+      for (let i = 0; i < this.spaceImgPreview.length; i++){
+        if (this.spaceImgPreview[i].num == index){
+          this.spaceImgPreview.splice(i, 1)
+        }
+      }
     },
     //타입 선택
     spaceTypeSelect(item){
@@ -170,7 +180,56 @@ export default {
       }).open()
     },
     // 검증
-
+    spaceCreateCheck(){
+      let message = ''
+      if (!this.spaceType){
+        message = '공간유형을 선택해주세요.'
+        this.$store.dispatch('MODALVIEWCLICK', true)
+        this.$store.dispatch('MODALMESSAGE', message)
+      } else if (!this.spaceName){
+        message = '공간명을 입력해주세요.'
+        this.$store.dispatch('MODALVIEWCLICK', true)
+        this.$store.dispatch('MODALMESSAGE', message)
+      } else if (this.spaceName.length > 20){
+        message = '공간명이 20자를 초과하였습니다.'
+        this.$store.dispatch('MODALVIEWCLICK', true)
+        this.$store.dispatch('MODALMESSAGE', message)
+      } else if (!this.spaceDetail){
+        message = '공간설명을 작성해주세요.'
+        this.$store.dispatch('MODALVIEWCLICK', true)
+        this.$store.dispatch('MODALMESSAGE', message)
+      } else if (this.spaceDetail.length > 100){
+        message = '공간명이 100자를 초과하였습니다.'
+        this.$store.dispatch('MODALVIEWCLICK', true)
+        this.$store.dispatch('MODALMESSAGE', message)
+      } else if (!this.postcode){
+        message = '우편번호를 입력해주세요.'
+        this.$store.dispatch('MODALVIEWCLICK', true)
+        this.$store.dispatch('MODALMESSAGE', message)
+      } else if (!this.address){
+        message = '주소를 입력해주세요.'
+        this.$store.dispatch('MODALVIEWCLICK', true)
+        this.$store.dispatch('MODALMESSAGE', message)
+      } else if (!this.detailAddress){
+        message = '상세주소를 입력해주세요.'
+        this.$store.dispatch('MODALVIEWCLICK', true)
+        this.$store.dispatch('MODALMESSAGE', message)
+      } else if (!this.regCode){
+        message = '사업자번호를 입력해주세요.'
+        this.$store.dispatch('MODALVIEWCLICK', true)
+        this.$store.dispatch('MODALMESSAGE', message)
+      } else if (this.regCode.length != 12){
+        message = '사업자번호를 확인해주세요.'
+        this.$store.dispatch('MODALVIEWCLICK', true)
+        this.$store.dispatch('MODALMESSAGE', message)
+      } else if (!this.spaceImg){
+        message = '공간의 사진을 추가해주세요.'
+        this.$store.dispatch('MODALVIEWCLICK', true)
+        this.$store.dispatch('MODALMESSAGE', message)
+      } else {
+        this.spaceCreate()
+      }
+    },
     //공간생성
     // async 
     async spaceCreate(){
@@ -186,15 +245,13 @@ export default {
         formData.append('regCode', this.regCode)
         if (this.spaceImg != []){
           for (let i = 0; i < this.spaceImg.length; i++){
-            formData.append('multipartFileList', this.spaceImg[i])
-            console.log(this.spaceImg[i])
+            formData.append('multipartFileList', this.spaceImg[i].file)
+            console.log(this.spaceImg[i].file)
           }
-        } else {
-          formData.append('multipartFileList', null)
         }
-        for (let key of formData.keys()){
-          console.log(`${key}:${formData.get(key)}`)
-        }
+        // for (let key of formData.keys()){
+        //   console.log(`${key}:${formData.get(key)}`)
+        // }
         const createDataResponse = await spaceCreate(formData)
         console.log(createDataResponse)
         if (createDataResponse.status == 200){
@@ -258,12 +315,16 @@ export default {
 }
 /* 공간명 */
 .spaceName {
+  position: relative;
   margin-top: 1vh;
 }
 .boxName {
   font-size: 1.1rem;
 }
 /* 공간소개 */
+.spaceDetail{
+  position: relative;
+}
 .spaceDetailBox {
   height: 8vh;
   resize: none;
@@ -303,7 +364,9 @@ export default {
   height: 15vh;
   border: 1px solid gray;
   padding: 1vh 1vw;
-  overflow-y: scroll;
+  display: flex;
+  flex-wrap: wrap;
+  overflow: scroll;
   overflow-x: unset;
 }
 .spaceImg {
@@ -315,8 +378,25 @@ export default {
 }
 .imgBtn {
   font-size: 1rem;
+  margin: 0 1vw;
   background: white;
   cursor: pointer;
+}
+.filePreview{
+  position: relative;
+  margin: 0.5vh 0.9vw;
+  border: 1px solid gray;
+  width: 10vw;
+  height: 15vh;
+}
+.preViewImg{
+  width: 10vw;
+  height: 15vh;
+}
+.previewImgDelete{
+  position: absolute;
+  top: 1vh;
+  right: 0;
 }
 /* 제출 */
 .submit {
@@ -331,5 +411,11 @@ export default {
 }
 .warning {
   color: red;
+}
+.warningMsg{
+  position: absolute;
+  right: 0;
+  bottom: -1vh;
+  font-size: 1rem;
 }
 </style>

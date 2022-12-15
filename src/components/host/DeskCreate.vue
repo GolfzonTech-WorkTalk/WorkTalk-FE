@@ -47,8 +47,17 @@
           </select>
         </div>
         <div>
-          <p>방사진</p>
-          <input type="file" multiple accept="image/*" class="files">
+          <p>데스크 사진등록</p>
+          <div class="imgBox">
+            <div v-for="file in item.roomImgPreview" :key="file" class="filePreview">
+              <i class="fa-solid fa-xmark previewImgDelete fa-lg" @click="fileDeleteButton(item, file.num)" />
+              <img class="preViewImg" :src="file.url">
+            </div>
+            <div class="spaceImg">
+              <label :for="'img'+index" class="imgBtn">사진추가</label>
+              <input :id="'img'+index" ref="spaceImg" type="file" multiple accept=".jpg, .png" hidden @change="fileUpload($event)">
+            </div>
+          </div>
         </div>
       </div>
       <button v-if="roomCreate.length >= 1" class="addSubmitBtn">
@@ -68,11 +77,12 @@ export default {
           spaceId: this.$route.params.spaceId,
           roomType: 'DESK',
           roomName: '',
-          roomImg: '',
           roomPrice: '10000',
           workStart: '시작시간',
           workEnd:'종료시간',
           roomDetail:'',
+          roomImg: [],
+          roomImgPreview:[],
         },
       ],
       startTimeData: '',
@@ -102,11 +112,12 @@ export default {
         spaceId: this.$route.params.spaceId,
         roomType: 'DESK',
         roomName: '',
-        roomImg: '',
         roomPrice: '',
         workStart: '시작시간',
         workEnd:'종료시간',
         roomDetail:'',
+        roomImg: [],
+        roomImgPreview:[],
       })
     },
     // 날짜 필터
@@ -141,9 +152,30 @@ export default {
       this.roomCreate.splice(index, 1)
     },
     // 사진 내용추가
-    fileUpload(e){
-      console.log(e.target.files)
-      //.roomImg = e.target.files
+    fileUpload(event){
+      const index = event.path[0].id.slice(3)
+      for (let i = 0; i < event.target.files.length; i++){
+        this.roomCreate[index].roomImg = [
+          ...this.roomCreate[index].roomImg,
+          {'file':event.target.files[i],'num':i},
+        ]  
+        this.roomCreate[index].roomImgPreview.push({
+          'url':URL.createObjectURL(event.target.files[i]),
+          'num':i,
+        })
+      }
+    },
+    fileDeleteButton(item, num){
+      for (let i = 0; i < item.roomImg.length; i++){
+        if (item.roomImg[i].num == num){
+          item.roomImg.splice(i, 1)
+        }
+      }
+      for (let i = 0; i < item.roomImgPreview.length; i++){
+        if (item.roomImgPreview[i].num == num){
+          item.roomImgPreview.splice(i, 1)
+        }
+      }
     },
     // 방생성
     // async 
@@ -164,13 +196,13 @@ export default {
           formData.append('workStart', roomCreateData[i].workStart)
           formData.append('workEnd', roomCreateData[i].workEnd)
           formData.append('roomDetail', roomCreateData[i].roomDetail)
-          if (this.roomImg != null){
-            for (let i = 0; i < this.roomImg.length; i++){
-              formData.append('multipartFileList', this.roomImg[i])
-              console.log(this.roomImg[i])
+          if (roomCreateData[i].roomImg != null){
+            for (let j = 0; j < roomCreateData[i].roomImg.length; j++){
+              formData.append('multipartFileList', roomCreateData[i].roomImg[j].file)
+              console.log(roomCreateData[i].roomImg[j].file)
             }
           }
-          const responce = await roomCreate(formData, roomCreateData[i].spaceId)
+          const responce = await roomCreate(formData)
           console.log(responce)
         }
         alert('방이 생성되었습니다.')
@@ -214,7 +246,7 @@ export default {
 }
 .roomDelte {
   position: absolute;
-  top: 1vh;
+  top: 2vh;
   right: 1vw;
 }
 .roomItems div {
@@ -243,5 +275,48 @@ export default {
 }
 .warning{
   color: red;
+}
+/* 사진 선택 */
+.imgBox{
+  position: relative;
+  margin-left: 2vw;
+  margin-bottom: 1vh;
+  width: 50vw;
+  height: 15vh;
+  border: 1px solid gray;
+  padding: 0vh 1vw;
+  display: flex;
+  flex-wrap: wrap;
+  overflow: scroll;
+  overflow-x: unset;
+}
+.spaceImg {
+  border: 1px solid gray;
+  width: 10vw;
+  height: 15vh;
+  text-align: center;
+  line-height: 15vh;
+}
+.imgBtn {
+  font-size: 1rem;
+  margin: 0 1vw;
+  background: white;
+  cursor: pointer;
+}
+.filePreview{
+  position: relative;
+  margin: 0.5vh 0.9vw;
+  border: 1px solid gray;
+  width: 10vw;
+  height: 15vh;
+}
+.preViewImg{
+  width: 10vw;
+  height: 15vh;
+}
+.previewImgDelete{
+  position: absolute;
+  top: 1vh;
+  right: 0;
 }
 </style>
