@@ -1,12 +1,8 @@
 <template>
   <div class="roomContainer">
     <p>가격기준 : 4인(2만원/시간) 6인(3만원/시간) 8인~10인이하(5만원/시간) 20인(10만원/시간)</p>
-    <button class="addCreateBtn" @click="addCreateFrom">
-      공간추가
-    </button>
-    <form class="roomItems" @submit.prevent="roomCreateSubmit">
-      <div v-for="(item, index) in roomCreate" :key="item" class="roomItem">
-        <i class="fa-solid fa-trash-can fa-lg roomDelte" @click="deleteRoomItem(index)" />
+    <form class="roomItems" @submit.prevent="roomUpdateSubmit">
+      <div v-for="(item, index) in roomUpdate" :key="item" class="roomItem">
         <div>
           <p>방종류</p>
           <select v-model="item.roomType" @change="priceSetting(item)">
@@ -22,14 +18,7 @@
           </p>
         </div>
         <div>
-          <p>방이름</p>
-          <p :class="(item.roomName.length >= '20')?'warning':'noWarning'" class="roomNameCount">
-            {{ item.roomName.length }} / 20자
-          </p>
-          <input v-model="item.roomName" class="roomName" type="text" placeholder="방의 이름을 작성해 주세요.">
-          <p v-if="item.roomName.length >= '20'" class="warning">
-            방이름은 20자를 초과할 수 없습니다.
-          </p>
+          <p>방이름 : {{ item.roomName }}</p>
         </div>
         <div>
           <p>방설명</p>
@@ -103,6 +92,13 @@
         </div>
         <div>
           <p>회의실 사진등록</p>
+          <span class="boxName">업로드된 사진</span>
+          <div class="imgBox">
+            <div v-for="file in item.roomImgDtoList" :key="file" class="filePreview">
+              <i class="fa-solid fa-trash-can fa-lg imgDelete" @click="roomImgDelete(file)" />
+              <img class="preViewImg" :src="file.roomImgUrl">
+            </div>
+          </div>
           <div class="imgBox">
             <div v-for="file in item.roomImgPreview" :key="file" class="filePreview">
               <i class="fa-solid fa-xmark previewImgDelete fa-lg" @click="fileDeleteButton(item, file.num)" />
@@ -115,7 +111,7 @@
           </div>
         </div>
       </div>
-      <button v-if="roomCreate.length >= 1" class="addSubmitBtn">
+      <button v-if="roomUpdate.length >= 1" class="addSubmitBtn">
         저 장
       </button>
     </form>
@@ -123,20 +119,26 @@
 </template>
 
 <script>
-import {roomCreate} from '@/api/host'
+import {roomOne} from '@/api/user'
+import {roomUpdate, roomImgDelete} from '@/api/host'
 export default {
   data(){
     return {
-      roomCreate: [
+      roomUpdate: [
         {
-          spaceId: this.$route.params.spaceId,
-          roomType: '방종류 선택',
-          roomName: '',
-          roomPrice: '',
-          workStart: '시작시간',
-          workEnd:'종료시간',
-          roomDetail:'',
-          roomImg: [],
+          roomId:'3',
+          roomType: 'MEETING4',
+          roomName: '회의실더미',
+          roomPrice: '20000',
+          workStart: '6',
+          workEnd:'22',
+          roomDetail:'테스트중입니다.',
+          roomImgDtoList: [
+            {roomId:3,
+            roomImgId:53,
+            roomImgUrl:"https://worktalk-img.s3.ap-northeast-2.amazonaws.com/4e8c3420-6fb8-4d13-b716-0cb69b87db4e-dummy1.jpg"},
+          ],
+          roomImg:[],
           roomImgPreview:[],
           room: {
             park:false,
@@ -162,35 +164,31 @@ export default {
     }
   },
   created(){
-    // console.log(this.$route.params.spaceType)
-    let createTime = []
-    for (let i = 0; i < 25; i++){
-      if (i < 10){
-        let data = {'time':'0'+i+':00', 'value':'0'+i, 'disabled':false}
-        createTime.push(data)
-      } else {
-        let data = {'time':i+':00', 'value':i, 'disabled':false}
-        createTime.push(data)
-      }
-    }
-    this.startTimeData = createTime
-    this.endTimeData = createTime
+    this.createTime()
+    this.roomCall()
   },
   methods: {
-    // 배열내용추가
-    addCreateFrom(){
-      console.log('클릭')
-      this.roomCreate.push({
-        spaceId: this.$route.params.spaceId,
-        roomType: '방종류 선택',
-        roomName: '',
-        roomPrice: '',
-        workStart: '시작시간',
-        workEnd:'종료시간',
-        roomDetail:'',
-        roomImg: [],
-        roomImgPreview:[],
-      })
+    async roomCall(){
+      const response = await roomOne(this.$route.params.spaceId)
+      for (let i = 0; i < response.data.length; i++){
+        response.data[i].roomImg = []
+        response.data[i].roomImgPreview = []
+      }
+      console.log(response)
+    },
+    createTime(){
+      let createTime = []
+      for (let i = 0; i < 25; i++){
+        if (i < 10){
+          let data = {'time':'0'+i+':00', 'value':i, 'disabled':false}
+          createTime.push(data)
+        } else {
+          let data = {'time':i+':00', 'value':i, 'disabled':false}
+          createTime.push(data)
+        }
+      }
+      this.startTimeData = createTime
+      this.endTimeData = createTime
     },
     // 가격 출력 및 반영
     priceSetting(item){
@@ -229,22 +227,15 @@ export default {
       }
       this.endTimeData = createTime
     },
-    // 배열내용 삭제
-    deleteRoomItem(index){
-      console.log('클릭')
-      console.log(index)
-      console.log(this.roomCreate[index])
-      this.roomCreate.splice(index, 1)
-    },
     // 사진 내용추가
     fileUpload(event){
       const index = event.path[0].id.slice(3)
       for (let i = 0; i < event.target.files.length; i++){
-        this.roomCreate[index].roomImg = [
-          ...this.roomCreate[index].roomImg,
+        this.roomUpdate[index].roomImg = [
+          ...this.roomUpdate[index].roomImg,
           {'file':event.target.files[i],'num':i},
         ]  
-        this.roomCreate[index].roomImgPreview.push({
+        this.roomUpdate[index].roomImgPreview.push({
           'url':URL.createObjectURL(event.target.files[i]),
           'num':i,
         })
@@ -262,32 +253,35 @@ export default {
         }
       }
     },
+    // 업로드된 사진 삭제
+    async roomImgDelete(file){
+      console.log(file)
+      const response = await roomImgDelete(file.roomImgId)
+      console.log(response)
+      this.spaceDataCall()
+    },
     // 방생성
-    async roomCreateSubmit(){
+    async roomUpdateSubmit(){
       // 이미지제외한 룸정보 배열생성
-      const roomCreateData = this.roomCreate
-      // 전송할 데이터 생성
+      const roomUpdateData = this.roomUpdate
       try {
-        for (let i = 0; i < roomCreateData.length; i++){
+        for (let i = 0; i < roomUpdateData.length; i++){
           let formData = new FormData()
-          formData.append('spaceId', roomCreateData[i].spaceId)
-          formData.append('roomType', roomCreateData[i].roomType)
-          formData.append('roomName', roomCreateData[i].roomName)
-          formData.append('roomPrice', roomCreateData[i].roomPrice)
-          formData.append('workStart', roomCreateData[i].workStart)
-          formData.append('workEnd', roomCreateData[i].workEnd)
-          formData.append('roomDetail', roomCreateData[i].roomDetail)
-          formData.append('room', roomCreateData[i].room)
-          if (roomCreateData[i].roomImg != null){
-            for (let j = 0; j < roomCreateData[i].roomImg.length; j++){
-              formData.append('multipartFileList', roomCreateData[i].roomImg[j].file)
-              console.log(roomCreateData[i].roomImg[j].file)
+          formData.append('spaceId', this.$route.params.spaceId)
+          formData.append('spaceId', roomUpdateData[i].roomId)
+          formData.append('roomDetail', roomUpdateData[i].roomDetail)
+          formData.append('roomPrice', roomUpdateData[i].roomPrice)
+          formData.append('workStart', roomUpdateData[i].workStart)
+          formData.append('workEnd', roomUpdateData[i].workEnd)
+          formData.append('roomType', roomUpdateData[i].roomImgDtoList)
+          formData.append('room', roomUpdateData[i].room)
+          if (roomUpdateData[i].roomImg != null){
+            for (let j = 0; j < roomUpdateData[i].roomImg.length; j++){
+              formData.append('multipartFileList', roomUpdateData[i].roomImg[j].file)
+              console.log(roomUpdateData[i].roomImg[j].file)
             }
           }
-          // for (let key of formData.keys()){
-          //   console.log(`${key}:${formData.get(key)}`)
-          // }
-          const responce = await roomCreate(formData)
+          const responce = await roomUpdate(roomUpdateData[i].roomId, formData)
           console.log(responce)
         }
         alert('방이 생성되었습니다.')
@@ -400,6 +394,11 @@ export default {
   height: 15vh;
 }
 .previewImgDelete{
+  position: absolute;
+  top: 1vh;
+  right: 0;
+}
+.imgDelete{
   position: absolute;
   top: 1vh;
   right: 0;

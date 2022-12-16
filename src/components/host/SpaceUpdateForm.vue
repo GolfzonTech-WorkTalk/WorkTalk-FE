@@ -50,7 +50,7 @@
 
 <script>
 import { spaceOne } from '@/api/user.js'
-import { spaceCreate } from '@/api/host'
+import { spaceUpdate, spaceImgDelete } from '@/api/host'
 export default {
   data(){
     return {
@@ -106,14 +106,21 @@ export default {
     spaceDetailCountCheck(){
       return this.spaceDetailCount = this.spaceItems.spaceDetail.length
     },
+    // 업로드된 사진 삭제
+    async spaceImgDelete(file){
+      console.log(file)
+      const response = await spaceImgDelete(file.spaceImgId)
+      console.log(response)
+      this.spaceDataCall()
+    },
     // 검증
     spaceUpdateCheck(){
       let message = ''
-      if (!this.spaceDetail){
+      if (!this.spaceItems.spaceDetail){
         message = '공간설명을 작성해주세요.'
         this.$store.dispatch('MODALVIEWCLICK', true)
         this.$store.dispatch('MODALMESSAGE', message)
-      } else if (this.spaceDetail.length > 100){
+      } else if (this.spaceItems.spaceDetail.length > 100){
         message = '공간명이 100자를 초과하였습니다.'
         this.$store.dispatch('MODALVIEWCLICK', true)
         this.$store.dispatch('MODALMESSAGE', message)
@@ -126,14 +133,9 @@ export default {
     async spaceUpdate(){
       try {
         let formData = new FormData()
-        formData.append('name', this.$store.state.nickName)
-        formData.append('spaceType', this.spaceType)
-        formData.append('spaceName', this.spaceName)
-        formData.append('spaceDetail', this.spaceDetail)
-        formData.append('postcode', this.postcode)
-        formData.append('address', this.address)
-        formData.append('detailAddress', this.detailAddress)
-        formData.append('regCode', this.regCode)
+        formData.append('spaceId', this.spaceItems.spaceId)
+        formData.append('spaceDetail', this.spaceItems.spaceDetail)
+        formData.append('imageUrlList', this.spaceItems.spaceImgList)
         if (this.spaceImg != []){
           for (let i = 0; i < this.spaceImg.length; i++){
             formData.append('multipartFileList', this.spaceImg[i].file)
@@ -143,7 +145,7 @@ export default {
         // for (let key of formData.keys()){
         //   console.log(`${key}:${formData.get(key)}`)
         // }
-        const createDataResponse = await spaceCreate(formData)
+        const createDataResponse = await spaceUpdate(this.spaceItems.spaceId, formData)
         console.log(createDataResponse)
         if (createDataResponse.status == 200){
           alert('공간이 생성되었습니다. 방을 생성해 주세요.')

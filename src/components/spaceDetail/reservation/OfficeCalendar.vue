@@ -361,6 +361,7 @@ export default {
   border-left: 0;
   border-right: 0;
   width: 16.8vw;
+  font-size: 0.8rem;
 }
 .yearMonthTable{
   text-align: center;
@@ -408,7 +409,8 @@ export default {
   width: 16.8vw;
   text-align: right;
   font-weight: bold;
-  letter-spacing: 0.2vw;
+  letter-spacing: 0.1vw;
+  font-size: 0.8rem;
 }
 .statusExplanation span:not(:last-child){
   margin-right: 0.5vw;

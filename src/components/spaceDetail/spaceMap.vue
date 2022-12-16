@@ -2,7 +2,7 @@
   <div id="mapContainer">
     <div id="map" />
     <div class="hostInfo">
-      <p>[ 공급자정보 ]</p>
+      <p><strong>[ 공급자정보 ]</strong></p>
       <p>닉네임 : {{ memberItems.name }}</p>
       <p>이메일 : {{ memberItems.email }}</p>
       <p>전화번호 : {{ memberItems.tel }}</p>

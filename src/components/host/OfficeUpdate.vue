@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="roomContainer">
     <form @submit.prevent="officeRoomSubmitCheck">
       <div class="inputBox">
         <p>가격설정</p>
@@ -58,6 +58,14 @@
       </div>
       <div class="inputBox">
         <p>오피스 사진등록</p>
+        <span class="boxName">업로드된 사진</span>
+        <div class="imgBox">
+          <div v-for="file in officeRoom.roomImgDtoList" :key="file" class="filePreview">
+            <i class="fa-solid fa-trash-can fa-lg imgDelete" @click="roomImgDelete(file)" />
+            <img class="preViewImg" :src="file.roomImgUrl">
+          </div>
+        </div>
+        <span class="boxName">추가사진 등록</span>
         <div class="imgBox">
           <div v-for="file in roomImgPreview" :key="file" class="filePreview">
             <i class="fa-solid fa-xmark previewImgDelete fa-lg" @click="fileDeleteButton(file.num)" />
@@ -77,19 +85,24 @@
 </template>
 
 <script>
-import {roomCreate} from '@/api/host'
+import {roomOne} from '@/api/user'
+import {roomUpdate, roomImgDelete} from '@/api/host'
 export default {
   data(){
     return {
       officeRoom: {
-        spaceId: this.$route.params.spaceId,
+        roomId:'3',
         roomType: 'OFFICE',
-        roomName: this.$route.params.name,
-        roomImg: [],
-        roomPrice: '',
+        roomName: '오피스더미',
+        roomPrice: '20000',
         workStart: '8',
         workEnd:'23',
-        roomDetail:'',
+        roomDetail:'테스트중입니다.',
+        roomImgDtoList: [
+          {roomId:3,
+          roomImgId:53,
+          roomImgUrl:"https://worktalk-img.s3.ap-northeast-2.amazonaws.com/4e8c3420-6fb8-4d13-b716-0cb69b87db4e-dummy1.jpg"},
+        ],
         room: {
           park:false,
           wifi:false,
@@ -102,15 +115,27 @@ export default {
           water:false,
         },
       },
+      roomImg:[],
       roomImgPreview:[],
       officeDetail: '',
     }
   },
+  created(){
+    this.roomCall()
+  },
   methods: {
+    async roomCall(){
+      const response = await roomOne(this.$route.params.spaceId)
+      for (let i = 0; i < response.data.length; i++){
+        response.data[i].roomImg = []
+        response.data[i].roomImgPreview = []
+      }
+      console.log(response)
+    },
     fileUpload(event){
       for (let i = 0; i < event.target.files.length; i++){
-        this.officeRoom.roomImg = [
-          ...this.officeRoom.roomImg,
+        this.roomImg = [
+          ...this.roomImg,
           {'file':event.target.files[i],'num':i},
         ]  
       }
@@ -122,9 +147,9 @@ export default {
       }
     },
     fileDeleteButton(index){
-      for (let i = 0; i < this.officeRoom.roomImg.length; i++){
-        if (this.officeRoom.roomImg[i].num == index){
-          this.officeRoom.roomImg.splice(i, 1)
+      for (let i = 0; i < this.roomImg.length; i++){
+        if (this.roomImg[i].num == index){
+          this.roomImg.splice(i, 1)
         }
       }
       for (let i = 0; i < this.roomImgPreview.length; i++){
@@ -132,6 +157,13 @@ export default {
           this.roomImgPreview.splice(i, 1)
         }
       }
+    },
+    // 업로드된 사진 삭제
+    async roomImgDelete(file){
+      console.log(file)
+      const response = await roomImgDelete(file.roomImgId)
+      console.log(response)
+      this.spaceDataCall()
     },
     officeRoomSubmitCheck(){
       const officeRoom = this.officeRoom
@@ -160,23 +192,23 @@ export default {
       try {
         const officeRoom = this.officeRoom
         let formData = new FormData()
-        formData.append('spaceId', officeRoom.spaceId)
-        formData.append('roomType', officeRoom.roomType)
-        formData.append('roomName', officeRoom.roomName)
+        formData.append('spaceId', this.$route.params.spaceId)
+        formData.append('roomId', officeRoom.roomId)
         formData.append('roomDetail', officeRoom.roomDetail)
         formData.append('roomPrice', officeRoom.roomPrice)
         formData.append('workStart', officeRoom.workStart)
         formData.append('workEnd', officeRoom.workEnd)
+        formData.append('roomType', officeRoom.roomImgDtoList)
         formData.append('room', officeRoom.room)
         if (officeRoom.roomImg != null){
-          for (let i = 0; i < officeRoom.roomImg.length; i++){
-            formData.append('multipartFileList', officeRoom.roomImg[i].file)
+          for (let i = 0; i < this.roomImg.length; i++){
+            formData.append('multipartFileList', this.roomImg[i].file)
           }
         }
         for (let key of formData.keys()){
           console.log(`${key}:${formData.get(key)}`)
         }
-        const responce = await roomCreate(formData)
+        const responce = await roomUpdate(officeRoom.roomId, formData)
         console.log(responce)
         if (responce.status == 200){
           alert('방이 생성되었습니다.')
@@ -191,6 +223,14 @@ export default {
 </script>
 
 <style scpoed>
+.roomContainer{
+  position: relative;
+  overflow: auto;
+  height: 100vh;
+}
+.roomContainer::-webkit-scrollbar{
+  display: none;
+}
 .inputBox{
   font-size: 1.1rem;
   margin: 2vh 0;
@@ -210,6 +250,7 @@ export default {
 }
 .officeDetail{
   width: 53vw;
+  height: 8vh;
   resize: none;
 }
 .warning{
@@ -271,6 +312,15 @@ export default {
   position: absolute;
   top: 1vh;
   right: 0;
+}
+.imgDelete{
+  position: absolute;
+  top: 1vh;
+  right: 0;
+}
+.boxName{
+  margin-left: 1vw;
+  font-size: 1rem;
 }
 /* 아이콘 */
 .iconItems {

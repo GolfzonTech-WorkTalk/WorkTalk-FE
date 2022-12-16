@@ -6,24 +6,24 @@
         <span>공간명 : {{ name }}</span>
       </div>
       <template v-if="spaceType == '데스크'">
-        <desk-create />
+        <desk-update />
       </template>
       <template v-else-if="spaceType == '회의실'">
-        <meeting-room-create />
+        <meeting-room-update />
       </template>
       <template v-else>
-        <office-create />
+        <office-update />
       </template>
     </div>
   </div>
 </template>
 
 <script>
-import DeskCreate from '@/components/host/DeskCreate.vue'
-import OfficeCreate from '@/components/host/OfficeCreate.vue'
-import MeetingRoomCreate from '@/components/host/MeetingRoomCreate.vue'
+import DeskUpdate from '@/components/host/DeskUpdate.vue'
+import OfficeUpdate from '@/components/host/OfficeUpdate.vue'
+import MeetingRoomUpdate from '@/components/host/MeetingRoomUpdate.vue'
 export default {
-  components: { DeskCreate, OfficeCreate, MeetingRoomCreate },
+  components: { DeskUpdate, OfficeUpdate, MeetingRoomUpdate },
   data(){
     return {
       name: this.$route.params.name,
@@ -62,7 +62,7 @@ export default {
   background: white;
   margin: auto;
   width: 55vw;
-  height: 110vh;
+  height: 100vh;
   padding: 2.5vw;
   font-weight: bold;
 }

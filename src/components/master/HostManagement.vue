@@ -73,7 +73,7 @@ export default {
       } catch (error){
         console.log(error)
       }
-      this.$store.dispatch('SPINNERVIEW')
+      this.$store.dispatch('SPINNERVIEW', false)
     },
     panaltyCheck(item){
       if (item.activated == 0){

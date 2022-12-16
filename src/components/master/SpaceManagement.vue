@@ -35,7 +35,7 @@
         <span class="spaceStatus" :class="item.spaceStatus" @click="spaceStatus(item)">{{ spaceStatusCheck(item.spaceStatus) }}</span>
       </div>
     </div>
-    <space-status-update v-if="spaceStatusUpdate" :space-status-update="spaceStatusUpdate" @update-cancel="updateCancel" @update-status="spaceListCall" />
+    <space-status-update v-if="spaceStatusUpdate" :space-status-update="spaceStatusUpdate" @update-cancel="updateCancel" @update-status="spaceListCall(pageNowNum)" />
     <div class="pageNumber">
       <span><i class="fa-solid fa-chevron-left monthMoveBtn" @click="pageMove('pre')" /></span>
       <span v-for="num in pageData" :key="num" :class="num.class" @click="reservationDataCall(num.value)">{{ num.value }}</span>
