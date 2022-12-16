@@ -141,8 +141,6 @@ export default {
             formData.append('multipartFileList', this.spaceImg[i].file)
             console.log(this.spaceImg[i].file)
           }
-        } else {
-          formData.append('multipartFileList',null)
         }
         for (let key of formData.keys()){
           console.log(`${key}:${formData.get(key)}`)

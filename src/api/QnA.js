@@ -21,13 +21,13 @@ function qnacommentCreate(qnaCommentData){
 }
 
 // QnA 답글수정
-function qnacommentUpdate(qnaId, qnaCommentData){
-  return posts.post('qnacommentUpdate/'+qnaId, qnaCommentData)
+function qnacommentUpdate(qnaCommentId, qnaCommentData){
+  return posts.post('qnacommentUpdate/'+qnaCommentId, qnaCommentData)
 }
 
 // QnA 답글삭제
-function qnacommentDelete(qnaId){
-  return posts.delete('qnacommentDelete/'+qnaId)
+function qnacommentDelete(qnaCommentId){
+  return posts.delete('qnacommentDelete/'+qnaCommentId)
 }
 
 // 공간에서의 QnA 리스트

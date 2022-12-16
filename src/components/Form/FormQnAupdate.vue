@@ -36,6 +36,7 @@ export default {
       type : '',
       content : '',
       qnaId: '',
+      qnaCommentId:'',
       qnacomment: '',
       // userType
       userType: '',
@@ -44,6 +45,7 @@ export default {
   created(){
     console.log(this.item)
     this.spaceId = this.item.spaceId
+    this.qnaCommentId = this.item.qnaCommentId
     this.type = this.item.type
     this.content = this.item.content
     this.qnaId = this.item.qnaId
@@ -81,7 +83,7 @@ export default {
       }
       console.log(qnaUpdataData)
       try {
-        let response = await qnacommentUpdate(this.qnaId, qnaUpdataData)
+        let response = await qnacommentUpdate(this.qnaCommentId, qnaUpdataData)
         console.log(response)
         this.$emit('qnaupdate-data:call')
         this.$emit('qnaupdate:close')
