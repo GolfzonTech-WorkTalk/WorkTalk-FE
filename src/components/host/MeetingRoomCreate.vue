@@ -4,7 +4,7 @@
     <button class="addCreateBtn" @click="addCreateFrom">
       공간추가
     </button>
-    <form class="roomItems" @submit.prevent="roomCreateSubmit">
+    <form class="roomItems" @submit.prevent="roomCreateSubmitCheck">
       <div v-for="(item, index) in roomCreate" :key="item" class="roomItem">
         <i class="fa-solid fa-trash-can fa-lg roomDelte" @click="deleteRoomItem(index)" />
         <div>
@@ -63,41 +63,9 @@
         <div>
           <p>편의시설</p>
           <div class="iconItems">
-            <div class="iconItem" :class="!item.room.park?'noSelect':'selected'" @click="item.room.park = !item.room.park">
-              <i class="fa-solid fa-square-parking fa-2x" />
-              <p>주차</p>
-            </div>
-            <div class="iconItem" :class="!item.room.wifi?'noSelect':'selected'" @click="item.room.wifi = !item.room.wifi">
-              <i class="fa-solid fa-wifi fa-2x" />
-              <p>인터넷/와이파이</p>
-            </div>
-            <div class="iconItem" :class="!item.room.whiteBoard?'noSelect':'selected'" @click="item.room.whiteBoard = !item.room.whiteBoard">
-              <i class="fa-solid fa-chalkboard fa-2x" />
-              <p>화이트보드</p>
-            </div>
-            <div class="iconItem" :class="!item.room.bim?'noSelect':'selected'" @click="item.room.bim = !item.room.bim">
-              <i class="fa-solid fa-tv fa-2x" />
-              <p>TV/프로젝터</p>
-            </div>
-            <div class="iconItem" :class="!item.room.food?'noSelect':'selected'" @click="item.room.food = !item.room.food">
-              <i class="fa-solid fa-utensils fa-2x" />
-              <p>음식물반입가능</p>
-            </div>
-            <div class="iconItem" :class="!item.room.print?'noSelect':'selected'" @click="item.room.print = !item.room.print">
-              <i class="fa-solid fa-print fa-2x" />
-              <p>복사/인쇄기</p>
-            </div>
-            <div class="iconItem" :class="!item.room.pc?'noSelect':'selected'" @click="item.room.pc = !item.room.pc">
-              <i class="fa-solid fa-computer fa-2x" />
-              <p>PC/노트북</p>
-            </div>
-            <div class="iconItem" :class="!item.room.chair?'noSelect':'selected'" @click="item.room.chair = !item.room.chair">
-              <i class="fa-solid fa-chair fa-2x" />
-              <p>의자/테이블</p>
-            </div>
-            <div class="iconItem" :class="!item.room.water?'noSelect':'selected'" @click="item.room.water = !item.room.water">
-              <i class="fa-solid fa-faucet-drip fa-2x" />
-              <p>정수기</p>
+            <div v-for="option in offeringOptionData" :key="option" class="iconItem" :class="(offeringOptionCheck(item,option.value))?'selected':'noSelect'" @click="offeringOptionAdd(item,option.value)">
+              <i :class="option.class" />
+              <p>{{ option.name }}</p>
             </div>
           </div>
         </div>
@@ -138,17 +106,7 @@ export default {
           roomDetail:'',
           roomImg: [],
           roomImgPreview:[],
-          room: {
-            park:false,
-            wifi:false,
-            whiteBoard:false,
-            bim:false,
-            food:false,
-            print:false,
-            pc:false,
-            chair:false,
-            water:false,
-          },
+          offeringOption:'',
         },
       ],
       startTimeData: '',
@@ -159,6 +117,17 @@ export default {
         {'name':'회의실 8~10인','price':'50000', 'value':'MEETING8'},
         {'name':'회의실 20인','price':'100000', 'value':'MEETING20'},
       ],
+      offeringOptionData: [
+        {'name':'주차','class':'fa-solid fa-square-parking fa-2x', 'value':'PARKING'},
+        {'name':'인터넷/와이파이','class':'fa-solid fa-wifi fa-2x', 'value':'INTERNET_WIFI'},
+        {'name':'화이트보드','class':'fa-solid fa-tv fa-2x', 'value':'WHITEBOARD'},
+        {'name':'TV/프로젝터','class':'fa-solid fa-utensils fa-2x', 'value':'TV_PROJECTOR'},
+        {'name':'음식물반입가능','class':'fa-solid fa-utensils fa-2x', 'value':'FOOD'},
+        {'name':'복사/인쇄기','class':'fa-solid fa-print fa-2x', 'value':'PRINTER'},
+        {'name':'PC/노트북','class':'fa-solid fa-computer fa-2x', 'value':'PC_LAPTOP'},
+        {'name':'의자/테이블','class':'fa-solid fa-chair fa-2x', 'value':'CHAIR_TABLE'},
+        {'name':'정수기','class':'fa-solid fa-faucet-drip fa-2x', 'value':'WATER'},
+      ],
     }
   },
   created(){
@@ -166,7 +135,7 @@ export default {
     let createTime = []
     for (let i = 0; i < 25; i++){
       if (i < 10){
-        let data = {'time':'0'+i+':00', 'value':'0'+i, 'disabled':false}
+        let data = {'time':'0'+i+':00', 'value':i, 'disabled':false}
         createTime.push(data)
       } else {
         let data = {'time':i+':00', 'value':i, 'disabled':false}
@@ -190,6 +159,7 @@ export default {
         roomDetail:'',
         roomImg: [],
         roomImgPreview:[],
+        offeringOption:'',
       })
     },
     // 가격 출력 및 반영
@@ -236,6 +206,21 @@ export default {
       console.log(this.roomCreate[index])
       this.roomCreate.splice(index, 1)
     },
+    // 편의시설
+    offeringOptionCheck(item,value){
+      if (item.offeringOption.indexOf(value) == -1){
+        return false
+      } else {
+        return true
+      }
+    },
+    offeringOptionAdd(item,value){
+      if (item.offeringOption.indexOf(value) == -1){
+        item.offeringOption += value
+      } else {
+        item.offeringOption = item.offeringOption.replace(value,'')
+      }
+    },
     // 사진 내용추가
     fileUpload(event){
       const index = event.path[0].id.slice(3)
@@ -262,6 +247,52 @@ export default {
         }
       }
     },
+    // 검증
+    roomCreateSubmitCheck(){
+      const roomCreate = this.roomCreate
+      let message = ''
+      let result = 0
+      for (let i = 0; i < roomCreate.length; i++){
+        if (!roomCreate[i].roomType == '방종류 선택'){
+          message = i+1+'번 방의 종류를 설정해주세요.'
+          this.$store.dispatch('MODALVIEWCLICK', true)
+          this.$store.dispatch('MODALMESSAGE', message)
+        } else if (!roomCreate[i].roomName){
+          message = i+1+'번 방의 이름을 작성해주세요.'
+          this.$store.dispatch('MODALVIEWCLICK', true)
+          this.$store.dispatch('MODALMESSAGE', message)
+        } else if (!roomCreate[i].roomName.length > 20){
+          message = i+1+'번 방의 이름이 20자를 초과했습니다.'
+          this.$store.dispatch('MODALVIEWCLICK', true)
+          this.$store.dispatch('MODALMESSAGE', message)
+        } else if (!roomCreate[i].roomDetail){
+          message = i+1+'번 방의 설명을 작성해주세요.'
+          this.$store.dispatch('MODALVIEWCLICK', true)
+          this.$store.dispatch('MODALMESSAGE', message)
+        } else if (roomCreate[i].roomDetail.length > 100){
+          message = i+1+'번 방의 설명이 100자를 초과했습니다.'
+          this.$store.dispatch('MODALVIEWCLICK', true)
+          this.$store.dispatch('MODALMESSAGE', message)
+        } else if (roomCreate[i].workStart == '시작시간' || roomCreate[i].workEnd == '종료시간'){
+          message = i+1+'번 방의 시간을 설정해주세요.'
+          this.$store.dispatch('MODALVIEWCLICK', true)
+          this.$store.dispatch('MODALMESSAGE', message)
+        } else if (roomCreate[i].workStart >= roomCreate[i].workEnd){
+          message = i+1+'번 방의 운영시작이 운용종료보다 큽니다.'
+          this.$store.dispatch('MODALVIEWCLICK', true)
+          this.$store.dispatch('MODALMESSAGE', message)
+        } else if (roomCreate[i].roomImg.length == 0){
+          message = i+1+'번 방의 사진을 추가해주세요.'
+          this.$store.dispatch('MODALVIEWCLICK', true)
+          this.$store.dispatch('MODALMESSAGE', message)
+        } else {
+          result ++
+        }
+      }
+      if (result == roomCreate.length){
+        this.roomCreateSubmit()
+      }
+    },
     // 방생성
     async roomCreateSubmit(){
       // 이미지제외한 룸정보 배열생성
@@ -277,7 +308,7 @@ export default {
           formData.append('workStart', roomCreateData[i].workStart)
           formData.append('workEnd', roomCreateData[i].workEnd)
           formData.append('roomDetail', roomCreateData[i].roomDetail)
-          formData.append('room', roomCreateData[i].room)
+          formData.append('offeringOption', roomCreateData[i].offeringOption)
           if (roomCreateData[i].roomImg != null){
             for (let j = 0; j < roomCreateData[i].roomImg.length; j++){
               formData.append('multipartFileList', roomCreateData[i].roomImg[j].file)

@@ -6,12 +6,14 @@
       <p @click="spaceDeleteCheck(true)">
         공간삭제
       </p>
-      <router-link :to="spaceUpdatelink('space')">
-        <p>공간수정</p>
-      </router-link>
-      <router-link :to="spaceUpdatelink('room')">
-        <p>룸수정</p>
-      </router-link>
+      <template v-if="spaceItem.spaceStatus == 'approved'">
+        <router-link :to="spaceUpdatelink('space')">
+          <p>공간수정</p>
+        </router-link>
+        <router-link :to="spaceUpdatelink('room')">
+          <p>룸수정</p>
+        </router-link>
+      </template>
     </div>
     <div v-if="spaceItem.spaceImgList != null" class="mainSpaceImg">
       <div class="moveImgBox leftBox">
@@ -142,6 +144,7 @@ export default {
   right: 0.5vw;
   top: 2vh;
   cursor: pointer;
+  z-index: 1;
 }
 .spaceGradeReview {
   float: right;

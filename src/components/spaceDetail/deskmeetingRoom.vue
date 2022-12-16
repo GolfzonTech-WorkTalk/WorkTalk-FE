@@ -37,48 +37,15 @@
           편의시설
         </p>
         <div class="officeInfoIconItems">
-          <div class="officeInfoIconItem officeInfoNoSelect">
-            <i class="fa-solid fa-square-parking fa-lg" />
-            <span>주차</span>
-          </div>
-          <div class="officeInfoIconItem officeInfoSelected">
-            <i class="fa-solid fa-wifi fa-lg" />
-            <div>
-              <span>인터넷/<br>와이파이</span>
+          <template v-if="item.offeringOption == null">
+            <span class="amenities">없음</span>
+          </template>
+          <template v-else>
+            <div v-for="option in offeringOptionData" :key="option" class="officeInfoIconItem" :class="optionCheck(item,option.value)">
+              <i :class="option.class" />
+              <span v-html="option.name" />
             </div>
-          </div>
-          <div class="officeInfoIconItem">
-            <i class="fa-solid fa-chalkboard fa-lg" />
-            <span>화이트보드</span>
-          </div>
-          <div class="officeInfoIconItem">
-            <i class="fa-solid fa-tv fa-lg" />
-            <div>
-              <span>TV/<br>프로젝터</span>
-            </div>
-          </div>
-          <div class="officeInfoIconItem">
-            <i class="fa-solid fa-utensils fa-lg" />
-            <div>
-              <span>음식물/<br>반입가능</span>
-            </div>
-          </div>
-          <div class="officeInfoIconItem">
-            <i class="fa-solid fa-print fa-lg" />
-            <span>복사/인쇄기</span>
-          </div>
-          <div class="officeInfoIconItem">
-            <i class="fa-solid fa-computer fa-lg" />
-            <span>PC/노트북</span>
-          </div>
-          <div class="officeInfoIconItem">
-            <i class="fa-solid fa-chair fa-lg" />
-            <span>의자/테이블</span>
-          </div>
-          <div class="officeInfoIconItem">
-            <i class="fa-solid fa-faucet-drip fa-lg" />
-            <span>정수기</span>
-          </div>
+          </template>
         </div>
       </div>
       <template v-if="roomReservationView == item.roomId">
@@ -157,7 +124,9 @@ export default {
   data(){
     return {
       // 룸정보
-      roomItems:[],
+      roomItems:[{
+        offeringOption:'',
+      }],
       price:'', // 방가격
       // 룸출력관리 변수들
       roomReservationView: '',
@@ -187,28 +156,34 @@ export default {
       mileage: '',
       useMileage: '',
       saveMileage: '',
+      offeringOptionData: [
+        {'name':'주차','class':'fa-solid fa-square-parking fa-lg', 'value':'PARKING'},
+        {'name':'인터넷/<br>와이파이','class':'fa-solid fa-wifi fa-lg', 'value':'INTERNET_WIFI'},
+        {'name':'화이트보드','class':'fa-solid fa-tv fa-lg', 'value':'WHITEBOARD'},
+        {'name':'TV/<br>프로젝터','class':'fa-solid fa-utensils fa-lg', 'value':'TV_PROJECTOR'},
+        {'name':'음식물<br>반입가능','class':'fa-solid fa-utensils fa-lg', 'value':'FOOD'},
+        {'name':'복사/인쇄기','class':'fa-solid fa-print fa-lg', 'value':'PRINTER'},
+        {'name':'PC/노트북','class':'fa-solid fa-computer fa-lg', 'value':'PC_LAPTOP'},
+        {'name':'의자/테이블','class':'fa-solid fa-chair fa-lg', 'value':'CHAIR_TABLE'},
+        {'name':'정수기','class':'fa-solid fa-faucet-drip fa-lg', 'value':'WATER'},
+      ],
     }
   },
   // 룸정보 출력
   async created(){
     try {
-      try {
-        const spaceId = this.$route.params.spaceId
-        let spaceResponce = await roomOne(spaceId)
-        this.roomItems = spaceResponce.data
-        for (let i = 0; i < this.roomItems.length; i++){
-          this.roomItems[i].roomImgListNum = 0
-        }
-      } catch (error){
-        console.log(error)
+      const spaceId = this.$route.params.spaceId
+      let spaceResponce = await roomOne(spaceId)
+      this.roomItems = spaceResponce.data
+      for (let i = 0; i < this.roomItems.length; i++){
+        this.roomItems[i].roomImgListNum = 0
       }
-      /* 더미 */
-      // this.roomItems = selectOneRoomDumy
     } catch (error){
       console.log(error)
     }
   },
   methods: {
+    // 이미지 전환
     movePrev(item){
       if (item.roomImgListNum == '0'){
         item.roomImgListNum = item.roomImgDtoList.length -1  
@@ -232,6 +207,19 @@ export default {
         return this.MEETING8
       } else {
         return this.MEETING20
+      }
+    },
+    // 옵션출력
+    optionCheck(item,value){
+      console.log(item.offeringOption)
+      if (item.offeringOption != null || item.offeringOption != ''){
+        if (item.offeringOption.indexOf(value) == -1){
+          return 'officeInfoNoOption'
+        } else {
+          return
+        }
+      } else {
+        return
       }
     },
     // 룸타입변경시 데이터 초기화
@@ -753,10 +741,7 @@ export default {
 .officeInfoIconItem span{
   font-size: 0.1rem;
 }
-.officeInfoNoSelect{
-  color: rgba(184, 184, 184, 0.685);
-}
-.officeInfoSelected{
-  color: rgba(0, 0, 255, 0.514);
+.officeInfoNoOption{
+  display: none;
 }
 </style>

@@ -1,24 +1,11 @@
 <template>
   <div class="roomContainer">
-    <p>가격기준 : 4인(2만원/시간) 6인(3만원/시간) 8인~10인이하(5만원/시간) 20인(10만원/시간)</p>
-    <form class="roomItems" @submit.prevent="roomUpdateSubmit">
+    <form class="roomItems" @submit.prevent="roomUpdateSubmitCheck">
       <div v-for="(item, index) in roomUpdate" :key="item" class="roomItem">
         <div>
-          <p>방종류</p>
-          <select v-model="item.roomType" @change="priceSetting(item)">
-            <option hidden>
-              방종류 선택
-            </option>
-            <option v-for="roomTypeItem in roomTypeData" :key="roomTypeItem" :value="roomTypeItem.value">
-              {{ roomTypeItem.name }}
-            </option>
-          </select>
-          <p class="roomTypePice">
-            {{ item.roomPrice }} / 시간
-          </p>
-        </div>
-        <div>
           <p>방이름 : {{ item.roomName }}</p>
+          <p>방종류 : {{ roomTypeCheck(item.roomType) }}</p>
+          <p>가격 : {{ item.roomPrice }} / 시간</p>
         </div>
         <div>
           <p>방설명</p>
@@ -52,41 +39,9 @@
         <div>
           <p>편의시설</p>
           <div class="iconItems">
-            <div class="iconItem" :class="!item.room.park?'noSelect':'selected'" @click="item.room.park = !item.room.park">
-              <i class="fa-solid fa-square-parking fa-2x" />
-              <p>주차</p>
-            </div>
-            <div class="iconItem" :class="!item.room.wifi?'noSelect':'selected'" @click="item.room.wifi = !item.room.wifi">
-              <i class="fa-solid fa-wifi fa-2x" />
-              <p>인터넷/와이파이</p>
-            </div>
-            <div class="iconItem" :class="!item.room.whiteBoard?'noSelect':'selected'" @click="item.room.whiteBoard = !item.room.whiteBoard">
-              <i class="fa-solid fa-chalkboard fa-2x" />
-              <p>화이트보드</p>
-            </div>
-            <div class="iconItem" :class="!item.room.bim?'noSelect':'selected'" @click="item.room.bim = !item.room.bim">
-              <i class="fa-solid fa-tv fa-2x" />
-              <p>TV/프로젝터</p>
-            </div>
-            <div class="iconItem" :class="!item.room.food?'noSelect':'selected'" @click="item.room.food = !item.room.food">
-              <i class="fa-solid fa-utensils fa-2x" />
-              <p>음식물반입가능</p>
-            </div>
-            <div class="iconItem" :class="!item.room.print?'noSelect':'selected'" @click="item.room.print = !item.room.print">
-              <i class="fa-solid fa-print fa-2x" />
-              <p>복사/인쇄기</p>
-            </div>
-            <div class="iconItem" :class="!item.room.pc?'noSelect':'selected'" @click="item.room.pc = !item.room.pc">
-              <i class="fa-solid fa-computer fa-2x" />
-              <p>PC/노트북</p>
-            </div>
-            <div class="iconItem" :class="!item.room.chair?'noSelect':'selected'" @click="item.room.chair = !item.room.chair">
-              <i class="fa-solid fa-chair fa-2x" />
-              <p>의자/테이블</p>
-            </div>
-            <div class="iconItem" :class="!item.room.water?'noSelect':'selected'" @click="item.room.water = !item.room.water">
-              <i class="fa-solid fa-faucet-drip fa-2x" />
-              <p>정수기</p>
+            <div v-for="option in offeringOptionData" :key="option" class="iconItem" :class="optionCheck(item,option.value)" @click="optionAdd(item,option.value)">
+              <i :class="option.class" />
+              <p>{{ option.name }}</p>
             </div>
           </div>
         </div>
@@ -99,6 +54,7 @@
               <img class="preViewImg" :src="file.roomImgUrl">
             </div>
           </div>
+          <span class="boxName">추가사진 등록</span>
           <div class="imgBox">
             <div v-for="file in item.roomImgPreview" :key="file" class="filePreview">
               <i class="fa-solid fa-xmark previewImgDelete fa-lg" @click="fileDeleteButton(item, file.num)" />
@@ -124,42 +80,19 @@ import {roomUpdate, roomImgDelete} from '@/api/host'
 export default {
   data(){
     return {
-      roomUpdate: [
-        {
-          roomId:'3',
-          roomType: 'MEETING4',
-          roomName: '회의실더미',
-          roomPrice: '20000',
-          workStart: '6',
-          workEnd:'22',
-          roomDetail:'테스트중입니다.',
-          roomImgDtoList: [
-            {roomId:3,
-            roomImgId:53,
-            roomImgUrl:"https://worktalk-img.s3.ap-northeast-2.amazonaws.com/4e8c3420-6fb8-4d13-b716-0cb69b87db4e-dummy1.jpg"},
-          ],
-          roomImg:[],
-          roomImgPreview:[],
-          room: {
-            park:false,
-            wifi:false,
-            whiteBoard:false,
-            bim:false,
-            food:false,
-            print:false,
-            pc:false,
-            chair:false,
-            water:false,
-          },
-        },
-      ],
+      roomUpdate: [],
       startTimeData: '',
       endTimeData: '',
-      roomTypeData: [
-        {'name':'회의실 4인','price':'20000', 'value':'MEETING4'},
-        {'name':'회의실 6인','price':'30000', 'value':'MEETING6'},
-        {'name':'회의실 8~10인','price':'50000', 'value':'MEETING8'},
-        {'name':'회의실 20인','price':'100000', 'value':'MEETING20'},
+      offeringOptionData: [
+        {'name':'주차','class':'fa-solid fa-square-parking fa-2x', 'value':'PARKING'},
+        {'name':'인터넷/와이파이','class':'fa-solid fa-wifi fa-2x', 'value':'INTERNET_WIFI'},
+        {'name':'화이트보드','class':'fa-solid fa-tv fa-2x', 'value':'WHITEBOARD'},
+        {'name':'TV/프로젝터','class':'fa-solid fa-utensils fa-2x', 'value':'TV_PROJECTOR'},
+        {'name':'음식물반입가능','class':'fa-solid fa-utensils fa-2x', 'value':'FOOD'},
+        {'name':'복사/인쇄기','class':'fa-solid fa-print fa-2x', 'value':'PRINTER'},
+        {'name':'PC/노트북','class':'fa-solid fa-computer fa-2x', 'value':'PC_LAPTOP'},
+        {'name':'의자/테이블','class':'fa-solid fa-chair fa-2x', 'value':'CHAIR_TABLE'},
+        {'name':'정수기','class':'fa-solid fa-faucet-drip fa-2x', 'value':'WATER'},
       ],
     }
   },
@@ -169,12 +102,16 @@ export default {
   },
   methods: {
     async roomCall(){
-      const response = await roomOne(this.$route.params.spaceId)
-      for (let i = 0; i < response.data.length; i++){
-        response.data[i].roomImg = []
-        response.data[i].roomImgPreview = []
+      try {
+        const response = await roomOne(this.$route.params.spaceId)
+        for (let i = 0; i < response.data.length; i++){
+          response.data[i].roomImg = []
+          response.data[i].roomImgPreview = []
+        }
+        this.roomUpdate = response.data
+      } catch (error){
+        console.log(error)
       }
-      console.log(response)
     },
     createTime(){
       let createTime = []
@@ -190,18 +127,17 @@ export default {
       this.startTimeData = createTime
       this.endTimeData = createTime
     },
-    // 가격 출력 및 반영
-    priceSetting(item){
-      if (item.roomType == 'MEETING4'){
-        item.roomPrice = 20000
-      } else if (item.roomType == 'MEETING6'){
-        item.roomPrice = 30000
-      } else if (item.roomType == 'MEETING8'){
-        item.roomPrice = 50000
-      } else if (item.roomType == 'MEETING20'){
-        item.roomPrice = 100000
+    // 룸타입 변경
+    roomTypeCheck(roomType){
+      if (roomType == 'MEETING4'){
+        return '회의실 4인'
+      } else if (roomType == 'MEETING6'){
+        return '회의실 6인'
+      } else if (roomType == 'MEETING8'){
+        return '회의실 8~10인'
+      } else if (roomType == 'MEETING20'){
+        return '회의실 20인'
       }
-      // console.log(item.roomType, item.roomPrice)
     },
     // 날짜 필터
     endTimeDataCheck(startTime){
@@ -226,6 +162,32 @@ export default {
         }
       }
       this.endTimeData = createTime
+    },
+    // 옵션관리
+    optionCheck(item, value){
+      if (item.offeringOption == null){
+        return 'noSelect'
+      }
+      // console.log(item.offeringOption, value)
+      if (item.offeringOption != null || item.offeringOption != ''){
+        if (item.offeringOption.indexOf(value) == -1){
+          return 'noSelect'
+        } else {
+          return 'selected'
+        }
+      } else {
+        return 'selected'
+      }
+
+    },
+    optionAdd(item,value){
+      if (item.offeringOption == null){
+        item.offeringOption = value
+      } else if (item.offeringOption.indexOf(value) == -1){
+        item.offeringOption += value
+      } else {
+        item.offeringOption = item.offeringOption.replace(value,'')
+      }
     },
     // 사진 내용추가
     fileUpload(event){
@@ -258,7 +220,36 @@ export default {
       console.log(file)
       const response = await roomImgDelete(file.roomImgId)
       console.log(response)
-      this.spaceDataCall()
+      this.roomCall()
+    },
+    roomUpdateSubmitCheck(){
+      const roomUpdate = this.roomUpdate
+      let message = ''
+      let result = 0
+      for (let i = 0; i < roomUpdate.length; i++){
+        if (!roomUpdate[i].roomDetail){
+          message = i+1+'번 방의 설명을 작성해주세요.'
+          this.$store.dispatch('MODALVIEWCLICK', true)
+          this.$store.dispatch('MODALMESSAGE', message)
+        } else if (roomUpdate[i].roomDetail.length > 100){
+          message = i+1+'번 방의 설명이 100자를 초과했습니다.'
+          this.$store.dispatch('MODALVIEWCLICK', true)
+          this.$store.dispatch('MODALMESSAGE', message)
+        } else if (roomUpdate[i].workStart >= roomUpdate[i].workEnd){
+          message = i+1+'번 방의 운영시작이 운용종료보다 큽니다.'
+          this.$store.dispatch('MODALVIEWCLICK', true)
+          this.$store.dispatch('MODALMESSAGE', message)
+        } else if (roomUpdate[i].roomImgDtoList.length == 0 && roomUpdate[i].roomImg.length == 0){
+          message = i+1+'번 방의 사진을 추가해주세요.'
+          this.$store.dispatch('MODALVIEWCLICK', true)
+          this.$store.dispatch('MODALMESSAGE', message)
+        } else {
+          result ++
+        }
+      }
+      if (result == roomUpdate.length){
+        this.roomUpdateSubmit()
+      }
     },
     // 방생성
     async roomUpdateSubmit(){
@@ -268,23 +259,26 @@ export default {
         for (let i = 0; i < roomUpdateData.length; i++){
           let formData = new FormData()
           formData.append('spaceId', this.$route.params.spaceId)
-          formData.append('spaceId', roomUpdateData[i].roomId)
+          formData.append('roomId', roomUpdateData[i].roomId)
           formData.append('roomDetail', roomUpdateData[i].roomDetail)
           formData.append('roomPrice', roomUpdateData[i].roomPrice)
           formData.append('workStart', roomUpdateData[i].workStart)
           formData.append('workEnd', roomUpdateData[i].workEnd)
-          formData.append('roomType', roomUpdateData[i].roomImgDtoList)
-          formData.append('room', roomUpdateData[i].room)
+          formData.append('roomImgDtoList', roomUpdateData[i].roomImgDtoList)
+          formData.append('offeringOption', roomUpdateData[i].offeringOption)
           if (roomUpdateData[i].roomImg != null){
             for (let j = 0; j < roomUpdateData[i].roomImg.length; j++){
               formData.append('multipartFileList', roomUpdateData[i].roomImg[j].file)
               console.log(roomUpdateData[i].roomImg[j].file)
             }
           }
+          for (let key of formData.keys()){
+            console.log(`${key}:${formData.get(key)}`)
+          }
           const responce = await roomUpdate(roomUpdateData[i].roomId, formData)
           console.log(responce)
         }
-        alert('방이 생성되었습니다.')
+        alert('방의 정보가 수정되었습니다.')
         this.$router.push('/host')
       } catch (error){
         console.log(error)
@@ -332,13 +326,6 @@ export default {
   margin: 0.5vh 0vh;
 }
 /* 룸이름 */
-.roomName{
-  width: 45vw;
-  height: 1vh;
-  border: 1px solid gray;
-  border-radius: 5px;
-  padding: 5px;
-}
 .roomDetail{
   width: 45vw;
   border: 1px solid gray;
@@ -349,7 +336,7 @@ export default {
 .workEnd{
   margin-left: 1vw;
 }
-.roomTypePice, .roomNameCount{
+.roomNameCount{
   float: right;
 }
 .warning{

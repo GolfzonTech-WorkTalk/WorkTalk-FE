@@ -18,8 +18,12 @@ function spaceRejected(spaceId){
 }
 
 // 유저관리
-function deactivatedHost(){
-  return posts.get('member/deactivated')
+function penaltyUser(activated){
+  return posts.get('penalty',{
+    params: {
+      activated,
+    },
+  })
 }
 
 function penaltyRemove(penaltyId){
@@ -27,8 +31,8 @@ function penaltyRemove(penaltyId){
 }
 
 // 호스트관리
-function penaltyUser(activated){
-  return posts.get('penalty',{
+function deactivatedHost(activated){
+  return posts.get('member/deactivated',{
     params: {
       activated,
     },

@@ -1,27 +1,27 @@
 <template>
-  <div class="spaceItem">
-    <div v-if="item.spaceImgList != null" class="spaceImg">
-      <div class="moveImgBox leftBox">
-        <i class="fa-solid fa-chevron-left fa-2x moveBtn" @click="movePrev" />
+  <div class="spaceModuleSpaceItem">
+    <div v-if="item.spaceImgList != null" class="spaceModuleSpaceImg">
+      <div class="spaceModuleMoveImgBox spaceModuleLeftBox">
+        <i class="fa-solid fa-chevron-left fa-2x spaceModuleMoveBtn" @click="movePrev" />
       </div>
       <img :src="item.spaceImgList[spaceImgListNum].spaceImgUrl" alt="공간이미지">
-      <div class="moveImgBox rightBox">
-        <i class="fa-solid fa-chevron-right fa-2x moveBtn" @click="moveNext" />
+      <div class="spaceModuleMoveImgBox spaceModuleRightBox">
+        <i class="fa-solid fa-chevron-right fa-2x spaceModuleMoveBtn" @click="moveNext" />
       </div>
     </div>
-    <div v-else class="spaceImg">
+    <div v-else class="spaceModuleSpaceImg">
       <img :src="require(`@/assets/noImg.gif`)" alt="공간이미지">
     </div>
-    <div class="linkBox">
+    <div class="spaceModuleLinkBox">
       <router-link :to="itemLink(item.spaceName, item.spaceId, item.spaceType)">
-        <div class="spaceTitle">
+        <div class="spaceModuleSpaceTitle">
           <span>{{ item.spaceName }}</span>
         </div>
-        <div class="spaceLocation">
+        <div class="spaceModuleSpaceLocation">
           <i class="fa-solid fa-map-pin" />
           <span>{{ item.address }}</span>
         </div>
-        <div class="spaceGradeReview">
+        <div class="spaceModuleSpaceGradeReview">
           <i class="fa-regular fa-star" /> {{ item.gradeAvg }} <i class="fa-regular fa-comments" /> {{ item.count }}
         </div><br>
       </router-link>
@@ -65,43 +65,43 @@ export default {
 </script>
 
 <style scoped>
-.spaceItem {
+.spaceModuleSpaceItem {
   position: relative;
   width: 22vw;
   height: 28vh;
   margin: 15px;
 }
-.spaceImg img {
+.spaceModuleSpaceImg img {
   width: 22vw;
   height: 20vh;
 }
-.spaceTitle {
+.spaceModuleSpaceTitle {
   font-size: 1.1rem;
   font-weight: bold;
 }
-.linkBox {
+.spaceModuleLinkBox {
   padding: 10px;
   border-bottom: 1px solid gray;
 }
-.spaceGradeReview {
+.spaceModuleSpaceGradeReview {
   float: right;
 }
-.moveImgBox{
+.spaceModuleMoveImgBox{
   position: absolute;
   height: 20vh;
   top: 0;
 }
-.moveImgBox:hover{
+.spaceModuleMoveImgBox:hover{
   background: rgba(255, 255, 255, 0.301);
 }
-.moveBtn{
+.spaceModuleMoveBtn{
   padding-top: 8vh;
   color: rgba(128, 128, 128, 0.712);
 }
-.leftBox{
+.spaceModuleLeftBox{
   left: 0;
 }
-.rightBox{
+.spaceModuleRightBox{
   right: 0;
 }
 </style>
