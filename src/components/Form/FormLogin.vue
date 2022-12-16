@@ -159,42 +159,29 @@ export default {
     },
     // 카카오 로그인
     kakaoLogin(){
-      // console.log(window.Kakao)
-      window.Kakao.Auth.login({
-        scope: 'profile_nickname, account_email',
-        success: this.getKakaoAccount,
-      })
+      const url = 'https://kauth.kakao.com/oauth/authorize?client_id=' +
+          process.env.VUE_APP_KAKAO_JS_KEY +
+          '&redirect_uri=' +
+          process.env.VUE_APP_KAKAO_REDIRECT_URL +
+          '&response_type=code&' +
+          'scope=account_email profile_nickname'
+      this.getKakaoAccount(url)
     },
-    getKakaoAccount(){
-      window.Kakao.API.request({
-        url:'/v2/user/me',
-        success: res => {
-          const kakao_account = res.kakao_account
-          const nickname = kakao_account.profile.nickname
-          const email = kakao_account. email
-          console.log(res)
-          console.log('kakao_account',kakao_account)
-          console.log('nickname',nickname)
-          console.log('email',email)
-          let kakaoLogin = {
-            'name':nickname+'_'+res.id,
-            'pw':res.id,
-            'email':email,
-            'member':true, // 회원이면 true 아니면 false 넘기기
-          }
-          let responce = mailFind(email)
-          console.log(responce)
-          if (responce.data == null || responce.status == 'kakao'){
-            console.log(kakaoLogin)
-            console.log('카카오회원 카카오 로그인실행')
-          } else if (responce.status == 'worktalk'){
-            console.log('워크토크회원 이미가입된 메세지 출력')
-          }
-        },
-        fail : error => {
-          console.log(error)
-        },
-      })
+    getKakaoAccount(url){
+      const popupHeight = '600'
+      const popupWidth = '500'
+      let popupOptions = 'height=--popupHeight--,width=--popupWidth--,left=--popupX--,top=--popupY--,scrollbars=yes,resizable=yes'
+      popupOptions = popupOptions.replace('--popupHeight--', popupHeight)
+      popupOptions = popupOptions.replace('--popupWidth--', popupWidth)
+      this.openPopup(url, popupOptions)
+      return false
+    },
+    openPopup(url, options){
+      window.open(
+          url,
+          '_blank',
+          options,
+      )
     },
   },
 }

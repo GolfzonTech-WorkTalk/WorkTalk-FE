@@ -211,7 +211,7 @@ export default {
         const responce = await roomUpdate(officeRoom.roomId, formData)
         console.log(responce)
         if (responce.status == 200){
-          alert('방이 생성되었습니다.')
+          alert('방의 정보가 수정되었습니다.')
           this.$router.push('/host')
         }
       } catch (error){

@@ -41,6 +41,7 @@ export default {
       ],
       // 제출데이터
       ccId : '',
+      ccCommentId : '',
       type : '',
       title:'',
       content : '',
@@ -52,6 +53,7 @@ export default {
   created(){
     // console.log(this.item)
     this.ccId = this.item.ccId
+    this.ccCommentId = this.item.ccCommentId
     this.type = this.item.type
     this.title = this.item.title
     this.content = this.item.content
@@ -93,20 +95,18 @@ export default {
         }
         console.log(CCUpdataData)
         try {
-          let ccId = Number(this.ccId)
-          console.log(ccId)
-          console.log(typeof(ccId))
           let response
           if (this.userType == 'ROLE_MASTER'){
-            response = await cccommentUpdate(ccId, CCUpdataData)
+            console.log(this.ccCommentId)
+            response = await cccommentUpdate(this.ccCommentId, CCUpdataData)
           } else {
-            response = await ccUpdata(ccId, CCUpdataData)
+            response = await ccUpdata(this.ccId, CCUpdataData)
           }
           console.log(response)
-          this.emitClose(false)
         } catch (error){
           console.log(error)
         }
+        this.emitClose(false)
       }
     },
   },

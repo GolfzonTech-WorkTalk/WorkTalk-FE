@@ -21,13 +21,13 @@ function cccommentCreate(CCCommentData){
 }
 
 // cc 답글수정
-function cccommentUpdate(CCId, CCCommentData){
-  return posts.post('customercommentUpdate/'+CCId, CCCommentData)
+function cccommentUpdate(ccCommentId, CCCommentData){
+  return posts.post('customercommentUpdate/'+ccCommentId, CCCommentData)
 }
 
 // cc 답글삭제
-function cccommentDelete(CCId){
-  return posts.delete('customercommentDelete/'+CCId)
+function cccommentDelete(ccCommentId){
+  return posts.delete('customercommentDelete/'+ccCommentId)
 }
 
 // 마이페이지에서 cc 리스트

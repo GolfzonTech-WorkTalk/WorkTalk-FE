@@ -169,7 +169,7 @@ export default {
     },
     // 날짜 출력
     lookupReservation(todayYYmm, initDay, endDay){
-      // console.log(todayYYmm, initDay, endDay)
+      console.log(todayYYmm, initDay, endDay)
       if (initDay && endDay){
         if (initDay<10){
           initDay = '0'+initDay
@@ -181,6 +181,13 @@ export default {
         this.endDate = todayYYmm+endDay
         this.amount = (endDay-initDay+1) * Number(this.price)
         this.paymentAmount = this.amount * 0.2
+      }
+      if (endDay == ''){
+        console.log('1234')
+        this.endDate = ''
+      }
+      if (initDay == ''){
+        console.log('asdf')
       }
     },
     // 마일리지 조회

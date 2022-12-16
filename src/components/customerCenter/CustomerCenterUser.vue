@@ -103,17 +103,18 @@ export default {
       }
     },
     dateCheck(value){
-      let date = value[0]+'-'+value[1]+'-'+value[2]
-      let hour = value[3]
-      let minute = value[3]
-      if (hour < 10){
-        hour = '0'+hour
-      }
-      if (minute < 10){
-        minute = '0'+minute
-      }
-      let time = hour+':'+minute
-      return `${date} ${time}`
+      return value.slice(0,10)+' '+value.slice(11,16)
+      // let date = value[0]+'-'+value[1]+'-'+value[2]
+      // let hour = value[3]
+      // let minute = value[3]
+      // if (hour < 10){
+      //   hour = '0'+hour
+      // }
+      // if (minute < 10){
+      //   minute = '0'+minute
+      // }
+      // let time = hour+':'+minute
+      // return `${date} ${time}`
     },
     // 삭제수정작성
     deleteCC(item){

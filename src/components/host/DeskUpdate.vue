@@ -253,7 +253,7 @@ export default {
           const responce = await roomUpdate(roomUpdateData[i].roomId, formData)
           console.log(responce)
         }
-        alert('방이 생성되었습니다.')
+        alert('방의 정보가 수정되었습니다.')
         this.$router.push('/host')
       } catch (error){
         console.log(error)

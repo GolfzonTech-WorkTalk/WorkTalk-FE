@@ -93,18 +93,19 @@ export default {
       }
     },
     dateCheck(dateData){
-      let year = dateData[0]
-      let month = dateData[1]
-      let date = dateData[2]
-      let hour = dateData[3]
-      let minute = dateData[4]
-      if (hour < 10){
-        hour = '0'+hour
-      }
-      if (minute < 10){
-        minute = '0'+minute
-      }
-      return year+'-'+month+'-'+date+' '+hour+':'+minute
+      return dateData.slice(0,10)+' '+dateData.slice(11,16)
+      // let year = dateData[0]
+      // let month = dateData[1]
+      // let date = dateData[2]
+      // let hour = dateData[3]
+      // let minute = dateData[4]
+      // if (hour < 10){
+      //   hour = '0'+hour
+      // }
+      // if (minute < 10){
+      //   minute = '0'+minute
+      // }
+      // return year+'-'+month+'-'+date+' '+hour+':'+minute
     },
     deleteQnA(item){
       this.deleteQnANum = item.qnaId
