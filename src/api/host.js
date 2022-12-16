@@ -12,8 +12,33 @@ function spaceCreate(SpaceInsertDto){
   })
 }
 
+function spaceUpdate(spaceId, SpaceUpdateDto){
+  return posts.post('host/spaceUpdate/'+spaceId, SpaceUpdateDto, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  })
+}
+
+function spaceImgDelete(spaceImgId){
+  return posts.post('spaceImgDelete', {
+    params:{
+      spaceImgId,
+    },
+  })
+}
+
+
 function roomCreate(formData){
   return posts.post('host/roomCreate', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  })
+}
+
+function roomUpdate(roomId, RoomUpdateDto){
+  return posts.post('host/roomCreate/'+roomId, RoomUpdateDto, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
@@ -27,6 +52,9 @@ function spaceDelte(spaceId){
 export {
   spaceAll,
   spaceCreate,
+  spaceUpdate,
+  spaceImgDelete,
   roomCreate,
+  roomUpdate,
   spaceDelte,
 }

@@ -114,8 +114,7 @@ export default {
   },
   methods: {
     navMove(value){
-      console.log(value)
-      window.location.href = `#${value}`
+      document.getElementById(value).scrollIntoView(false)
     },
     QnAFormOpenClose(value){
       this.QnAFormView = value

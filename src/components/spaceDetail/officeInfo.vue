@@ -21,6 +21,55 @@
       <p class="roomDetail">
         {{ roomItems.roomDetail }}
       </p>
+      <div>
+        <p class="amenities">
+          편의시설
+        </p>
+        <div class="officeInfoIconItems">
+          <div class="officeInfoIconItem officeInfoNoSelect">
+            <i class="fa-solid fa-square-parking fa-lg" />
+            <span>주차</span>
+          </div>
+          <div class="officeInfoIconItem officeInfoSelected">
+            <i class="fa-solid fa-wifi fa-lg" />
+            <div>
+              <span>인터넷/<br>와이파이</span>
+            </div>
+          </div>
+          <div class="officeInfoIconItem">
+            <i class="fa-solid fa-chalkboard fa-lg" />
+            <span>화이트보드</span>
+          </div>
+          <div class="officeInfoIconItem">
+            <i class="fa-solid fa-tv fa-lg" />
+            <div>
+              <span>TV/<br>프로젝터</span>
+            </div>
+          </div>
+          <div class="officeInfoIconItem">
+            <i class="fa-solid fa-utensils fa-lg" />
+            <div>
+              <span>음식물/<br>반입가능</span>
+            </div>
+          </div>
+          <div class="officeInfoIconItem">
+            <i class="fa-solid fa-print fa-lg" />
+            <span>복사/인쇄기</span>
+          </div>
+          <div class="officeInfoIconItem">
+            <i class="fa-solid fa-computer fa-lg" />
+            <span>PC/노트북</span>
+          </div>
+          <div class="officeInfoIconItem">
+            <i class="fa-solid fa-chair fa-lg" />
+            <span>의자/테이블</span>
+          </div>
+          <div class="officeInfoIconItem">
+            <i class="fa-solid fa-faucet-drip fa-lg" />
+            <span>정수기</span>
+          </div>
+        </div>
+      </div>
       <p class="roomTypePrice">
         가격 : {{ roomItems.roomPrice }}/일
       </p>
@@ -273,20 +322,18 @@ export default {
 }
 .roomSpaceTile{
   font-weight: bold;
-  font-size: 1.5rem;
+  font-size: 1rem;
 }
-.roomName{
-  margin-left: 0.5vw;
-  font-size: 1.2rem;
-}
-.roomTypePrice, .roomDetail{
+.roomTypePrice, .roomDetail, .amenities{
   margin: 0.5vh 0.5vw;
+  font-size: 0.8rem;
 }
 .reservationResult{
   margin-top: 1vh;
   margin-left: 0.5vw;
   margin-bottom: 2vh;
   border-bottom: 2px solid gray;
+  font-size: 0.8rem;
 }
 .reservationResult p:last-child{
   font-size: 0.8rem;
@@ -374,5 +421,32 @@ export default {
 }
 .rightBox{
   right: 0;
+}
+/* 아이콘 */
+.officeInfoIconItems {
+  margin-top: 1vh;
+  margin-left: 1vw;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+.officeInfoIconItem {
+  display: flex;
+  align-items: center;
+  line-height: 1.5vh;
+  width: 5.5vw;
+  height: 5vh;
+}
+.officeInfoIconItem i{
+  margin-right: 0.5vw;
+}
+.officeInfoIconItem span{
+  font-size: 0.1rem;
+}
+.officeInfoNoSelect{
+  color: rgba(184, 184, 184, 0.685);
+}
+.officeInfoSelected{
+  color: rgba(0, 0, 255, 0.514);
 }
 </style>

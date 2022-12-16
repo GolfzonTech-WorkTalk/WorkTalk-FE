@@ -62,7 +62,7 @@ export default {
   background: white;
   margin: auto;
   width: 55vw;
-  height: 110vh;
+  height: 100vh;
   padding: 2.5vw;
   font-weight: bold;
 }

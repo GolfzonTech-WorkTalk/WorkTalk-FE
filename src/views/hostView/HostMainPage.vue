@@ -1,10 +1,10 @@
 <template>
   <div>
-    <div class="spaceCreate">
-      <router-link to="/host/spaceCreate">
+    <router-link to="/host/spaceCreate">
+      <div class="spaceCreate">
         <span class="linkText">새공간등록</span>
-      </router-link>
-    </div>
+      </div>
+    </router-link>
     <div class="spaceAllContainer">
       <main-page-space-module v-for="spaceItem in spaceItems" :key="spaceItem" :space-item="spaceItem" @space-delete-call="spaceAllCall" />
     </div>

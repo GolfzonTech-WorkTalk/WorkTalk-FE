@@ -39,8 +39,7 @@ export default {
       this.pageView = this.$route.params.role
     },
     pageViewChange(role){
-      this.$router.replace('/master/memberManagement/'+role)
-      this.pageViewCheck()
+      this.pageView = role
     },
   },
 }
