@@ -2,11 +2,11 @@
   <div class="hostManagementBox">
     <div v-if="hostStatusUpdate != '사용승인박스'" class="Background" />
     <div class="hostListSortBox">
-      <select v-model="hostListSort">
+      <select v-model="hostListSort" @change="hostListCall(hostListSort)">
         <option value="" hidden>
           전체인원
         </option>
-        <option v-for="item in hostListSortData" :key="item" :value="item.valeu">
+        <option v-for="item in hostListSortData" :key="item" :value="item.value">
           {{ item.name }}
         </option>
       </select>
@@ -53,21 +53,21 @@ export default {
       hostList:[],
       hostListSortData:[
         {'name':'전체인원','value':''},
-        {'name':'승인인원','value':'panalty'},
-        {'name':'미승인인원','value':'NoPanalty'},
+        {'name':'승인인원','value':'1'},
+        {'name':'미승인인원','value':'0'},
       ],
       hostListSort:'',
       hostStatusUpdate:'사용승인박스',
     }
   },
   created(){
-    this.hostListCall()
+    this.hostListCall(this.hostListSort)
   },
   methods:{
-    async hostListCall(){
+    async hostListCall(hostListSort){
       // const response = await hostDummy.data
       try {
-        const response = await deactivatedHost()
+        const response = await deactivatedHost(hostListSort)
         console.log(response.data.data)
         this.hostList = response.data.data
       } catch (error){

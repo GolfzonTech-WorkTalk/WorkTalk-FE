@@ -2,7 +2,7 @@
   <div class="userManagementBox">
     <div v-if="userStatusUpdate != '패널티해제박스'" class="Background" />
     <div class="userListSortBox">
-      <select v-model="userListSort">
+      <select v-model="userListSort" @change="userListCall(userListSort)">
         <option value="" hidden>
           전체인원
         </option>

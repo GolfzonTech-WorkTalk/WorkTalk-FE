@@ -61,8 +61,6 @@ export default {
     logout(){
       this.$store.commit('setlogoutUser')
       deleteCookie('token')
-      deleteCookie('email')
-      deleteCookie('userType')
       this.$store.dispatch('MENUTABCLOSE', false)
       this.$router.push('/')
     },

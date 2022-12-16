@@ -1,6 +1,5 @@
 <template>
   <div class="roomContainer">
-    <p>가격기준 : 10000/시간</p>
     <form class="roomItems" @submit.prevent="roomUpdateSubmit">
       <div v-for="(item, index) in roomUpdate" :key="item" class="roomItem">
         <div>

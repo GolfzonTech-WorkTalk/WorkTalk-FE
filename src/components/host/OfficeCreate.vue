@@ -18,41 +18,9 @@
       <div>
         <p>편의시설</p>
         <div class="iconItems">
-          <div class="iconItem" :class="!officeRoom.room.park?'noSelect':'selected'" @click="officeRoom.room.park = !officeRoom.room.park">
-            <i class="fa-solid fa-square-parking fa-2x" />
-            <p>주차</p>
-          </div>
-          <div class="iconItem" :class="!officeRoom.room.wifi?'noSelect':'selected'" @click="officeRoom.room.wifi = !officeRoom.room.wifi">
-            <i class="fa-solid fa-wifi fa-2x" />
-            <p>인터넷/와이파이</p>
-          </div>
-          <div class="iconItem" :class="!officeRoom.room.whiteBoard?'noSelect':'selected'" @click="officeRoom.room.whiteBoard = !officeRoom.room.whiteBoard">
-            <i class="fa-solid fa-chalkboard fa-2x" />
-            <p>화이트보드</p>
-          </div>
-          <div class="iconItem" :class="!officeRoom.room.bim?'noSelect':'selected'" @click="officeRoom.room.bim = !officeRoom.room.bim">
-            <i class="fa-solid fa-tv fa-2x" />
-            <p>TV/프로젝터</p>
-          </div>
-          <div class="iconItem" :class="!officeRoom.room.food?'noSelect':'selected'" @click="officeRoom.room.food = !officeRoom.room.food">
-            <i class="fa-solid fa-utensils fa-2x" />
-            <p>음식물반입가능</p>
-          </div>
-          <div class="iconItem" :class="!officeRoom.room.print?'noSelect':'selected'" @click="officeRoom.room.print = !officeRoom.room.print">
-            <i class="fa-solid fa-print fa-2x" />
-            <p>복사/인쇄기</p>
-          </div>
-          <div class="iconItem" :class="!officeRoom.room.pc?'noSelect':'selected'" @click="officeRoom.room.pc = !officeRoom.room.pc">
-            <i class="fa-solid fa-computer fa-2x" />
-            <p>PC/노트북</p>
-          </div>
-          <div class="iconItem" :class="!officeRoom.room.chair?'noSelect':'selected'" @click="officeRoom.room.chair = !officeRoom.room.chair">
-            <i class="fa-solid fa-chair fa-2x" />
-            <p>의자/테이블</p>
-          </div>
-          <div class="iconItem" :class="!officeRoom.room.water?'noSelect':'selected'" @click="officeRoom.room.water = !officeRoom.room.water">
-            <i class="fa-solid fa-faucet-drip fa-2x" />
-            <p>정수기</p>
+          <div v-for="option in offeringOptionData" :key="option" class="iconItem" :class="(offeringOptionCheck(officeRoom,option.value))?'selected':'noSelect'" @click="offeringOptionAdd(officeRoom,option.value)">
+            <i :class="option.class" />
+            <p>{{ option.name }}</p>
           </div>
         </div>
       </div>
@@ -90,23 +58,40 @@ export default {
         workStart: '8',
         workEnd:'23',
         roomDetail:'',
-        room: {
-          park:false,
-          wifi:false,
-          whiteBoard:false,
-          bim:false,
-          food:false,
-          print:false,
-          pc:false,
-          chair:false,
-          water:false,
-        },
+        offeringOption:'',
       },
       roomImgPreview:[],
       officeDetail: '',
+      offeringOptionData: [
+        {'name':'주차','class':'fa-solid fa-square-parking fa-2x', 'value':'PARKING'},
+        {'name':'인터넷/와이파이','class':'fa-solid fa-wifi fa-2x', 'value':'INTERNET_WIFI'},
+        {'name':'화이트보드','class':'fa-solid fa-tv fa-2x', 'value':'WHITEBOARD'},
+        {'name':'TV/프로젝터','class':'fa-solid fa-utensils fa-2x', 'value':'TV_PROJECTOR'},
+        {'name':'음식물반입가능','class':'fa-solid fa-utensils fa-2x', 'value':'FOOD'},
+        {'name':'복사/인쇄기','class':'fa-solid fa-print fa-2x', 'value':'PRINTER'},
+        {'name':'PC/노트북','class':'fa-solid fa-computer fa-2x', 'value':'PC_LAPTOP'},
+        {'name':'의자/테이블','class':'fa-solid fa-chair fa-2x', 'value':'CHAIR_TABLE'},
+        {'name':'정수기','class':'fa-solid fa-faucet-drip fa-2x', 'value':'WATER'},
+      ],
     }
   },
   methods: {
+    // 편의시설
+    offeringOptionCheck(officeRoom,value){
+      if (officeRoom.offeringOption.indexOf(value) == -1){
+        return false
+      } else {
+        return true
+      }
+    },
+    offeringOptionAdd(officeRoom,value){
+      if (officeRoom.offeringOption.indexOf(value) == -1){
+        officeRoom.offeringOption += value
+      } else {
+        officeRoom.offeringOption = officeRoom.offeringOption.replace(value,'')
+      }
+    },
+    // 사진추가
     fileUpload(event){
       for (let i = 0; i < event.target.files.length; i++){
         this.officeRoom.roomImg = [
@@ -133,6 +118,7 @@ export default {
         }
       }
     },
+    // 검증
     officeRoomSubmitCheck(){
       const officeRoom = this.officeRoom
       let message = ''
@@ -144,11 +130,11 @@ export default {
         message = '오피스 설명을 작성해주세요.'
         this.$store.dispatch('MODALVIEWCLICK', true)
         this.$store.dispatch('MODALMESSAGE', message)
-      } else if (officeRoom.roomDetail > 100){
+      } else if (officeRoom.roomDetail.length > 100){
         message = '오피스 설명이 100자를 초과했습니다.'
         this.$store.dispatch('MODALVIEWCLICK', true)
         this.$store.dispatch('MODALMESSAGE', message)
-      } else if (!officeRoom.roomImg){
+      } else if (officeRoom.roomImg.length == 0){
         message = '오피스의 사진을 추가해주세요.'
         this.$store.dispatch('MODALVIEWCLICK', true)
         this.$store.dispatch('MODALMESSAGE', message)
@@ -156,6 +142,7 @@ export default {
         this.officeRoomSubmit()
       }
     },
+    // 제출
     async officeRoomSubmit(){
       try {
         const officeRoom = this.officeRoom
@@ -167,7 +154,7 @@ export default {
         formData.append('roomPrice', officeRoom.roomPrice)
         formData.append('workStart', officeRoom.workStart)
         formData.append('workEnd', officeRoom.workEnd)
-        formData.append('room', officeRoom.room)
+        formData.append('offeringOption', officeRoom.offeringOption)
         if (officeRoom.roomImg != null){
           for (let i = 0; i < officeRoom.roomImg.length; i++){
             formData.append('multipartFileList', officeRoom.roomImg[i].file)

@@ -21,13 +21,12 @@ function spaceUpdate(spaceId, SpaceUpdateDto){
 }
 
 function spaceImgDelete(spaceImgId){
-  return posts.post('spaceImgDelete', {
+  return posts.delete('spaceImgDelete',{
     params:{
       spaceImgId,
     },
   })
 }
-
 
 function roomCreate(formData){
   return posts.post('host/roomCreate', formData, {
@@ -38,15 +37,23 @@ function roomCreate(formData){
 }
 
 function roomUpdate(roomId, RoomUpdateDto){
-  return posts.post('host/roomCreate/'+roomId, RoomUpdateDto, {
+  return posts.post('host/roomUpdate/'+roomId, RoomUpdateDto, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
   })
 }
 
+function roomImgDelete(roomImgId){
+  return posts.delete('roomImgDelete', {
+    params:{
+      roomImgId,
+    },
+  })
+}
+
 function spaceDelte(spaceId){
-  return posts.get('host/spaceDelete/'+spaceId)
+  return posts.delete('host/spaceDelete/'+spaceId)
 }
 
 export {
@@ -56,5 +63,6 @@ export {
   spaceImgDelete,
   roomCreate,
   roomUpdate,
+  roomImgDelete,
   spaceDelte,
 }

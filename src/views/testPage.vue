@@ -1,41 +1,47 @@
 <template>
   <div>
-    <button @click="textFunction">
-      textBtn
-    </button>
+    <input v-model="result.roomId" type="text">
+    <input v-model="result.checkInDate" type="text">
+    <input v-model="result.checkOutDate" type="text">
+    <input v-model="result.checkInTime" type="text">
+    <input v-model="result.checkOutTime" type="text">
+    <input v-model="result.spaceType" type="text">
+    <p class="testBtn" @click="click">
+      클릭
+    </p>
   </div>
 </template>
 
 <script>
+import {test} from '@/api/test.js'
 export default {
+  data(){
+    return {
+      result:{
+        roomId:'1',
+        checkInDate:'2022-12-17',
+        checkOutDate:'2022-12-19',
+        checkInTime:'12',
+        checkOutTime:'17',
+        spaceType:'1',
+      },
+    }
+  },
+  created(){
+    this.$store.dispatch('SPINNERVIEW', false)
+  },
   methods: {
-    textFunction(){
-      const { IMP } = window
-      IMP.init('imp82350026')
-
-      const data = {
-        merchant_uid: `mid_text`,
-        company: '워크토크',
-      }
-
-      IMP.certification(data, this.callback)
-    },
-    callback(response){
-      const {
-        success,
-        error_msg,
-      } = response
-
-      if (success){
-        alert('본인인증 성공')
-      } else {
-        alert(`본인인증 실패: ${error_msg}`)
-      }
+    async click(){
+      console.log(this.result)
+      const response = await test(this.result)
+      console.log(response)
     },
   },
 }
 </script>
 
-<style>
-
+<style scoped>
+.testBtn{
+  cursor: pointer;
+}
 </style>

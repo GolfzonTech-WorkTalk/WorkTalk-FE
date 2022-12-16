@@ -75,6 +75,7 @@ export default {
       const response = await spaceOne(this.$route.params.spaceId)
       console.log(response.data[0])
       this.spaceItems = response.data[0]
+      this.spaceDetailCount = this.spaceItems.spaceDetail.length
     },
     // 사진등록삭제
     fileUpload(event){
@@ -108,7 +109,6 @@ export default {
     },
     // 업로드된 사진 삭제
     async spaceImgDelete(file){
-      console.log(file)
       const response = await spaceImgDelete(file.spaceImgId)
       console.log(response)
       this.spaceDataCall()
@@ -136,19 +136,21 @@ export default {
         formData.append('spaceId', this.spaceItems.spaceId)
         formData.append('spaceDetail', this.spaceItems.spaceDetail)
         formData.append('imageUrlList', this.spaceItems.spaceImgList)
-        if (this.spaceImg != []){
+        if (this.spaceImg.length != 0){
           for (let i = 0; i < this.spaceImg.length; i++){
             formData.append('multipartFileList', this.spaceImg[i].file)
             console.log(this.spaceImg[i].file)
           }
+        } else {
+          formData.append('multipartFileList',null)
         }
-        // for (let key of formData.keys()){
-        //   console.log(`${key}:${formData.get(key)}`)
-        // }
+        for (let key of formData.keys()){
+          console.log(`${key}:${formData.get(key)}`)
+        }
         const createDataResponse = await spaceUpdate(this.spaceItems.spaceId, formData)
         console.log(createDataResponse)
         if (createDataResponse.status == 200){
-          alert('공간이 생성되었습니다. 방을 생성해 주세요.')
+          alert('공간이 수정되었습니다.')
           this.$router.push('/host')
         }
       } catch (error){
