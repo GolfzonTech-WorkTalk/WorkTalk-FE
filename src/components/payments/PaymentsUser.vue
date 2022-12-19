@@ -34,7 +34,7 @@
           <span class="reserveDate">{{ reserveDateCheck(item.reserveDate) }}</span>
           <span class="paymentStatus" :class="(item.paid=='0')?'paymentIng':'paymentEnd'">{{ paymentStatusCheck(item.payStatus, item.reserveStatus) }}</span>
           <span class="reserveStatus">{{ reserveStatusRename(item.reserveStatus) }}</span>
-          <span class="payAmount" :class="reserveStatus(item.reserveStatus)">{{ payAmountCheck(item.reserveStatus,item.payAmount) }}</span>
+          <span class="payAmount" :class="reserveStatus(item.reserveStatus)">{{ item.payAmount }}</span>
         </div>
       </div>
       <div class="pageNumber">
@@ -154,25 +154,21 @@ export default {
       }
     },
     reserveDateCheck(reserveDate){
-      let year = reserveDate[0]
-      let month = reserveDate[1]
-      let date = reserveDate[2]
-      let hour = reserveDate[3]
-      let minute = reserveDate[4]
-      if (hour < 10){
-        hour = '0'+hour
-      }
-      if (minute < 10){
-        minute = '0'+minute
-      }
-      return year+'-'+month+'-'+date+' '+hour+':'+minute
-    },
-    payAmountCheck(reserveStatus,payAmount){
-      if (reserveStatus == 'CANCELED_BY_USER' || reserveStatus == 'CANCELED_BY_HOST'){
-        return '+'+payAmount
-      } else {
-        return '-'+payAmount
-      }
+      const date = reserveDate.slice(0,10)
+      const time = reserveDate.slice(11,16)
+      return `${date} ${time}`
+      // let year = reserveDate[0]
+      // let month = reserveDate[1]
+      // let date = reserveDate[2]
+      // let hour = reserveDate[3]
+      // let minute = reserveDate[4]
+      // if (hour < 10){
+      //   hour = '0'+hour
+      // }
+      // if (minute < 10){
+      //   minute = '0'+minute
+      // }
+      // return year+'-'+month+'-'+date+' '+hour+':'+minute
     },
     reserveStatus(reserveStatus){
       if (reserveStatus == 'CANCELED_BY_USER' || reserveStatus == 'CANCELED_BY_HOST'){

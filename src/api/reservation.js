@@ -1,7 +1,7 @@
 import { instance, posts } from "./index"
 
 // 방의 예약조회
-function reservationData(roomId, roomType, initDate, endDate, initTime, endTime){
+function reservationData(spaceType, roomId, roomType, initDate, endDate, initTime, endTime){
   return instance.get('reservations/isBooked',{
     params:{
       roomId,
@@ -10,6 +10,7 @@ function reservationData(roomId, roomType, initDate, endDate, initTime, endTime)
       endDate,
       initTime,
       endTime,
+      spaceType,
     },
   })
 }
@@ -19,9 +20,18 @@ function reserveChoose(reservaData){
   return posts.post('/reservation/choose', reservaData)
 }
 
+// 예약임시DB불러오기
+function reserveChooseCall(tempRedisReserveId){
+  return posts.get('/redis/reservation/findById', {
+    params:{
+      tempRedisReserveId,
+    },
+  })
+}
+
 // 임시DB삭제
-function reserveChooseDelete(reserveId){
-  return posts.get('/reservation/delete/'+reserveId)
+function reserveChooseDelete(tempRedisReserveId){
+  return posts.get('/reservation/delete/'+tempRedisReserveId)
 }
 
 // 예약확정 DB저장
@@ -69,6 +79,7 @@ function paymentHistory(pageNum, payStatus, reserveDate){
 export {
     reservationData,
     reserveChoose,
+    reserveChooseCall,
     reserveChooseDelete,
     reservationReserve,
     reservation,

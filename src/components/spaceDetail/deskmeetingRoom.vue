@@ -79,8 +79,37 @@
             총금액 : {{ amount }}
           </p>
         </div>
-        <div class="reservationSubmitBtn">
-          <span @click="reservationSubmitCheck">예약하기</span>
+        <div class="reservationSubmitBtnBox">
+          <template v-if="memberIsValid.tel != null && memberIsValid.activated == 1">
+            <p class="reservationSubmitBtn" @click="reservationSubmitCheck">
+              예약하기
+            </p>
+          </template>
+          <template v-else>
+            <p class="noShowNotel">
+              예약하기
+            </p>
+            <template v-if="memberIsValid.activated == 0">
+              <p class="noShowNotelWarning">
+                * 노쇼 유저입니다.
+              </p>
+            </template>
+            <template v-else-if="memberIsValid.tel == null && memberIsValid.activated == 1">
+              <p class="noShowNotelWarning">
+                * 전화번호가 없습니다.
+              </p>
+              <router-link to="/profile">
+                <p class="telInput">
+                  전화번호 등록하러가기
+                </p>
+              </router-link>
+            </template>
+            <template v-else>
+              <p class="noShowNotelWarning">
+                * 로근인 후 예약이 가능합니다.
+              </p>
+            </template>
+          </template>
         </div>
       </template>
     </div>
@@ -88,7 +117,7 @@
 </template>
 
 <script>
-import { roomOne } from '@/api/user.js'
+import { roomOne, isValid } from '@/api/user.js'
 import { reservationData, reserveChoose } from '@/api/reservation.js'
 import DeskMeetingCalendarVue from './reservation/DeskMeetingCalendar.vue'
 export default {
@@ -134,22 +163,38 @@ export default {
         {'name':'의자/테이블','class':'fa-solid fa-chair fa-lg', 'value':'CHAIR_TABLE'},
         {'name':'정수기','class':'fa-solid fa-faucet-drip fa-lg', 'value':'WATER'},
       ],
+      memberIsValid:{},
     }
   },
   // 룸정보 출력
-  async created(){
-    try {
-      const spaceId = this.$route.params.spaceId
-      let spaceResponce = await roomOne(spaceId)
-      this.roomItems = spaceResponce.data
-      for (let i = 0; i < this.roomItems.length; i++){
-        this.roomItems[i].roomImgListNum = 0
-      }
-    } catch (error){
-      console.log(error)
-    }
+  created(){
+    this.callRoomInfo()
+    this.callMemberTelNoshow()
   },
   methods: {
+    // 룸정보 불러오기
+    async callRoomInfo(){
+      try {
+        const spaceId = this.$route.params.spaceId
+        let spaceResponce = await roomOne(spaceId)
+        this.roomItems = spaceResponce.data
+        for (let i = 0; i < this.roomItems.length; i++){
+          this.roomItems[i].roomImgListNum = 0
+        }
+      } catch (error){
+        console.log(error)
+      }
+    },
+    // 멤버의 노쇼,텔 확인
+    async callMemberTelNoshow(){
+      try {
+        const memberIsValid = await isValid()
+        console.log(memberIsValid.data)
+        this.memberIsValid = memberIsValid.data
+      } catch (error){
+        console.log(error)
+      }
+    },
     // 이미지 전환
     movePrev(item){
       if (item.roomImgListNum == '0'){
@@ -215,9 +260,11 @@ export default {
         const roomType = this.roomType
         const initDate = this.reservationDay
         const endDate = this.reservationDay
-        const initTime = null
-        const endTime = null
-        let response = await reservationData(roomId, roomType, initDate, endDate, initTime, endTime)
+        const spaceType = this.$route.params.spaceType
+        const initTime = this.workStart
+        const endTime = this.workEnd
+        // console.log(spaceType, roomId, roomType, initDate, endDate, initTime, endTime)
+        let response = await reservationData(spaceType, roomId, roomType, initDate, endDate, initTime, endTime)
         console.log(response)
         this.reservation = response.data
       } catch (error){
@@ -379,7 +426,7 @@ export default {
         // 예약임시데이터 저장
         let response = await reserveChoose(reservationData)
         console.log(response)
-        // this.$router.push('/user/reservationPayment/'+response.reserveId)
+        this.$router.push('/user/reservationPayment/'+response.data)
       } catch (error){
         console.log(error)
       }
@@ -421,18 +468,37 @@ export default {
   border-bottom: 2px solid gray;
 }
 /* 결제버튼 */
-.reservationSubmitBtn{
-  padding: 1vh 0vw;
-  margin-left: 0.5vw;
+.reservationSubmitBtnBox{
+  text-align: center;
 }
-.reservationSubmitBtn span{
+.reservationSubmitBtn, .noShowNotel{
   border: 1px solid gray;
   font-weight: bold;
   font-size: 1.1rem;
   letter-spacing: 1rem;
   padding: 0 2.3vw;
-  margin: 2vw;
+  margin: 1vw;
   border-radius: 10px;
+  cursor: pointer;
+}
+.noShowNotel{
+  background: rgba(197, 197, 197, 0.46);
+  pointer-events: none;
+}
+.noShowNotelWarning{
+  color: red;
+  font-weight: bold;
+}
+.telInput{
+  border: 1px solid gray;
+  border-radius: 10px;
+  width: 10vw;
+  margin: auto;
+  cursor: pointer;
+}
+.telInput:hover{
+  background: rgba(156, 156, 220, 0.652);
+  color: white;
 }
 /* 시간 CSS */
 .timeLine{
@@ -536,7 +602,6 @@ export default {
   margin-left: 1vw;
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
 }
 .officeInfoIconItem {
   display: flex;
