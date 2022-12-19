@@ -2,25 +2,42 @@
   <div class="paymentContainer">
     <div>
       <div class="paymentSortBox">
-        <select v-model="paymentSort" class="paymentSort" @change="reservationDataCall(pageNowNum)">
-          <option value="기간" hidden>
+        <select v-model="paymentSort" class="paymentSort" @change="paymentDataRequest(pageNowNum)">
+          <option value="" hidden>
             결제기간
           </option>
           <option v-for="item in paymentSortData" :key="item" :value="item.value">
             {{ item.name }}
           </option>
         </select>
-        <select v-model="spaceType" class="paymentSort" @change="reservationDataCall(pageNowNum)">
-          <option value="공간" hidden>
+        <select v-model="payStatus" class="paymentSort" @change="paymentDataRequest(pageNowNum)">
+          <option value="" hidden>
+            결제상태
+          </option>
+          <option v-for="item in payStatusData" :key="item" :value="item.value">
+            {{ item.name }}
+          </option>
+        </select>
+        <select v-model="spaceType" class="paymentSort" @change="paymentDataRequest(pageNowNum)">
+          <option value="" hidden>
             공간종류
           </option>
           <option v-for="item in spaceTypeData" :key="item" :value="item.value">
             {{ item.name }}
           </option>
         </select>
+        <select v-model="paymentRoom" class="paymentSort" @change="paymentDataRequest(pageNowNum)">
+          <option value="" hidden>
+            공간이름
+          </option>
+          <option v-for="item in paymentRoomData" :key="item" :value="item.value">
+            {{ item.name }}
+          </option>
+        </select>
       </div>
       <div class="paymentItems">
         <div class="paymentItemTitle">
+          <span class="spaceNameTitle">예약번호</span>
           <span class="spaceNameTitle">공간이름</span>
           <span class="roomNameTitle">방이름</span>
           <span class="reserveDateTitle">예약일</span>
@@ -29,6 +46,7 @@
           <span class="payAmountTitle">결제금액</span>
         </div>
         <div v-for="item in paymentData" :key="item" class="paymentItem">
+          <span class="spaceName">{{ item.reserveId }}</span>
           <span class="spaceName">{{ item.spaceName }}</span>
           <span class="roomName">{{ item.roomName }}</span>
           <span class="reserveDate">{{ reserveDateCheck(item.reserveDate) }}</span>
@@ -48,7 +66,7 @@
 
 <script>
 // import {payment} from '@/utils/dummy/paymentDummy.js'
-import {paymentHistory} from '@/api/reservation.js'
+import {paymentRoom, paymentHistoryHost} from '@/api/reservation.js'
 export default {
   data(){
     return {
@@ -59,15 +77,28 @@ export default {
         {'name':'6개월','value':'6'},
         {'name':'1년','value':'12'},
       ],
-      paymentSort:'기간',
+      paymentSort:'',
       spaceTypeData: [
-        {'name':'전 체','value':''},
+        {'name':'전체','value':''},
         {'name':'오피스','value':'1'},
         {'name':'데스크','value':'2'},
         {'name':'회의실','value':'3'},
       ],
-      spaceType:'공간',
+      spaceType:'',
+      payStatusData: [
+        {'name':'전 체','value':''},
+        {'name':'보증금결제','value':'DEPOSIT'},
+        {'name':'선결제(완납)','value':'PREPAID'},
+        {'name':'후결제(예정)','value':'POSTPAID_BOOKED'},
+        {'name':'후결제(완납)','value':'POSTPAID_DONE'},
+        {'name':'환불','value':'REFUND'},
+      ],
+      payStatus:'',
       paymentData:[],
+      paymentRoomData:[
+        {'name':'전 체','value':''},
+      ],
+      paymentRoom:'',
       // 페이지 관리데이터
       pageStartNum: 1,
       pageNowNum:1,
@@ -76,22 +107,29 @@ export default {
     }
   },
   created(){
+    this.paymentRoomCall()
     this.paymentDataRequest(this.pageNowNum)
   },
   methods: {
+    async paymentRoomCall(){
+      const response = await paymentRoom()
+      console.log(response.data.length)
+      for (let i = 0; i < response.data.length; i++){
+        this.paymentRoomData = [
+          ...this.paymentRoomData,
+          {'name':response.data[i],'value':response.data[i]},
+        ]
+      }
+    },
     async paymentDataRequest(pageNowNum){
       this.paymentData = []
+      let payStatus = this.payStatus
+      let paymentSortData = this.paymentSort
       let spaceType = this.spaceType
-      let paymentSortData = this.paymentSortData
+      let paymentRoom = this.paymentRoom
       this.pageNowNum = pageNowNum
       try {
-        if (spaceType == '공간종류'){
-          spaceType = ''
-        }
-        if (paymentSortData == '기간'){
-          paymentSortData = ''
-        }
-        let response = await paymentHistory(pageNowNum-1 )
+        let response = await paymentHistoryHost(pageNowNum-1, payStatus, paymentSortData, spaceType, paymentRoom )
         // let response = await paymentHistory(pageNowNum-1, spaceType, paymentSortData)
         this.paymentData = response.data.data
         this.pageTotal =  response.data.count
@@ -221,8 +259,11 @@ export default {
   margin: 2vh 0;
 }
 .paymentSort{
+  width: 8vw;
+  letter-spacing: 0.1rem;
   font-size: 1rem;
-  width: 6vw;
+  font-weight: bold;
+  margin-left: 1vw;
 }
 /* 결제내역출력 */
 .paymentContainer::-webkit-scrollbar{

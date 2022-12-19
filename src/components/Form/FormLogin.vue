@@ -62,7 +62,7 @@
 </template>
 
 <script>
-import { mailFind, pwFind, kakaoLogin } from '@/api/auth.js'
+import { mailFind, pwFind } from '@/api/auth.js'
 import {emailCheck} from '@/utils/emailCheck'
 import jwt_decode from 'jwt-decode'
 export default {
@@ -167,16 +167,18 @@ export default {
     kakaoLogin(){
       window.Kakao.Auth.authorize({
         // redirectUri:'http://localhost:8081/login',
-        // redirectUri:'http://3.36.148.54/login',
-        redirectUri:'http://localhost:8100/user/kakao/callback',
+        // redirectUri:'http://localhost:8100/user/kakao/callback',
+        redirectUri:'http://15.165.247.125:8100/user/kakao/callback',
       })
     },
     async kakaoTokenCall(){
-      console.log(this.$route)
-      const code = this.$route.query.code
-      console.log(code)
-      const response = await kakaoLogin(code)
-      console.log(response)
+      try {
+        const code = this.$route.query.code
+        await this.$store.dispatch('KAKAOLOGIN', code)
+        this.$router.push('/')
+      } catch (error){
+        console.log(error)
+      }
     },
   },
 }

@@ -37,41 +37,9 @@
         <div>
           <p>편의시설</p>
           <div class="iconItems">
-            <div class="iconItem" :class="!item.room.park?'noSelect':'selected'" @click="item.room.park = !item.room.park">
-              <i class="fa-solid fa-square-parking fa-2x" />
-              <p>주차</p>
-            </div>
-            <div class="iconItem" :class="!item.room.wifi?'noSelect':'selected'" @click="item.room.wifi = !item.room.wifi">
-              <i class="fa-solid fa-wifi fa-2x" />
-              <p>인터넷/와이파이</p>
-            </div>
-            <div class="iconItem" :class="!item.room.whiteBoard?'noSelect':'selected'" @click="item.room.whiteBoard = !item.room.whiteBoard">
-              <i class="fa-solid fa-chalkboard fa-2x" />
-              <p>화이트보드</p>
-            </div>
-            <div class="iconItem" :class="!item.room.bim?'noSelect':'selected'" @click="item.room.bim = !item.room.bim">
-              <i class="fa-solid fa-tv fa-2x" />
-              <p>TV/프로젝터</p>
-            </div>
-            <div class="iconItem" :class="!item.room.food?'noSelect':'selected'" @click="item.room.food = !item.room.food">
-              <i class="fa-solid fa-utensils fa-2x" />
-              <p>음식물반입가능</p>
-            </div>
-            <div class="iconItem" :class="!item.room.print?'noSelect':'selected'" @click="item.room.print = !item.room.print">
-              <i class="fa-solid fa-print fa-2x" />
-              <p>복사/인쇄기</p>
-            </div>
-            <div class="iconItem" :class="!item.room.pc?'noSelect':'selected'" @click="item.room.pc = !item.room.pc">
-              <i class="fa-solid fa-computer fa-2x" />
-              <p>PC/노트북</p>
-            </div>
-            <div class="iconItem" :class="!item.room.chair?'noSelect':'selected'" @click="item.room.chair = !item.room.chair">
-              <i class="fa-solid fa-chair fa-2x" />
-              <p>의자/테이블</p>
-            </div>
-            <div class="iconItem" :class="!item.room.water?'noSelect':'selected'" @click="item.room.water = !item.room.water">
-              <i class="fa-solid fa-faucet-drip fa-2x" />
-              <p>정수기</p>
+            <div v-for="option in offeringOptionData" :key="option" class="iconItem" :class="optionCheck(item,option.value)" @click="optionAdd(item,option.value)">
+              <i :class="option.class" />
+              <p>{{ option.name }}</p>
             </div>
           </div>
         </div>
@@ -110,37 +78,20 @@ import {roomUpdate, roomImgDelete} from '@/api/host'
 export default {
   data(){
     return {
-      roomUpdate: [
-        {
-          roomId:'3',
-          roomType: 'DESK',
-          roomName: '데스크룸1',
-          roomPrice: '10000',
-          workStart: '6',
-          workEnd:'20',
-          roomDetail:'테스트중입니다.',
-          roomImgDtoList: [
-            {roomId:3,
-            roomImgId:53,
-            roomImgUrl:"https://worktalk-img.s3.ap-northeast-2.amazonaws.com/4e8c3420-6fb8-4d13-b716-0cb69b87db4e-dummy1.jpg"},
-          ],
-          roomImg:[],
-          roomImgPreview:[],
-          room: {
-            park:false,
-            wifi:true,
-            whiteBoard:false,
-            bim:false,
-            food:false,
-            print:false,
-            pc:false,
-            chair:false,
-            water:false,
-          },
-        },
-      ],
+      roomUpdate: [],
       startTimeData: '',
       endTimeData: '',
+      offeringOptionData: [
+        {'name':'주차','class':'fa-solid fa-square-parking fa-2x', 'value':'PARKING'},
+        {'name':'인터넷/와이파이','class':'fa-solid fa-wifi fa-2x', 'value':'INTERNET_WIFI'},
+        {'name':'화이트보드','class':'fa-solid fa-tv fa-2x', 'value':'WHITEBOARD'},
+        {'name':'TV/프로젝터','class':'fa-solid fa-utensils fa-2x', 'value':'TV_PROJECTOR'},
+        {'name':'음식물반입가능','class':'fa-solid fa-utensils fa-2x', 'value':'FOOD'},
+        {'name':'복사/인쇄기','class':'fa-solid fa-print fa-2x', 'value':'PRINTER'},
+        {'name':'PC/노트북','class':'fa-solid fa-computer fa-2x', 'value':'PC_LAPTOP'},
+        {'name':'의자/테이블','class':'fa-solid fa-chair fa-2x', 'value':'CHAIR_TABLE'},
+        {'name':'정수기','class':'fa-solid fa-faucet-drip fa-2x', 'value':'WATER'},
+      ],
     }
   },
   created(){
@@ -149,12 +100,16 @@ export default {
   },
   methods: {
     async roomCall(){
-      const response = await roomOne(this.$route.params.spaceId)
-      for (let i = 0; i < response.data.length; i++){
-        response.data[i].roomImg = []
-        response.data[i].roomImgPreview = []
+      try {
+        const response = await roomOne(this.$route.params.spaceId)
+        for (let i = 0; i < response.data.length; i++){
+          response.data[i].roomImg = []
+          response.data[i].roomImgPreview = []
+        }
+        this.roomUpdate = response.data
+      } catch (error){
+        console.log(error)
       }
-      console.log(response)
     },
     createTime(){
       let createTime = []
@@ -193,6 +148,32 @@ export default {
         }
       }
       this.endTimeData = createTime
+    },
+    // 옵션관리
+    optionCheck(item, value){
+      if (item.offeringOption == null){
+        return 'noSelect'
+      }
+      // console.log(item.offeringOption, value)
+      if (item.offeringOption != null || item.offeringOption != ''){
+        if (item.offeringOption.indexOf(value) == -1){
+          return 'noSelect'
+        } else {
+          return 'selected'
+        }
+      } else {
+        return 'selected'
+      }
+
+    },
+    optionAdd(item,value){
+      if (item.offeringOption == null){
+        item.offeringOption = value
+      } else if (item.offeringOption.indexOf(value) == -1){
+        item.offeringOption += value
+      } else {
+        item.offeringOption = item.offeringOption.replace(value,'')
+      }
     },
     // 사진 내용추가
     fileUpload(event){
@@ -243,7 +224,7 @@ export default {
           formData.append('workStart', roomUpdateData[i].workStart)
           formData.append('workEnd', roomUpdateData[i].workEnd)
           formData.append('roomType', roomUpdateData[i].roomImgDtoList)
-          formData.append('room', roomUpdateData[i].room)
+          formData.append('offeringOption', roomUpdateData[i].offeringOption)
           if (roomUpdateData[i].roomImg != null){
             for (let j = 0; j < roomUpdateData[i].roomImg.length; j++){
               formData.append('multipartFileList', roomUpdateData[i].roomImg[j].file)

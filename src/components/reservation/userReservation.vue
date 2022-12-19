@@ -216,7 +216,11 @@ export default {
     },
     amountLeaveCheck(item){
       if (item.paid == '0' && item.paymentStatus == 'PREPAID'){
-        return true
+        if (item.reserveStatus == 'CANCELED_BY_USER' || item.reserveStatus == 'CANCELED_BY_HOST'){
+          return false  
+        } else {
+          return true
+        }
       } else {
         return false
       }
@@ -598,7 +602,7 @@ export default {
   position: absolute;
   background: rgba(0, 0, 0, 0.356);
   top: -14.5vh;
-  left: -15vw;
+  left: -17vw;
   width: 110vw;
   height: 110vh;
   z-index: 1;

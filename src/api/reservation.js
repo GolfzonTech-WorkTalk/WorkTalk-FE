@@ -77,15 +77,8 @@ function paymentHistory(pageNum, payStatus, reserveDate){
 }
 
 // 호스트 예약된 방
-function paymentRoom(pageNum, payStatus, reserveDate, spaceType){
-  return posts.get('/payments/history',{
-    params: {
-      pageNum,
-      payStatus,
-      reserveDate,
-      spaceType,
-    },
-  })
+function paymentRoom(){
+  return posts.get('/payments/rooms')
 }
 
 // 호스트결제내역

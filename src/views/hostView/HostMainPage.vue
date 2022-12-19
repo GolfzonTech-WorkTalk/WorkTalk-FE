@@ -1,10 +1,8 @@
 <template>
   <div>
-    <router-link to="/host/spaceCreate">
-      <div class="spaceCreate">
-        <span class="linkText">새공간등록</span>
-      </div>
-    </router-link>
+    <div class="spaceCreate">
+      <span class="linkText" @click="activatedCheck">새공간등록</span>
+    </div>
     <div class="spaceAllContainer">
       <main-page-space-module v-for="spaceItem in spaceItems" :key="spaceItem" :space-item="spaceItem" @space-delete-call="spaceAllCall" />
     </div>
@@ -13,7 +11,7 @@
 
 <script>
 import MainPageSpaceModule from '@/components/host/MainPageSpaceModule.vue'
-import { spaceAll } from '@/api/host.js'
+import { spaceAll, activatedCheck } from '@/api/host.js'
 // import { spaceDumy } from '@/utils/dummy'
 // import jwt_decode from 'jwt-decode'
 export default {
@@ -40,6 +38,16 @@ export default {
         console.log(error)
       }
       this.$store.dispatch('SPINNERVIEW', false)
+    },
+    async activatedCheck(){
+      const response = await activatedCheck()
+      if (response.data){
+        this.$router.push('/host/spaceCreate')
+      } else {
+        let message = '공간생성 대기상태입니다.'
+        this.$store.dispatch('MODALVIEWCLICK', true)
+        this.$store.dispatch('MODALMESSAGE', message)
+      }
     },
   },
 }

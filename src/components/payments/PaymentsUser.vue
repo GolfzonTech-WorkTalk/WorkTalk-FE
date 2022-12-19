@@ -21,6 +21,7 @@
       </div>
       <div class="paymentItems">
         <div class="paymentItemTitle">
+          <span class="spaceNameTitle">예약번호</span>
           <span class="spaceNameTitle">공간이름</span>
           <span class="roomNameTitle">방이름</span>
           <span class="reserveDateTitle">예약일</span>
@@ -29,6 +30,7 @@
           <span class="payAmountTitle">결제금액</span>
         </div>
         <div v-for="item in paymentData" :key="item" class="paymentItem">
+          <span class="spaceName">{{ item.reserveId }}</span>
           <span class="spaceName">{{ item.spaceName }}</span>
           <span class="roomName">{{ item.roomName }}</span>
           <span class="reserveDate">{{ reserveDateCheck(item.reserveDate) }}</span>

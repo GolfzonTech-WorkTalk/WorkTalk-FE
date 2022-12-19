@@ -96,6 +96,19 @@ export default createStore({
         console.log(error)
       }
     },
+    // 로그인 처리
+    async KAKAOLOGIN(context, code){
+      try {
+        const decode = jwt_decode(code.token)
+        context.commit('setToken', code.token)
+        context.commit('setNickName', decode.sub)
+        context.commit('setRole', decode.auth)
+        saveTokenToCookie(code.token)
+        return code
+      } catch (error){
+        console.log(error)
+      }
+    },
     // 모달찰 끄기
     MODALVIEWCLICK(context, click){
       context.commit('setModalView', click)
