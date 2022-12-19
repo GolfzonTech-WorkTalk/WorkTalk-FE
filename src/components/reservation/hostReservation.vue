@@ -23,8 +23,9 @@
       <div class="reservationItem">
         <span class="reserveIdTitle itemTitle">예약번호</span>
         <span class="roomTypeTitle">방종류</span>
-        <span class="roomName itemTitle">방이름</span>
+        <span class="roomNameTitle itemTitle">방이름</span>
         <span class="reserveTimeTitle itemTitle">예약일</span>
+        <span class="reserveInOutTitle itemTitle">입/퇴실</span>
         <span class="reservaStatusTitle">예약상태</span>
         <span class="amountTitle itemTitle">금액</span>
         <span class="reservationCancel itemTitle">비 고</span>
@@ -34,6 +35,7 @@
         <span class="roomType" :class="item.roomType">{{ roomTypeRename(item.roomType) }}</span>
         <span class="roomName">{{ item.roomName }}</span>
         <span class="reserveTime">{{ reserveTime(item.bookDate.reserveDate) }}</span>
+        <span class="reserveInOut">{{ InOutTime(item) }}</span>
         <span class="reserveStatus" :class="item.reserveStatus">{{ reserveStatusRename(item.reserveStatus) }}</span>
         <span class="amount">{{ item.reserveAmount }}</span>
         <span v-if="cancelPossible(item)" class="reservationCancelBtn" @click="boxOpen('cancel', index)">예약취소</span>
@@ -179,6 +181,22 @@ export default {
       const date = reserveDate.slice(0,10)
       const time = reserveDate.slice(11,16)
       return `${date} ${time}`
+    },
+    InOutTime(item){
+      console.log(item)
+      if (item.roomType == 'OFFICE'){
+        return `${item.bookDate.checkInDate}~${item.bookDate.checkOutDate}`
+      } else {
+        let checkInTime = item.bookDate.checkInTime
+        let checkOutTime = item.bookDate.checkOutTime
+        if (checkInTime < 10){
+          checkInTime = '0'+checkInTime
+        }
+        if (checkOutTime < 10){
+          checkOutTime = '0'+checkOutTime
+        }
+        return `${item.bookDate.checkInDate} ${checkInTime}:00~${checkOutTime}:00`
+      }
     },
     cancelPossible(item){
       if (item.reserveStatus == 'BOOKED'){
@@ -361,8 +379,14 @@ export default {
   background: rgba(9, 44, 139, 0.527);
 }
 /* 방이름 */
+.roomNameTitle{
+  width: 6vw;
+  text-align: center;
+}
 .roomName{
-  width: 10vw;
+  font-weight: bold;
+  font-size: 0.8rem;
+  width: 6vw;
   text-align: center;
 }
 /* 예약상태 */
@@ -389,19 +413,28 @@ export default {
 }
 /* 예약시간 */
 .reserveTimeTitle{
-  width: 13vw;
+  width: 9vw;
 }
 .reserveTime{
-  width: 13vw;
+  width: 9vw;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+/* 입퇴실 */
+.reserveInOutTitle{
+  width: 11vw;
+}
+.reserveInOut{
+  width: 11vw;
   font-size: 0.8rem;
   font-weight: bold;
 }
 /* 가격 */
 .amountTitle{
-  width: 6vw;
+  width: 5vw;
 }
 .amount{
-  width: 6vw;
+  width: 5vw;
   font-size: 0.8rem;
   font-weight: bold;
 }

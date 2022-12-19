@@ -1,5 +1,5 @@
 const cityAddress = [
-  {typeCode:11,name:'서울특별시'},
+  {typeCode:11,name:'서울'},
   {typeCode:21,name:'부산광역시'},
   {typeCode:22,name:'대구광역시'},
   {typeCode:23,name:'인천광역시'},

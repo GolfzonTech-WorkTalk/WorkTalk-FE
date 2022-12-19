@@ -3,56 +3,26 @@
     <form @submit.prevent="officeRoomSubmitCheck">
       <div class="inputBox">
         <p>가격설정</p>
-        <input v-model="officeRoom.roomPrice" class="officeTitle" type="text" placeholder="숫자만 입력해 주세요.">
+        <input v-model="officeUpdate.roomPrice" class="officeTitle" type="text" :placeholder="officeUpdate.roomPrice">
       </div>
       <div class="inputBox">
-        <span>오피스 설명</span>
-        <p :class="(officeRoom.roomDetail.length >= '100')?'warning':'noWarning'" class="officeNameCount">
-          {{ officeRoom.roomDetail.length }} / 100자
-        </p>
-        <textarea v-model="officeRoom.roomDetail" class="officeDetail" rows="10" placeholder="오피스의 설명을 작성해 주세요." />
-        <p v-if="officeRoom.roomDetail.length >= '100'" class="warning">
-          방설명은 100자를 초과할 수 없습니다.
-        </p>
+        <template v-if="officeUpdate.length != 0">
+          <span>오피스 설명</span>
+          <p :class="( textCount(officeUpdate.roomDetail) >= '100')?'warning':'noWarning'" class="roomNameCount">
+            {{ textCount(officeUpdate.roomDetail) }} / 100자
+          </p>
+          <textarea v-model="officeUpdate.roomDetail" class="officeDetail" rows="10" placeholder="오피스의 설명을 작성해 주세요." />
+          <p v-if="textCount(officeUpdate.roomDetail) >= '100'" class="warning">
+            방설명은 100자를 초과할 수 없습니다.
+          </p>
+        </template>
       </div>
       <div>
         <p>편의시설</p>
         <div class="iconItems">
-          <div class="iconItem" :class="!officeRoom.room.park?'noSelect':'selected'" @click="officeRoom.room.park = !officeRoom.room.park">
-            <i class="fa-solid fa-square-parking fa-2x" />
-            <p>주차</p>
-          </div>
-          <div class="iconItem" :class="!officeRoom.room.wifi?'noSelect':'selected'" @click="officeRoom.room.wifi = !officeRoom.room.wifi">
-            <i class="fa-solid fa-wifi fa-2x" />
-            <p>인터넷/와이파이</p>
-          </div>
-          <div class="iconItem" :class="!officeRoom.room.whiteBoard?'noSelect':'selected'" @click="officeRoom.room.whiteBoard = !officeRoom.room.whiteBoard">
-            <i class="fa-solid fa-chalkboard fa-2x" />
-            <p>화이트보드</p>
-          </div>
-          <div class="iconItem" :class="!officeRoom.room.bim?'noSelect':'selected'" @click="officeRoom.room.bim = !officeRoom.room.bim">
-            <i class="fa-solid fa-tv fa-2x" />
-            <p>TV/프로젝터</p>
-          </div>
-          <div class="iconItem" :class="!officeRoom.room.food?'noSelect':'selected'" @click="officeRoom.room.food = !officeRoom.room.food">
-            <i class="fa-solid fa-utensils fa-2x" />
-            <p>음식물반입가능</p>
-          </div>
-          <div class="iconItem" :class="!officeRoom.room.print?'noSelect':'selected'" @click="officeRoom.room.print = !officeRoom.room.print">
-            <i class="fa-solid fa-print fa-2x" />
-            <p>복사/인쇄기</p>
-          </div>
-          <div class="iconItem" :class="!officeRoom.room.pc?'noSelect':'selected'" @click="officeRoom.room.pc = !officeRoom.room.pc">
-            <i class="fa-solid fa-computer fa-2x" />
-            <p>PC/노트북</p>
-          </div>
-          <div class="iconItem" :class="!officeRoom.room.chair?'noSelect':'selected'" @click="officeRoom.room.chair = !officeRoom.room.chair">
-            <i class="fa-solid fa-chair fa-2x" />
-            <p>의자/테이블</p>
-          </div>
-          <div class="iconItem" :class="!officeRoom.room.water?'noSelect':'selected'" @click="officeRoom.room.water = !officeRoom.room.water">
-            <i class="fa-solid fa-faucet-drip fa-2x" />
-            <p>정수기</p>
+          <div v-for="option in offeringOptionData" :key="option" class="iconItem" :class="optionCheck(officeUpdate,option.value)" @click="optionAdd(officeUpdate,option.value)">
+            <i :class="option.class" />
+            <p>{{ option.name }}</p>
           </div>
         </div>
       </div>
@@ -60,7 +30,7 @@
         <p>오피스 사진등록</p>
         <span class="boxName">업로드된 사진</span>
         <div class="imgBox">
-          <div v-for="file in officeRoom.roomImgDtoList" :key="file" class="filePreview">
+          <div v-for="file in officeUpdate.roomImgDtoList" :key="file" class="filePreview">
             <i class="fa-solid fa-trash-can fa-lg imgDelete" @click="roomImgDelete(file)" />
             <img class="preViewImg" :src="file.roomImgUrl">
           </div>
@@ -90,47 +60,64 @@ import {roomUpdate, roomImgDelete} from '@/api/host'
 export default {
   data(){
     return {
-      officeRoom: {
-        roomId:'3',
-        roomType: 'OFFICE',
-        roomName: '오피스더미',
-        roomPrice: '20000',
-        workStart: '8',
-        workEnd:'23',
-        roomDetail:'테스트중입니다.',
-        roomImgDtoList: [
-          {roomId:3,
-          roomImgId:53,
-          roomImgUrl:"https://worktalk-img.s3.ap-northeast-2.amazonaws.com/4e8c3420-6fb8-4d13-b716-0cb69b87db4e-dummy1.jpg"},
-        ],
-        room: {
-          park:false,
-          wifi:false,
-          whiteBoard:false,
-          bim:false,
-          food:false,
-          print:false,
-          pc:false,
-          chair:false,
-          water:false,
-        },
+      officeUpdate: {
+        roomDetail:'더미',
       },
       roomImg:[],
       roomImgPreview:[],
-      officeDetail: '',
+      offeringOptionData: [
+        {'name':'주차','class':'fa-solid fa-square-parking fa-2x', 'value':'PARKING'},
+        {'name':'인터넷/와이파이','class':'fa-solid fa-wifi fa-2x', 'value':'INTERNET_WIFI'},
+        {'name':'화이트보드','class':'fa-solid fa-chalkboard fa-2x', 'value':'WHITEBOARD'},
+        {'name':'TV/프로젝터','class':'fa-solid fa-tv fa-2x', 'value':'TV_PROJECTOR'},
+        {'name':'음식물반입가능','class':'fa-solid fa-utensils fa-2x', 'value':'FOOD'},
+        {'name':'복사/인쇄기','class':'fa-solid fa-print fa-2x', 'value':'PRINTER'},
+        {'name':'PC/노트북','class':'fa-solid fa-computer fa-2x', 'value':'PC_LAPTOP'},
+        {'name':'의자/테이블','class':'fa-solid fa-chair fa-2x', 'value':'CHAIR_TABLE'},
+        {'name':'정수기','class':'fa-solid fa-faucet-drip fa-2x', 'value':'WATER'},
+      ],
     }
   },
-  created(){
-    this.roomCall()
+  async created(){
+    await this.roomCall()
   },
   methods: {
     async roomCall(){
-      const response = await roomOne(this.$route.params.spaceId)
-      for (let i = 0; i < response.data.length; i++){
-        response.data[i].roomImg = []
-        response.data[i].roomImgPreview = []
+      try {
+        this.officeUpdate = []
+        const response = await roomOne(this.$route.params.spaceId)
+        console.log(response.data[0])
+        console.log(response.data[0].roomDetail.length)
+        this.officeUpdate = response.data[0]
+      } catch (error){
+        console.log(error)
       }
-      console.log(response)
+    },
+    // 옵션관리
+    optionCheck(item, value){
+      if (item.offeringOption == null){
+        return 'noSelect'
+      }
+      // console.log(item.offeringOption, value)
+      if (item.offeringOption != null || item.offeringOption != ''){
+        if (item.offeringOption.indexOf(value) == -1){
+          return 'noSelect'
+        } else {
+          return 'selected'
+        }
+      } else {
+        return 'selected'
+      }
+
+    },
+    optionAdd(item,value){
+      if (item.offeringOption == null){
+        item.offeringOption = value
+      } else if (item.offeringOption.indexOf(value) == -1){
+        item.offeringOption += value
+      } else {
+        item.offeringOption = item.offeringOption.replace(value,'')
+      }
     },
     fileUpload(event){
       for (let i = 0; i < event.target.files.length; i++){
@@ -158,6 +145,10 @@ export default {
         }
       }
     },
+    textCount(roomDetail){
+      console.log(roomDetail)
+      return roomDetail.length
+    },
     // 업로드된 사진 삭제
     async roomImgDelete(file){
       console.log(file)
@@ -166,21 +157,21 @@ export default {
       this.spaceDataCall()
     },
     officeRoomSubmitCheck(){
-      const officeRoom = this.officeRoom
+      const officeUpdate = this.officeUpdate
       let message = ''
-      if (!officeRoom.roomPrice){
+      if (!officeUpdate.roomPrice){
         message = '가격을 설정해주세요.'
         this.$store.dispatch('MODALVIEWCLICK', true)
         this.$store.dispatch('MODALMESSAGE', message)
-      } else if (!officeRoom.roomDetail){
+      } else if (!officeUpdate.roomDetail){
         message = '오피스 설명을 작성해주세요.'
         this.$store.dispatch('MODALVIEWCLICK', true)
         this.$store.dispatch('MODALMESSAGE', message)
-      } else if (officeRoom.roomDetail > 100){
+      } else if (officeUpdate.roomDetail > 100){
         message = '오피스 설명이 100자를 초과했습니다.'
         this.$store.dispatch('MODALVIEWCLICK', true)
         this.$store.dispatch('MODALMESSAGE', message)
-      } else if (!officeRoom.roomImg){
+      } else if (officeUpdate.roomImgDtoList.length == 0 && this.roomImg.length == 0){
         message = '오피스의 사진을 추가해주세요.'
         this.$store.dispatch('MODALVIEWCLICK', true)
         this.$store.dispatch('MODALMESSAGE', message)
@@ -190,17 +181,17 @@ export default {
     },
     async officeRoomSubmit(){
       try {
-        const officeRoom = this.officeRoom
+        const officeUpdate = this.officeUpdate
         let formData = new FormData()
         formData.append('spaceId', this.$route.params.spaceId)
-        formData.append('roomId', officeRoom.roomId)
-        formData.append('roomDetail', officeRoom.roomDetail)
-        formData.append('roomPrice', officeRoom.roomPrice)
-        formData.append('workStart', officeRoom.workStart)
-        formData.append('workEnd', officeRoom.workEnd)
-        formData.append('roomType', officeRoom.roomImgDtoList)
-        formData.append('room', officeRoom.room)
-        if (officeRoom.roomImg != null){
+        formData.append('roomId', officeUpdate.roomId)
+        formData.append('roomDetail', officeUpdate.roomDetail)
+        formData.append('roomPrice', officeUpdate.roomPrice)
+        formData.append('workStart', officeUpdate.workStart)
+        formData.append('workEnd', officeUpdate.workEnd)
+        formData.append('roomType', officeUpdate.roomImgDtoList)
+        formData.append('offeringOption', officeUpdate.room)
+        if (officeUpdate.roomImg != null){
           for (let i = 0; i < this.roomImg.length; i++){
             formData.append('multipartFileList', this.roomImg[i].file)
           }
@@ -208,7 +199,7 @@ export default {
         for (let key of formData.keys()){
           console.log(`${key}:${formData.get(key)}`)
         }
-        const responce = await roomUpdate(officeRoom.roomId, formData)
+        const responce = await roomUpdate(officeUpdate.roomId, formData)
         console.log(responce)
         if (responce.status == 200){
           alert('방의 정보가 수정되었습니다.')

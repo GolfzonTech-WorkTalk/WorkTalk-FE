@@ -4,6 +4,10 @@ function spaceAll(){
   return posts.get('host/spaceAll')
 }
 
+function activatedCheck(){
+  return posts.get('hostActivated')
+}
+
 function spaceCreate(SpaceInsertDto){
   return posts.post('host/spaceCreate', SpaceInsertDto, {
     headers: {
@@ -58,6 +62,7 @@ function spaceDelte(spaceId){
 
 export {
   spaceAll,
+  activatedCheck,
   spaceCreate,
   spaceUpdate,
   spaceImgDelete,

@@ -351,10 +351,18 @@ export default {
     // 시간선택 처리 및 가격계산 함수
     clickTime(item){
       const num = item.value
+      const hour = new Date().getHours()
+      const minute = new Date().getMinutes()
+      console.log(num, hour, minute)
       if (item.class == 'timeItem'){
         if (!this.initTime){
           this.initTime = num
           this.endTime = num+1
+          if (num == hour+1 && minute >= 30){
+            let message = '30분전 예약은 취소/환불이 불가합니다.'
+            this.$store.dispatch('MODALVIEWCLICK', true)
+            this.$store.dispatch('MODALMESSAGE', message)
+          }
         } else if (this.initTime > num){
           this.initTime = num
         } else if (this.endTime < num || this.endTime == num){
