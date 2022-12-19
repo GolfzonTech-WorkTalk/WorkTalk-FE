@@ -166,7 +166,9 @@ export default {
     // 카카오 로그인
     kakaoLogin(){
       window.Kakao.Auth.authorize({
-        redirectUri:'http://3.36.148.54/login',
+        // redirectUri:'http://localhost:8081/login',
+        // redirectUri:'http://3.36.148.54/login',
+        redirectUri:'http://localhost:8100/user/kakao/callback',
       })
     },
     async kakaoTokenCall(){
