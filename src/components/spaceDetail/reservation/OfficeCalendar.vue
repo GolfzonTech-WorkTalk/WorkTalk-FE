@@ -36,17 +36,13 @@
 
 <script>
 // import { reservationData3 } from '@/utils/dummy/dummy.js'
+import { roomOne } from '@/api/user.js'
 import { reservationData } from '@/api/reservation.js'
 export default {
-  props: {
-    roomItems : {
-      type : Object,
-      required: true,
-    },
-  },
   emits: ['select-day:date-click'],
   data(){
     return {
+      roomItems:'',
       // 요일
       days: ['일','월','화','수','목','금','토'],
       // 오늘 날짜
@@ -63,14 +59,25 @@ export default {
       reserveData: [],
     }
   },
-  created(){
-    // this.reserveData = reservationData3
+  async created(){
+    await this.callRoomInfo()
     this.year = this.today.getFullYear()
     this.month = this.today.getMonth()
     this.date = this.today.getDate()
     this.getDates() // 달력의 전체 날짜를 출력하는 함수
   },
   methods: {
+    // 룸정보 불러오기
+    async callRoomInfo(){
+      try {
+        const spaceId = this.$route.params.spaceId
+        const response = await roomOne(spaceId)
+        console.log(response)
+        this.roomItems = response.data[0]
+      } catch (error){
+        console.log(error)
+      }
+    },
     // 예약데이터 가져오는 API
     async getRoomReservation(){
       let month
@@ -80,15 +87,19 @@ export default {
       } else {
         month = (this.month+1)
       }
+      const spaceType = this.$route.params.spaceType
       const roomId = this.roomItems.roomId
       const roomType = this.roomItems.roomType
       const initDate = this.year+'-'+month+'-'+'01'
       const endDate = this.year+'-'+month+'-'+day.getDate()
-      const initTime = null
-      const endTime = null
-      const response = await reservationData(roomId, roomType, initDate, endDate, initTime, endTime)
+      const initTime = 9
+      const endTime = 22
+      console.log(spaceType, roomId, roomType, initDate, endDate, initTime, endTime)
+      const response = await reservationData(spaceType, roomId, roomType, initDate, endDate, initTime, endTime)
       console.log(response)
       this.reserveData = response.data
+      // 예약체크
+      this.reservationCheck()
     },
     // 달력출력
     getDates(value){
@@ -125,8 +136,6 @@ export default {
       this.getNextMonth(nextMonthFirstDay)
       // 예약가져오기
       this.getRoomReservation()
-      // 예약체크
-      this.reservationCheck()
     },
     // 달력의 필요데이터 생성
     getFirstAndLastDate(month, year){
@@ -194,7 +203,7 @@ export default {
       for (let i = 0; i < this.dates.length; i++){
         for (let j = 0; j < this.dates[i].length; j++){
           let date = this.dates[i]
-          // console.log(date[j].date)
+          // console.log(date[j].date, date[j].class)
           if (date[j].class != 'nextMonth' && date[j].class != 'preMonth'){
             for (let k = 0; k < this.reserveData.length; k++){
               // console.log(this.reserveData[k].initDate)
@@ -339,16 +348,6 @@ export default {
           }
         }
       }
-    },
-    // 날짜 선택
-    emitDate(){
-      this.getDates()
-      let month = this.month+1
-      month = this.dataFormChage(month)
-      let date = this.dataFormChage(this.initDay)
-      let reserveDay = this.year+'-'+month+'-'+date
-      // console.log(reserveDay)
-      this.$emit('select-day:date-click', reserveDay)
     },
   },
 }

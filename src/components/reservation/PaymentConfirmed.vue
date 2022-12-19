@@ -56,11 +56,11 @@
           <p class="reservationRoomTextTitle">
             [ 예약일자 ]
           </p>
-          <p v-if="tempReserveId.spaceType == 1" class="reservationRoomTextContent">
-            {{ tempReserveId.checkInDate }} ~ {{ tempReserveId.checkOutDate }}
+          <p v-if="roomInfo.roomType == 'OFFICE'" class="reservationRoomTextContent">
+            {{ tempReserve.bookDate.checkInDate }} ~ {{ tempReserve.bookDate.checkOutDate }}
           </p>
           <p v-else class="reservationRoomTextContent">
-            {{ tempReserveId.checkInDate }} {{ timeCheck(tempReserveId.checkInTime,tempReserveId.checkOutTime) }}
+            {{ tempReserve.bookDate.checkInDate }} {{ timeCheck(tempReserve.bookDate.checkInTime,tempReserve.bookDate.checkOutTime) }}
           </p>
         </div>
       </div>
@@ -72,17 +72,21 @@
           <p class="reservationRoomTextTitle">
             [ 결제방법 ]
           </p>
-          <div v-if="tempReserveId.spaceType == 1" class="payStatusItems">
-            <span>보증금</span>
-            <span>선납</span>
-            <span class="payStatus">후납</span>
-            <p>* 오피스는 후납만 가능합니다.</p>
-          </div>
-          <div v-else class="payStatusItems">
-            <span :class="{'payStatus' : payStatus == 'DEPOSIT'}" @click="payStatusSelect('DEPOSIT')">보증금</span>
-            <span :class="{'payStatus' : payStatus == 'PREPAID'}" @click="payStatusSelect('PREPAID')">선납</span>
-            <span :class="{'payStatus' : payStatus == 'POSTPAID'}" @click="payStatusSelect('POSTPAID')">후납</span>
-          </div>
+          <template v-if="roomInfo.roomType == 'OFFICE'">
+            <div class="payStatusItems">
+              <span>보증금</span>
+              <span>선납</span>
+              <span class="payStatus">후납</span>
+              <p>* 오피스는 후납만 가능합니다.</p>
+            </div>
+          </template>
+          <template v-else>
+            <div class="payStatusItems">
+              <span :class="{'payStatus' : payStatus == 'DEPOSIT'}" @click="payStatusSelect('DEPOSIT')">보증금</span>
+              <span :class="{'payStatus' : payStatus == 'PREPAID'}" @click="payStatusSelect('PREPAID')">선납</span>
+              <span :class="{'payStatus' : payStatus == 'POSTPAID'}" @click="payStatusSelect('POSTPAID')">후납</span>
+            </div>
+          </template>
         </div>
         <div class="mileageBox">
           <p class="reservationRoomTextTitle">
@@ -124,21 +128,24 @@
 </template>
 
 <script>
-import { roomOne, mileage } from '@/api/user.js'
-import { reserveChoose, reservationReserve, reserveChooseDelete } from '@/api/reservation.js'
+import { reservationRoomOne, mileage } from '@/api/user.js'
+import { reserveChooseCall, reservationReserve, reserveChooseDelete } from '@/api/reservation.js'
 export default {
   data(){
     return {
-      tempReserveId:{
-        "tempReserveId": "string",
-        "memberId": 0,
-        "roomId": 1,
-        "reserveDate": "2022-12-17T12:47:53.134Z",
-        "spaceType": 2,
-        "checkInDate": "2022-12-17",
-        "checkOutDate": "2022-12-17",
-        "checkInTime": 3,
-        "checkOutTime": 5,
+      tempReserve:{
+        tempReserveID:"",
+        memberId:null,
+        roomId:'',
+        bookDate:{
+          cancelDate:'',
+          checkInDate:'',
+          checkInTime:'',
+          checkOutDate:'',
+          checkOutTime:'',
+          reserveDate:'',
+        },
+        expiration:'',
       },
       roomInfo:[{
         offeringOption:'',
@@ -164,22 +171,42 @@ export default {
       mileageSave:'',
     }
   },
-  async created(){
-    try {
-      const roomId = this.tempReserveId.roomId
-      let spaceResponce = await roomOne(roomId)
-      this.roomInfo = spaceResponce.data[0]
-      this.roomInfo.roomImgListNum = 0
-      if (this.tempReserveId.spaceType == 1){
-        this.amount = (this.tempReserveId.checkOutDate.slice(-2) - this.tempReserveId.checkInDate.slice(-2) + 1) * this.roomInfo.roomPrice
-      } else {
-        this.amount = (this.tempReserveId.checkOutTime - this.tempReserveId.checkInTime) * this.roomInfo.roomPrice
-      }
-    } catch (error){
-      console.log(error)
-    }
+  created(){
+    this.callTempReserveId()
   },
   methods:{
+    // 예약DB 조회
+    async callTempReserveId(){
+      try {
+        const response = await reserveChooseCall(this.$route.params.tempReserveId)
+        this.tempReserve = response.data
+        console.log(this.tempReserve)
+        this.callRoomInfo(this.tempReserve.roomId)
+      } catch (error){
+        console.log(error)
+        let message = '취소된 예약입니다. 예약날짜를 다시 선택해주세요.'
+        this.$store.dispatch('MODALVIEWCLICK', true)
+        this.$store.dispatch('MODALMESSAGE', message)
+        this.$router.go(-1)
+      }
+    },
+    // 방 정보 조회
+    async callRoomInfo(roomId){
+      try {
+        let spaceResponce = await reservationRoomOne(roomId)
+        console.log(spaceResponce.data)
+        this.roomInfo = spaceResponce.data[0]
+        this.roomInfo.roomImgListNum = 0
+        if (this.roomInfo.roomType == 'OFFICE'){
+          this.amount = (this.tempReserve.bookDate.checkOutDate.slice(-2) - this.tempReserve.bookDate.checkInDate.slice(-2) + 1) * this.roomInfo.roomPrice
+          this.payStatusSelect('POSTPAID')
+        } else {
+          this.amount = (this.tempReserve.bookDate.checkOutTime - this.tempReserve.bookDate.checkInTime) * this.roomInfo.roomPrice
+        }
+      } catch (error){
+        console.log(error)
+      }
+    },
     // 이미지 전환
     movePrev(item){
       if (item.roomImgListNum == '0'){
@@ -259,7 +286,11 @@ export default {
         this.$store.dispatch('MODALVIEWCLICK', true)
         this.$store.dispatch('MODALMESSAGE', message)
       } else {
-        this.amount = (this.endTime - this.initTime + 1) *  this.price
+        if (this.roomInfo.roomType == 'OFFICE'){
+          this.amount = (this.tempReserve.bookDate.checkOutDate.slice(-2) - this.tempReserve.bookDate.checkInDate.slice(-2) + 1) * this.roomInfo.roomPrice
+        } else {
+          this.amount = (this.tempReserve.bookDate.checkOutTime - this.tempReserve.bookDate.checkInTime) * this.roomInfo.roomPrice
+        }
         this.amount = this.amount - this.mileageUsage
         this.payStatusSelect(this.payStatus)
       }
@@ -279,23 +310,26 @@ export default {
       let date = new Date()
       // 예약 데이터 정의
       const reservationData = {
-        'roomId': this.roomReservationView,
-        'checkInDate': this.reservationDay,
-        'checkOutDate': this.reservationDay,
-        'checkInTime': this.initTime,
-        'checkOutTime': this.endTime,
+        'tempReserveID':this.tempReserve.tempReserveId,
+        'roomId': this.tempReserve.roomId,
+        'checkInDate': this.tempReserve.bookDate.checkInDate,
+        'checkOutDate': this.tempReserve.bookDate.checkOutDate,
+        'checkInTime': this.tempReserve.bookDate.checkInTime,
+        'checkOutTime': this.tempReserve.bookDate.checkOutTime,
         'reserveAmount': this.amount,
         'payAmount': this.paymentAmount,
         'payStatus': this.payStatus,
+        'mileageUsage':this.mileageUsage,
+        'mileageSave':this.mileageSave,
       }
-      // console.log(reservationData)
+      console.log(reservationData)
       // 결제 데이터 정의
       let paymentData = {
         pay_method: "card",
-        merchant_uid: this.roomReservationView+'_'+date.getFullYear()+date.getMonth()+date.getDate()+date.getHours()+date.getMinutes()+date.getSeconds(),
+        merchant_uid: this.tempReserve.roomId+'_'+date.getFullYear()+date.getMonth()+date.getDate()+date.getHours()+date.getMinutes()+date.getSeconds(),
         // 룸ID_일련번호(고유값)
         // 고유값으로 채번하여 DB상에 저장(결제 위변조 작업시 필요)
-        name: this.selectRoomName,
+        name: this.roomInfo.roomName,
         amount: this.paymentAmount,
       }
       if (this.payStatus == 'POSTPAID'){
@@ -307,36 +341,31 @@ export default {
       console.log(paymentData)
       //결제로직
       try {
-        let response = await reserveChoose(reservationData)
-        console.log('임시더미')
-        console.log(response)
-        if (response.status == 200){
-          // 결제로직
-          const { IMP } = window
-          IMP.init('imp38067385')
-          IMP.request_pay(paymentData, rsp => { // callback
-            if (rsp.success){
-              console.log('결제 성공')
-              console.log(rsp)
-              reservationData.reserveId = response.data
-              reservationData.imp_uid = rsp.imp_uid
-              reservationData.merchant_uid = rsp.merchant_uid
-              reservationData.mileageUse = this.mileageUsage
-              reservationData.mileageSave = this.mileageSave
-              if (this.payStatus == 'POSTPAID'){
-                reservationData.customer_uid = paymentData.customer_uid
-              }
-              console.log(reservationData)
-              this.reservationPaymentDB(reservationData)
-            } else {
-              console.log('결제 실패')
-              const dropReserve = reserveChooseDelete(response.data)
-              console.log(dropReserve)
-              console.log('결제DB삭제')
-              this.roomReservationView = ''
+        // 결제로직
+        const { IMP } = window
+        IMP.init('imp38067385')
+        IMP.request_pay(paymentData, rsp => { // callback
+          if (rsp.success){
+            console.log('결제 성공')
+            console.log(rsp)
+            reservationData.imp_uid = rsp.imp_uid
+            reservationData.merchant_uid = rsp.merchant_uid
+            if (this.payStatus == 'POSTPAID'){
+              reservationData.customer_uid = paymentData.customer_uid
             }
-          })
-        }
+            console.log(reservationData)
+            this.reservationPaymentDB(reservationData)
+          } else {
+            console.log('결제 실패')
+            const dropReserve = reserveChooseDelete(this.tempReserve.tempReserveId)
+            console.log(dropReserve)
+            console.log('결제DB삭제')
+            let message = '결제를 취소하셨습니다. 다시 예약을 해주세요.'
+            this.$store.dispatch('MODALVIEWCLICK', true)
+            this.$store.dispatch('MODALMESSAGE', message)
+            this.$router.go(-2)
+          }
+        })
       } catch (error){
         console.log(error)
       }
@@ -426,7 +455,6 @@ export default {
   margin-left: 1vw;
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
 }
 .officeInfoIconItem {
   display: flex;
@@ -467,6 +495,7 @@ export default {
   font-size: 0.8rem;
   font-weight: bold;
   letter-spacing: 0.1rem;
+  cursor: pointer;
 }
 .payStatusItems p{
   position: absolute;
@@ -492,6 +521,7 @@ export default {
   font-size: 0.5rem;
   font-weight: bold;
   letter-spacing: 0.1rem;
+  cursor: pointer;
 }
 .mileageCheck{
   position: absolute;
@@ -520,6 +550,7 @@ export default {
 .paymentBtn{
   position: absolute;
   right: 0;
+  cursor: pointer;
 }
 .paymentBtn strong{
   letter-spacing: 1rem;

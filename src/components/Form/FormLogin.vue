@@ -166,11 +166,13 @@ export default {
     // 카카오 로그인
     kakaoLogin(){
       window.Kakao.Auth.authorize({
-        redirectUri:'http://localhost:8081/login',
+        redirectUri:'http://3.36.148.54/login',
       })
     },
     async kakaoTokenCall(){
+      console.log(this.$route)
       const code = this.$route.query.code
+      console.log(code)
       const response = await kakaoLogin(code)
       console.log(response)
     },

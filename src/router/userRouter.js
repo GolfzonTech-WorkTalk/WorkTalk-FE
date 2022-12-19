@@ -16,7 +16,7 @@ export default [
     meta: {auth:true},
   },
   {
-    path: '/user/reservationPayment/:reserveId',
+    path: '/user/reservationPayment/:tempReserveId',
     name: 'userReservationPayment',
     component: () => import('@/views/userView/reservationPayment.vue'),
     meta: {auth:true},
