@@ -2,7 +2,7 @@
   <div class="paymentContainer">
     <div>
       <div class="paymentSortBox">
-        <select v-model="paymentSort" class="paymentSort">
+        <select v-model="paymentSort" class="paymentSort" @change="reservationDataCall(pageNowNum)">
           <option value="기간" hidden>
             결제기간
           </option>
@@ -91,7 +91,7 @@ export default {
         if (paymentSortData == '기간'){
           paymentSortData = ''
         }
-        let response = await paymentHistory(pageNowNum-1)
+        let response = await paymentHistory(pageNowNum-1 )
         // let response = await paymentHistory(pageNowNum-1, spaceType, paymentSortData)
         this.paymentData = response.data.data
         this.pageTotal =  response.data.count
@@ -138,18 +138,9 @@ export default {
       }
     },
     reserveDateCheck(reserveDate){
-      let year = reserveDate[0]
-      let month = reserveDate[1]
-      let date = reserveDate[2]
-      let hour = reserveDate[3]
-      let minute = reserveDate[4]
-      if (hour < 10){
-        hour = '0'+hour
-      }
-      if (minute < 10){
-        minute = '0'+minute
-      }
-      return year+'-'+month+'-'+date+' '+hour+':'+minute
+      const date = reserveDate.slice(0,10)
+      const time = reserveDate.slice(11,16)
+      return `${date} ${time}`
     },
     payAmountCheck(reserveStatus,payAmount){
       if (reserveStatus == 'CANCELED_BY_USER' || reserveStatus == 'CANCELED_BY_HOST' || reserveStatus == 'NOSHOW'){

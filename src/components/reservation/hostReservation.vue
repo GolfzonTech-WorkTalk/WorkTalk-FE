@@ -33,7 +33,7 @@
         <span class="reserveId" :class="item.paymentStatus">{{ item.reserveId }}</span>
         <span class="roomType" :class="item.roomType">{{ roomTypeRename(item.roomType) }}</span>
         <span class="roomName">{{ item.roomName }}</span>
-        <span class="reserveTime">{{ reserveTime(item.bookDate.checkInDate, item.bookDate.checkInTime, item.bookDate.checkOutTime) }}</span>
+        <span class="reserveTime">{{ reserveTime(item.bookDate.reserveDate) }}</span>
         <span class="reserveStatus" :class="item.reserveStatus">{{ reserveStatusRename(item.reserveStatus) }}</span>
         <span class="amount">{{ item.reserveAmount }}</span>
         <span v-if="cancelPossible(item)" class="reservationCancelBtn" @click="boxOpen('cancel', index)">예약취소</span>
@@ -175,24 +175,10 @@ export default {
       }
       return paid
     },
-    reserveTime(date, inTime, outTime){
-      let yearChange = date[0]
-      let monthChange = date[1]
-      let dateChange = date[2]
-      if (monthChange < 10){
-        monthChange = '0'+monthChange
-      }
-      if (dateChange < 10){
-        dateChange = '0'+dateChange
-      }
-      if (inTime < 10){
-        inTime = '0'+inTime
-      }
-      if (outTime < 10){
-        outTime = '0'+outTime
-      }
-      const yyMMdd = yearChange+'-'+monthChange+'-'+dateChange
-      return `${yyMMdd} ${inTime}:00~${outTime}:00`
+    reserveTime(reserveDate){
+      const date = reserveDate.slice(0,10)
+      const time = reserveDate.slice(11,16)
+      return `${date} ${time}`
     },
     cancelPossible(item){
       if (item.reserveStatus == 'BOOKED'){
@@ -282,7 +268,7 @@ export default {
       } 
       let cancelData = {
         reserveId : item.reserveId,
-        cencelReason : this.cancelReason,
+        cancelReason : this.cancelReason,
         // cancelDate : nowYYmmDDhhMM(),
         // reserveStatus: "CANCELED_BY_HOST",
       }
