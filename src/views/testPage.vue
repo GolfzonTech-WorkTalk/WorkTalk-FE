@@ -9,6 +9,10 @@
     <p class="testBtn" @click="click">
       클릭
     </p>
+    <div>
+      <span @click="getCurrentPosition()">위치 좌표 확인</span>
+      <div>{{ isPositionReady ? 'yes' : 'no' }}</div>
+    </div>
   </div>
 </template>
 
@@ -25,6 +29,8 @@ export default {
         checkOutTime:'17',
         spaceType:'1',
       },
+      positionObj: {},
+      isPositionReady: false,
     }
   },
   created(){
@@ -35,6 +41,25 @@ export default {
       console.log(this.result)
       const response = await test(this.result)
       console.log(response)
+    },
+    getCurrentPosition(){
+      if (!navigator.geolocation){
+        this.setAlert('위치 정보를 찾을 수 없습니다.1')
+      } else {
+        navigator.geolocation.getCurrentPosition(this.getPositionValue, this.geolocationError)
+      }
+    },
+    getPositionValue(val){
+      this.positionObj.latitude = val.coords.latitude
+      this.positionObj.longitude = val.coords.longitude
+      this.isPositionReady = true
+      this.setAlert('주소 확인 완료')
+    },
+    geolocationError(){
+      this.setAlert('위치 정보를 찾을 수 없습니다.2')
+    },
+    setAlert(text){
+      alert(text)
     },
   },
 }

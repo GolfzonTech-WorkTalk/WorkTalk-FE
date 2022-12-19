@@ -16,6 +16,12 @@ export default [
     meta: {auth:true},
   },
   {
+    path: '/user/reservationPayment/:reserveId',
+    name: 'userReservationPayment',
+    component: () => import('@/views/userView/reservationPayment.vue'),
+    meta: {auth:true},
+  },
+  {
     path: '/user/QnAReview',
     name: 'userReview',
     component: () => import('@/views/QnAReview.vue'),

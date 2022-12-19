@@ -17,8 +17,8 @@
           {{ item.name }}
         </option>
       </select>
-      <select v-model="selectSpaceType" class="mapLocationSort" :class="{'selectTerms':selectSpaceType!='공간타입'}" @change="spaceInfoSearch">
-        <option value="공간타입" hidden>
+      <select v-model="selectSpaceType" class="mapLocationSort" :class="{'selectTerms':selectSpaceType!='AllType'}" @change="changeSpaceType">
+        <option value="AllType" hidden>
           공간타입
         </option>
         <option v-for="item in selectSpaceTypeData" :key="item" :value="item.value">
@@ -29,6 +29,9 @@
       <div class="selectTermsClearBtn" @click="selectTermsClear">
         <i class="fa-solid fa-rotate-right fa-lg" />
         <span>초기화</span>
+      </div>
+      <div class="selectTermsClearBtn" @click="getCurrentPosition">
+        <span>현재위치</span>
       </div>
     </div>
     <div id="map" />
@@ -45,12 +48,12 @@ export default {
       cityAddressData:[],
       cityDetailAddressData:[],
       selectCityCode:'지역코드',
-      selectCityName:'지역',
+      selectCityName:'AllRegions',
       selectCityDetailName:'세부지역',
-      selectSpaceType:'공간타입',
+      selectSpaceType:'AllType',
       searchWord:'',
       selectSpaceTypeData:[
-        {'name':'전체','value':'공간타입'},
+        {'name':'전체','value':'AllType'},
         {'name':'오피스','value':'1'},
         {'name':'데스크','value':'2'},
         {'name':'회의실','value':'3'},
@@ -65,32 +68,52 @@ export default {
       infowindowArray: [],
       // 맵
       map:'',
+      // 화면표시 좌표
+      CoordinatesX:'',
+      CoordinatesY:'',
     }
   },
   // 공간정보 출력
-  created(){
-    this.paramsCheck()
-    this.spaceInfoSearch()
-    this.$store.dispatch('SPINNERVIEW', false)
-  },
-  mounted(){
-    // 카카오API
-    if (window.kakao && window.kakao.maps){
-      this.initMap()
-    } else {
-      const script = document.createElement('script')
-      /* global kakao */
-      script.onload = () => kakao.maps.load(this.initMap)
-      script.src = 'http://dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=2627ce9d62772f5e16c1c48d472aadbd&libraries=services'
-      document.head.appendChild(script)
-    }
+  async created(){
+    await this.getCurrentPosition()
+    this.kakao()
   },
   methods: {
-    paramsCheck(){
+    // 지도
+    kakao(){
+      if (window.kakao && window.kakao.maps){
+      this.initMap()
+      } else {
+        const script = document.createElement('script')
+        /* global kakao */
+        script.onload = () => kakao.maps.load(this.initMap)
+        script.src = 'http://dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=2627ce9d62772f5e16c1c48d472aadbd&libraries=services'
+        document.head.appendChild(script)
+      }
+    },
+    // 현재위치 가져오기
+    getCurrentPosition(){
+      if (!navigator.geolocation){
+        alert('위치 정보를 찾을 수 없습니다.1')
+      } else {
+        navigator.geolocation.getCurrentPosition(this.getPositionValue, this.geolocationError)
+      }
+    },
+    getPositionValue(val){
+      this.CoordinatesX = val.coords.latitude
+      this.CoordinatesY = val.coords.longitude
+      this.paramsCheck()
+      // alert('주소 확인 완료')
+    },
+    geolocationError(){
+      this.paramsCheck()
+      alert('위치 정보를 찾을 수 없습니다.2')
+    },
+    async paramsCheck(){
       this.cityAddressData = cityAddress
       this.selectSpaceType = this.$route.params.spaceType
       if (this.$route.params.spaceType == 'AllType'){
-        this.selectSpaceType = '공간타입'
+        this.selectSpaceType = 'AllType'
       }
       this.searchWord = this.$route.params.spaceName
       if (this.$route.params.spaceName == 'AllName'){
@@ -98,7 +121,7 @@ export default {
       }
       this.selectCityName = this.$route.params.address
       if (this.$route.params.address == 'AllRegions'){
-        this.selectCityName = '지역'
+        this.selectCityName = 'AllRegions'
       }
       for (let i = 0; i < this.cityAddressData.length; i++){
         if (this.selectCityName.indexOf(this.cityAddressData[i].name) != '-1'){
@@ -120,20 +143,69 @@ export default {
           this.selectCityName = this.cityAddressData[i].name
         }
       }
+      if (this.selectCityName != 'AllRegions'){
+        let address = this.selectCityName
+        if (this.selectCityDetailName != '세부지역'){
+          address = this.selectCityName+' '+this.selectCityDetailName
+        }
+        console.log(address)
+        let coordinate = await this.getCoordsByAddress(address)
+        this.setCenter(coordinate.Ma, coordinate.La)
+        this.CoordinatesX = coordinate.Ma
+        this.CoordinatesY = coordinate.La
+        if (this.selectCityDetailName != '세부지역'){
+          this.zoomIn()
+        } else {
+          this.zoomOut()
+        }
+      } else {
+        this.setCenter(this.CoordinatesX, this.CoordinatesY)
+        this.zoomOut()
+      }
+      this.spaceInfoSearch()
+    },
+    // 공간타입 변경
+    changeSpaceType(){
+      let address = this.selectCityName
+      if (this.selectCityDetailName != '세부지역'){
+        address = this.selectCityName+' '+this.selectCityDetailName
+      }
+      let searchWord
+      if (this.searchWord == ''){
+        searchWord = 'AllName'
+      }
+      this.$router.replace('/map/'+this.selectSpaceType+'/'+searchWord+'/'+address)
+      this.spaceInfoSearch()
     },
     // 조건 초기화
     selectTermsClear(){
       this.selectCityCode = '지역코드'
-      this.selectCityName='지역'
+      this.selectCityName='AllRegions'
       this.selectCityDetailName = '세부지역'
-      this.selectSpaceType = '공간타입'
+      this.selectSpaceType = 'AllType'
       this.searchWord=''
-      this.spaceInfoSearch()
+      this.$router.replace('/map/AllType/AllName/AllRegions')
+      this.getCurrentPosition()
     },
+    // 공간정보 불러오기
     async spaceInfoSearch(){
       try {
-        const response = await spaceSearch(this.pageNum,this.spaceType,this.spaceName,this.address)
+        let address = this.selectCityName
+        let spaceType = this.selectSpaceType
+        if (address == 'AllRegions'){
+          address = ''
+        }
+        if (this.selectCityDetailName != '세부지역'){
+          address = this.selectCityName+' '+this.selectCityDetailName
+        }
+        if (spaceType == 'AllType'){
+          spaceType = ''
+        }
+        const response = await spaceSearch('0',spaceType,this.searchWord,address)
         this.spaceItems = response.data.data
+        this.initMap()
+        this.$store.dispatch('SPINNERVIEW', false)
+        console.log(response)
       } catch (error){
         console.log(error)
       }
@@ -143,7 +215,6 @@ export default {
       let typeCode = this.selectCityCode
       this.cityDetailAddressData = []
       this.selectCityDetailName='세부지역'
-      // console.log(typeCode)
       for (let i = 0; i < cityAddressDetail.length; i++){
         if (cityAddressDetail[i].typeCode == typeCode){
           this.cityDetailAddressData.push(cityAddressDetail[i])
@@ -156,19 +227,31 @@ export default {
       }
       let address = this.selectCityName
       let coordinate = await this.getCoordsByAddress(address)
-      // console.log(coordinate.La)
-      // console.log(coordinate.Ma)
       this.setCenter(coordinate.Ma, coordinate.La)
+      this.CoordinatesX = coordinate.Ma
+      this.CoordinatesY = coordinate.La
       this.zoomOut()
+      this.spaceInfoSearch()
+      let searchWord
+      if (this.searchWord == ''){
+        searchWord = 'AllName'
+      }
+      this.$router.replace('/map/'+this.selectSpaceType+'/'+searchWord+'/'+this.selectCityName)
     },
     // 세부지역 선택
     async selectCityDetailOne(){
       let address = this.selectCityName+' '+this.selectCityDetailName
       let coordinate = await this.getCoordsByAddress(address)
-      // console.log(coordinate.La)
-      // console.log(coordinate.Ma)
       this.setCenter(coordinate.Ma, coordinate.La)
+      this.CoordinatesX = coordinate.Ma
+      this.CoordinatesY = coordinate.La
       this.zoomIn()
+      this.spaceInfoSearch()
+      let searchWord
+      if (this.searchWord == ''){
+        searchWord = 'AllName'
+      }
+      this.$router.replace('/map/'+this.selectSpaceType+'/'+searchWord+'/'+address)
     },
     // 지도이동
     setCenter(x, y){            
@@ -182,14 +265,15 @@ export default {
       this.map.setLevel(5)
     },
     zoomOut(){    
-      this.map.setLevel(8)
+      this.map.setLevel(7)
     },
     // 카카오맵만들기
     async initMap(){
+      console.log(this.CoordinatesX, this.CoordinatesY)
       let mapContainer = document.getElementById('map'),
       mapOption = {
-        center: new kakao.maps.LatLng(37.564343, 126.947613), // 지도의 중심좌표
-        level: 8, // 지도의 확대 레벨
+        center: new kakao.maps.LatLng(this.CoordinatesX, this.CoordinatesY), // 지도의 중심좌표
+        level: 7, // 지도의 확대 레벨
       }
       
       //지도 생성 및 객체 리턴
@@ -231,7 +315,7 @@ export default {
     },
     // 주소-좌표 변환 함수
     getCoordsByAddress(address){
-      console.log(address)
+      // console.log(address)
       let geocoder = new kakao.maps.services.Geocoder()
       return new Promise((resolve, reject) => {
         // 주소로 좌표를 검색합니다
@@ -240,7 +324,7 @@ export default {
           if (status === kakao.maps.services.Status.OK){
             var coords = new kakao.maps.LatLng(result[0].y, result[0].x)
             resolve(coords)
-            // console.log(coords)
+            console.log(coords)
             return
           }
           reject(new Error("getCoordsByAddress Error: not Vaild Address"))

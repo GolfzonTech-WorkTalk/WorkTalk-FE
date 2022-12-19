@@ -43,7 +43,7 @@
           <template v-else>
             <div v-for="option in offeringOptionData" :key="option" class="officeInfoIconItem" :class="optionCheck(item,option.value)">
               <i :class="option.class" />
-              <span v-html="option.name" />
+              <span>{{ option.name }}</span>
             </div>
           </template>
         </div>
@@ -74,34 +74,9 @@
           <span>예약시간 : </span>
           <span v-if="(initTime != null)">{{ timeCheck(initTime, endTime) }}</span>
         </div>
-        <div v-if="amount != ''" class="reservationType">
-          <!-- <div class="paymentTypeBox"> -->
-          <p>결제방법</p>
-          <div class="paymentTypeItems">
-            <span :class="{'paymentType' : paymentType == 'DEPOSIT'}" @click="paymentTypeSelect('DEPOSIT')">보증금</span>
-            <span :class="{'paymentType' : paymentType == 'PREPAID'}" @click="paymentTypeSelect('PREPAID')">선납</span>
-            <span :class="{'paymentType' : paymentType == 'POSTPAID'}" @click="paymentTypeSelect('POSTPAID')">후납</span>
-          </div>
-        </div>
-        <div v-if="amount != ''" class="mileageBox">
-          <!-- <div class="mileageBox"> -->
-          <span>마일리지</span>
-          <span class="mileageCheck" @click="mileageCheck">조회</span>
-          <div>
-            <p>보유 : {{ mileage }}</p>
-            <input v-model="useMileage" class="useMileageBox" type="text" placeholder="100단위 사용가능" @keypress="useMuleagePress" @change="useMuleageChange">
-            <span class="mileageCheck" @click="useMuleageCheckOK">사용</span>
-          </div>
-        </div>
         <div v-if="amount != ''" class="paymentBox">
           <p>
             총금액 : {{ amount }}
-          </p>
-          <p>
-            예약금 : {{ paymentAmount }}
-          </p>
-          <p>
-            적립예정 : {{ saveMileage }}
           </p>
         </div>
         <div class="reservationSubmitBtn">
@@ -113,9 +88,8 @@
 </template>
 
 <script>
-import { roomOne, mileage } from '@/api/user.js'
-import { reservationData, reserveChoose, reservationReserve, reserveChooseDelete } from '@/api/reservation.js'
-// import { selectOneRoomDumy } from '@/utils/dummy/dummy.js'
+import { roomOne } from '@/api/user.js'
+import { reservationData, reserveChoose } from '@/api/reservation.js'
 import DeskMeetingCalendarVue from './reservation/DeskMeetingCalendar.vue'
 export default {
   components: {
@@ -149,19 +123,12 @@ export default {
       amount:'', // 총결제금액
       roomType:'',
       // 결제
-      selectRoomName: '',
-      paymentType:'',
-      paymentAmount:'', // 결제금액
-      // 마일리지
-      mileage: '',
-      useMileage: '',
-      saveMileage: '',
       offeringOptionData: [
         {'name':'주차','class':'fa-solid fa-square-parking fa-lg', 'value':'PARKING'},
-        {'name':'인터넷/<br>와이파이','class':'fa-solid fa-wifi fa-lg', 'value':'INTERNET_WIFI'},
+        {'name':'인터넷/와이파이','class':'fa-solid fa-wifi fa-lg', 'value':'INTERNET_WIFI'},
         {'name':'화이트보드','class':'fa-solid fa-tv fa-lg', 'value':'WHITEBOARD'},
-        {'name':'TV/<br>프로젝터','class':'fa-solid fa-utensils fa-lg', 'value':'TV_PROJECTOR'},
-        {'name':'음식물<br>반입가능','class':'fa-solid fa-utensils fa-lg', 'value':'FOOD'},
+        {'name':'TV/프로젝터','class':'fa-solid fa-utensils fa-lg', 'value':'TV_PROJECTOR'},
+        {'name':'음식물반입가능','class':'fa-solid fa-utensils fa-lg', 'value':'FOOD'},
         {'name':'복사/인쇄기','class':'fa-solid fa-print fa-lg', 'value':'PRINTER'},
         {'name':'PC/노트북','class':'fa-solid fa-computer fa-lg', 'value':'PC_LAPTOP'},
         {'name':'의자/테이블','class':'fa-solid fa-chair fa-lg', 'value':'CHAIR_TABLE'},
@@ -211,7 +178,6 @@ export default {
     },
     // 옵션출력
     optionCheck(item,value){
-      console.log(item.offeringOption)
       if (item.offeringOption != null || item.offeringOption != ''){
         if (item.offeringOption.indexOf(value) == -1){
           return 'officeInfoNoOption'
@@ -232,14 +198,8 @@ export default {
       this.endTime = null
       this.amount = ''
       this.roomType = item.roomType
-      this.workStart = item.workStart,
-      this.workEnd = item.workEnd,
-      // 결제데이터
-      this.selectRoomName = item.roomName
-      this.paymentType = ''
-      this.paymentAmount = ''
-      this.useMileage = ''
-      this.saveMileage = ''
+      this.workStart = item.workStart
+      this.workEnd = item.workEnd
     },
     // 예약날짜 선택
     async lookupReservation(reserveDay){
@@ -250,11 +210,6 @@ export default {
       this.initTime = null
       this.endTime = null
       this.amount = ''
-      // 결제데이터
-      this.paymentType = ''
-      this.paymentAmount = ''
-      this.useMileage = ''
-      this.saveMileage = ''
       try {
         const roomId = this.roomReservationView
         const roomType = this.roomType
@@ -286,14 +241,6 @@ export default {
       }
       // 예약날짜 제외처리
       this.reserveCheck(workStart, workEnd)
-      // 시간선택 처리 함수
-      if (this.initTime != '' || this.endTime != ''){
-        this.selectTimeCheck(workStart, workEnd)
-      }
-      if (this.endTime != '' && this.initTime != ''){
-        console.log('계산')
-        this.amount = (this.endTime - this.initTime) *  this.price
-      }
     },
     // 시간생성
     time(workStart, workEnd){
@@ -329,19 +276,27 @@ export default {
       }
     },
     // 시간선택 처리 함수
-    selectTimeCheck(workStart, workEnd){
-      for (let i = 0; i < workEnd - workStart + 1; i++){
+    selectTimeCheck(){
+      for (let i = 0; i < this.timeDatas.length; i++){
         let time = this.timeDatas[i].value
         let initTime = this.initTime
         let endTime = this.endTime
+        // console.log(time,initTime,endTime)
         if (time == initTime || time > initTime && time < endTime){
+          // console.log('select')
           if (this.timeDatas[i].class == 'timeItem reserved'){
             let message = '중간에 예약이 있습니다. 다시 선택해 주세요.'
             this.$store.dispatch('MODALVIEWCLICK', true)
             this.$store.dispatch('MODALMESSAGE', message)
             this.endTime = this.timeDatas[i].value
           } else {
+            // console.log(this.timeDatas[i].class)
             this.timeDatas[i].class = 'timeItem selectTime'
+            // console.log(this.timeDatas[i].class)
+          }
+        } else {
+          if (this.timeDatas[i].class != 'timeItem reserved'){
+            this.timeDatas[i].class = 'timeItem'
           }
         }
       }
@@ -374,7 +329,11 @@ export default {
           }
         }
       }
-      this.createTime()
+      if (this.endTime != null && this.initTime != null){
+        // console.log('계산')
+        this.amount = (this.endTime - this.initTime) *  this.price
+      }
+      this.selectTimeCheck()
     },
     // 시간출력
     timeCheck(initTime, endTime){
@@ -385,53 +344,6 @@ export default {
         endTime = '0'+endTime
       }
       return `${initTime}:00 ~ ${endTime}:00`
-    },
-    // 결제방식 선택
-    paymentTypeSelect(value){
-      this.paymentType = value
-      if (this.paymentType != value){
-        this.useMileage = ''
-      }
-      if (value == 'PREPAID'){
-        this.paymentAmount = this.amount
-      } else {
-        this.paymentAmount = this.amount * 0.2
-      }
-      if (value == 'POSTPAID'){
-        this.saveMileage = '0'
-      } else {
-        this.saveMileage = this.amount * 0.05
-      }
-      // 결제계산
-    },
-    // 마일리지 조회
-    async mileageCheck(){
-      let response = await mileage()
-      console.log(response)
-      this.mileage = response.data
-      // 더미
-      // this.mileage = 10000
-    },
-    // 마일리지 사용체크
-    useMuleagePress(){
-      if (this.mileage < this.useMileage){
-        this.useMileage = this.mileage
-      }
-    },
-    useMuleageChange(){
-      this.useMuleagePress()
-      this.useMileage = parseInt(this.useMileage/100)*100
-    },
-    useMuleageCheckOK(){
-      if (!this.mileage){
-        let message = '마일리지 조회를 먼저해주세요.'
-        this.$store.dispatch('MODALVIEWCLICK', true)
-        this.$store.dispatch('MODALMESSAGE', message)
-      } else {
-        this.amount = (this.endTime - this.initTime + 1) *  this.price
-        this.amount = this.amount - this.useMileage
-        this.paymentTypeSelect(this.paymentType)
-      }
     },
     // 결제전 값 확인
     reservationSubmitCheck(){
@@ -449,88 +361,25 @@ export default {
         message = '예약시간을 선택해주세요.'
         this.$store.dispatch('MODALVIEWCLICK', true)
         this.$store.dispatch('MODALMESSAGE', message)
-      } else if (!this.paymentType){
-        message = '결제유형을 선택해주세요.'
-        this.$store.dispatch('MODALVIEWCLICK', true)
-        this.$store.dispatch('MODALMESSAGE', message)
       } else {
         this.reservationSubmit()
       }
     },
-    // 결제로직
     async reservationSubmit(){
-      let date = new Date()
-      // 예약 데이터 정의
       const reservationData = {
         'roomId': this.roomReservationView,
+        'spaceType':this.$route.params.spaceType,
         'checkInDate': this.reservationDay,
         'checkOutDate': this.reservationDay,
         'checkInTime': this.initTime,
         'checkOutTime': this.endTime,
-        'reserveAmount': this.amount,
-        'payAmount': this.paymentAmount,
-        'payStatus': this.paymentType,
       }
-      // console.log(reservationData)
-      // 결제 데이터 정의
-      let paymentData = {
-        pay_method: "card",
-        merchant_uid: this.roomReservationView+'_'+date.getFullYear()+date.getMonth()+date.getDate()+date.getHours()+date.getMinutes()+date.getSeconds(),
-        // 룸ID_일련번호(고유값)
-        // 고유값으로 채번하여 DB상에 저장(결제 위변조 작업시 필요)
-        name: this.selectRoomName,
-        amount: this.paymentAmount,
-      }
-      if (this.paymentType == 'POSTPAID'){
-        paymentData.pg = "kakaopay.TCSUBSCRIP"
-        paymentData.customer_uid = this.$store.state.nickName+'_'+date.getFullYear()+date.getMonth()+date.getDate()+date.getHours()+date.getMinutes()+date.getSeconds()
-      } else {
-        paymentData.pg = "kakaopay"
-      }
-      console.log(paymentData)
-      //결제로직
-      try {
-        let response = await reserveChoose(reservationData)
-        console.log('임시더미')
-        console.log(response)
-        if (response.status == 200){
-          // 결제로직
-          const { IMP } = window
-          IMP.init('imp38067385')
-          IMP.request_pay(paymentData, rsp => { // callback
-            if (rsp.success){
-              console.log('결제 성공')
-              console.log(rsp)
-              reservationData.reserveId = response.data
-              reservationData.imp_uid = rsp.imp_uid
-              reservationData.merchant_uid = rsp.merchant_uid
-              reservationData.mileageUse = this.useMileage
-              reservationData.mileageSave = this.saveMileage
-              if (this.paymentType == 'POSTPAID'){
-                reservationData.customer_uid = paymentData.customer_uid
-              }
-              console.log(reservationData)
-              this.reservationPaymentSubmit(reservationData)
-            } else {
-              console.log('결제 실패')
-              const dropReserve = reserveChooseDelete(response.data)
-              console.log(dropReserve)
-              console.log('결제DB삭제')
-              this.roomReservationView = ''
-            }
-          })
-        }
-      } catch (error){
-        console.log(error)
-      }
-    },
-    async reservationPaymentSubmit(reservationData){
-      console.log('DB넣기')
       console.log(reservationData)
       try {
-        let response = await reservationReserve(reservationData)
+        // 예약임시데이터 저장
+        let response = await reserveChoose(reservationData)
         console.log(response)
-        this.$router.push('/user/reservation')
+        // this.$router.push('/user/reservationPayment/'+response.reserveId)
       } catch (error){
         console.log(error)
       }
@@ -565,50 +414,11 @@ export default {
 .roomItems{
   margin-bottom: 3vh;
 }
-/* 결제종류 선택 및 결제버튼 */
-.paymentTypeBox{
-  margin-left: 0.5vw;
-  border-bottom: 2px solid gray;
-}
-.paymentTypeItems{
-  display: flex;
-  justify-content: center;
-  margin-left: 0.5vw;
-  padding: 1vh 0vw;
-  width: 16.8vw;
-}
-.paymentTypeItems span{
-  padding: 0.5vh 1.3vw;
-  margin: 0vh 0.2vw;
-  border: 1px solid gray;
-  border-radius: 10px;
-  text-align: center;
-  line-height: 2.5vh;
-}
-.paymentType{
-  background: rgb(127, 127, 201);
-  color: white;
-}
-/* 결제금액 및 마일리지 */
-.paymentBox, .mileageBox{
+.paymentBox{
   position: relative;
   padding: 1vh 0vw;
   margin-left: 0.5vw;
   border-bottom: 2px solid gray;
-}
-.mileageCheck{
-  float:right;
-  border: 1px solid gray;
-  border-radius: 10px;
-  padding: 0 0.5vw;
-  text-align: center;
-  cursor: pointer;
-}
-.useMileageBox{
-  border: 1px solid gray;
-  border-radius: 5px;
-  padding: 0.5vh 0.5vw;
-  width: 11vw;
 }
 /* 결제버튼 */
 .reservationSubmitBtn{

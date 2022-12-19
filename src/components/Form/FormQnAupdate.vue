@@ -73,6 +73,8 @@ export default {
       try {
         let response = await qnaUpdata(this.qnaId, qnaUpdataData)
         console.log(response)
+        this.$emit('qnaupdate-data:call')
+        this.$emit('qnaupdate:close')
       } catch (error){
         console.log(error)
       }

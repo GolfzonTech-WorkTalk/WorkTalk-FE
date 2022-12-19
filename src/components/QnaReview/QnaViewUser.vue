@@ -29,7 +29,7 @@
             </div>
           </template>
           <template v-if="updateQnANum == item.qnaId">
-            <FormQnAupdate :item="item" @qnaupdate:close="deleteQnACancel" />
+            <FormQnAupdate :item="item" @qnaupdate:close="deleteQnACancel" @qnaupdate-data:call="qnaListCall(QnAtype)" />
           </template>
           <p class="date">
             {{ dateCheck(item.lastModifiedDate) }}
