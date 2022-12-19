@@ -1,6 +1,6 @@
 <template>
   <div class="mainPage">
-    <router-link to="/map/AllType/AllName/AllRegions/noDate/noDate/noTime/noTime">
+    <router-link to="/map/AllType/AllName/AllRegions">
       <i class="mapIcon fa-solid fa-map-location-dot fa-3x" />
     </router-link>
     <div class="spaceType">

@@ -16,6 +16,11 @@ function registerMember(memberData){
   return instance.post('member/join', memberData)
 }
 
+// 소셜로그인 카카오
+function kakaoLogin(code){
+  return instance.post('user/kakao/callback', code)
+}
+
 // 로그인
 function loginMember(memberData){
   return instance.post('login', memberData)
@@ -36,7 +41,7 @@ function memberLeave(memberId){
   return posts.post('member/leave/'+memberId)
 }
 
-// 이메일체크
+// 이메일찾기
 function mailFind(email){
   return instance.get('member/findEmail', {
     params:{
@@ -57,6 +62,7 @@ function pwFind(email){
 export {
   mailCheck,
   registerMember,
+  kakaoLogin,
   loginMember,
   nickCheck,
   userData,

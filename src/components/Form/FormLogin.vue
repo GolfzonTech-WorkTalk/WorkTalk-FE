@@ -62,7 +62,7 @@
 </template>
 
 <script>
-import { mailFind, pwFind } from '@/api/auth.js'
+import { mailFind, pwFind, kakaoLogin } from '@/api/auth.js'
 import {emailCheck} from '@/utils/emailCheck'
 import jwt_decode from 'jwt-decode'
 export default {
@@ -79,6 +79,12 @@ export default {
     userEmailValid(){
       return emailCheck(this.email)
     },
+  },
+  created(){
+    console.log()
+    if (this.$route.query.code){
+      this.kakaoTokenCall()
+    }
   },
   methods: {
     // 로그인검증
@@ -159,29 +165,14 @@ export default {
     },
     // 카카오 로그인
     kakaoLogin(){
-      const url = 'https://kauth.kakao.com/oauth/authorize?client_id=' +
-          process.env.VUE_APP_KAKAO_JS_KEY +
-          '&redirect_uri=' +
-          process.env.VUE_APP_KAKAO_REDIRECT_URL +
-          '&response_type=code&' +
-          'scope=account_email profile_nickname'
-      this.getKakaoAccount(url)
+      window.Kakao.Auth.authorize({
+        redirectUri:'http://localhost:8081/login',
+      })
     },
-    getKakaoAccount(url){
-      const popupHeight = '600'
-      const popupWidth = '500'
-      let popupOptions = 'height=--popupHeight--,width=--popupWidth--,left=--popupX--,top=--popupY--,scrollbars=yes,resizable=yes'
-      popupOptions = popupOptions.replace('--popupHeight--', popupHeight)
-      popupOptions = popupOptions.replace('--popupWidth--', popupWidth)
-      this.openPopup(url, popupOptions)
-      return false
-    },
-    openPopup(url, options){
-      window.open(
-          url,
-          '_blank',
-          options,
-      )
+    async kakaoTokenCall(){
+      const code = this.$route.query.code
+      const response = await kakaoLogin(code)
+      console.log(response)
     },
   },
 }

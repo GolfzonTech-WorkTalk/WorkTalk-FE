@@ -167,15 +167,15 @@ export default {
     },
     // 조건 검색
     searchSubmit(){
-      const link = this.linkCheck()
+      const link = this.linkCheck('search')
       this.$emit('searchSubmit',link)
     },
     mapLink(){
-      const link = this.linkCheck()
+      const link = this.linkCheck('map')
       this.$router.push('/map/'+link)
     },
     // 링크체크
-    linkCheck(){
+    linkCheck(val){
       let address = this.selectCityName
       let spaceName = this.searchWord
       let spaceType = this.selectSpaceType
@@ -196,13 +196,22 @@ export default {
         address = address +' '+ this.selectCityDetailName
         // console.log(address)
       }
-      if (this.selectSpaceType == 1){
+      if (this.selectSpaceType == '공간타입'){
+        startDate = 'noDate'
+        endDate = 'noDate'
+        startTime = 'noTime'
+        endTime = 'noTime'
+      } else if (this.selectSpaceType == 1){
         startTime = 'noTime'
         endTime = 'noTime'
       } else if (this.selectSpaceType == 2 || this.selectSpaceType == 3){
         endDate = 'noDate'
       }
-      return spaceType+'/'+spaceName+'/'+address+'/'+startDate+'/'+endDate+'/'+startTime+'/'+endTime
+      if (val == 'search'){
+        return spaceType+'/'+spaceName+'/'+address+'/'+startDate+'/'+endDate+'/'+startTime+'/'+endTime
+      } else {
+        return spaceType+'/'+spaceName+'/'+address
+      }
     },
     // 시간 날짜 선택
     searchDate(selectDate){
