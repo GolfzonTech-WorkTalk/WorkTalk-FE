@@ -170,7 +170,9 @@ export default {
       })
     },
     async kakaoTokenCall(){
+      console.log(this.$route)
       const code = this.$route.query.code
+      console.log(code)
       const response = await kakaoLogin(code)
       console.log(response)
     },

@@ -18,7 +18,11 @@ function registerMember(memberData){
 
 // 소셜로그인 카카오
 function kakaoLogin(code){
-  return instance.post('user/kakao/callback', code)
+  return instance.post('user/kakao/callback', {
+    params: {
+      code,
+    },
+  })
 }
 
 // 로그인
