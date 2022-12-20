@@ -76,7 +76,7 @@ export default {
         ).then(response => {
           // console.log(response)
           // console.log(response.data.documents[0].road_address.region_2depth_name)
-          let address = response.data.documents[0].road_address.region_2depth_name
+          let address = response.data.documents[0].address.region_2depth_name
           this.thisAddress = address
           this.reservationDataCall()
           this.$emit('address:find', address)
