@@ -22,7 +22,7 @@ function reserveChoose(reservaData){
 
 // 예약임시DB불러오기
 function reserveChooseCall(tempRedisReserveId){
-  return posts.get('/redis/reservation/findById', {
+  return posts.get('/reservation/findById', {
     params:{
       tempRedisReserveId,
     },

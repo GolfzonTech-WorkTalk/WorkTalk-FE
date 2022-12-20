@@ -1,21 +1,31 @@
 <template>
   <div class="ReviewContainer">
-    <div v-for="item in ReviewList" :key="item" class="Reviewitem">
-      <div>
-        <span class="spacetypelabel">{{ item.memberId }}</span>
-        <span class="roomName">{{ item.roomName }}</span>
-        <div class="gradeBox">
-          <i v-for="gradeitem in gradeCheck(item.grade)" :key="gradeitem" :class="gradeitem.star" />
-        </div>
-        <p class="Reviewcontent">
-          {{ item.content }}
-        </p>
-        <div class="dateBox">
-          <p class="date">
-            {{ dateCheck(item.lastModifiedDate) }}
+    <template v-if="ReviewList.length == 0">
+      <span class="noReview">등록후기 없음</span>
+    </template>
+    <template v-else>
+      <div v-for="item in ReviewList" :key="item" class="Reviewitem">
+        <div>
+          <span class="spacetypelabel">{{ item.memberId }}</span>
+          <span class="roomName">{{ item.roomName }}</span>
+          <div class="gradeBox">
+            <i v-for="gradeitem in gradeCheck(item.grade)" :key="gradeitem" :class="gradeitem.star" />
+          </div>
+          <p class="Reviewcontent">
+            {{ item.content }}
           </p>
+          <div class="dateBox">
+            <p class="date">
+              {{ dateCheck(item.lastModifiedDate) }}
+            </p>
+          </div>
         </div>
-      </div>
+      </div>  
+    </template>
+    <div class="pageNumber">
+      <span><i class="fa-solid fa-chevron-left monthMoveBtn" @click="pageMove('pre')" /></span>
+      <span v-for="num in pageData" :key="num" :class="num.class" @click="spaceQnAListCall(num.value)">{{ num.value }}</span>
+      <span><i class="fa-solid fa-chevron-right" @click="pageMove('next')" /></span>
     </div>
   </div>
 </template>
@@ -35,22 +45,80 @@ export default {
       ],
       deleteReviewNum:'후기삭제',
       updateReviewNum:'후기수정',
-      testRange:'',
+      // 페이지 관리데이터
+      pageStartNum: 1,
+      pageNowNum:1,
+      pageData:[],
+      pageTotal:'',
     }
   },
   created(){
-    this.spaceReviewListCall()
+    this.spaceReviewListCall(this.pageNowNum)
   },
   methods: {
-    async spaceReviewListCall(){
+    async spaceReviewListCall(pageNowNum){
+      if (!pageNowNum){
+        pageNowNum = this.pageNowNum
+      } else {
+        this.pageNowNum = pageNowNum
+      }
       const spaceId = this.$route.params.spaceId
       try {
-        const response = await spaceReviewList(spaceId)
-        // console.log(response)
-        this.ReviewList = response.data
+        const response = await spaceReviewList(pageNowNum-1, spaceId)
+        this.ReviewList = response.data.data
+        this.pageTotal = response.data.count
+        this.paging(this.pageNowNum)
       } catch (error){
         console.log(error)
       }
+    },
+    // 페이징
+    paging(pageNowNum){
+      this.pageData = []
+      this.pageNowNum = pageNowNum
+      let total = this.pageTotal
+      if (total%5 != 0){
+        this.pageTotal = parseInt(total/5)+1
+      } else { 
+        this.pageTotal = total/5
+      }
+      let lastPage
+      if (this.pageTotal < 6){
+        lastPage = this.pageTotal+1
+      } else { 
+        lastPage = this.pageStartNum+5
+        if (lastPage >= this.pageTotal ){
+          lastPage = this.pageTotal+1
+        }
+      }
+      for (let i = this.pageStartNum; i < lastPage; i++){
+        if (pageNowNum == i){
+          this.pageData.push({'value':i,'class':'pageNowNum'})
+        } else {
+          this.pageData.push({'value':i,'class':''})
+        }
+      }
+    },
+    // 페이지 번호 넘기기
+    pageMove(value){
+      if (this.pageTotal == 1){
+        return
+      } else if (value == 'next'){
+        if (this.pageStartNum == this.pageTotal-1){
+          this.paging(this.pageStartNum)
+        } else {
+          this.pageStartNum = this.pageStartNum + 5
+          this.paging(this.pageStartNum)
+        }
+      } else {
+        if (this.pageStartNum == 1){
+          this.paging(this.pageStartNum)
+        } else {
+          this.pageStartNum = this.pageStartNum - 5
+          this.paging(this.pageStartNum)
+        }
+      }
+      this.reservationDataCall(this.pageNowNum)
     },
     gradeCheck(grade){
       let starData = []
@@ -129,5 +197,16 @@ export default {
 }
 .fa-trash:hover{
   color: red;
+}
+.pageNumber{
+  text-align: center;
+  width: 34vw;
+}
+.pageNumber{
+  cursor: pointer;
+}
+.noReview{
+  margin-left: 13.5vw;
+  font-weight: bold;
 }
 </style>

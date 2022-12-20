@@ -16,8 +16,13 @@ function reviewDelete(reviewId){
 }
 
 // 공간에서의 후기 리스트
-function spaceReviewList(spaceId){
-  return instance.get('spaceOne/'+spaceId+'/reviews')
+function spaceReviewList(pageNum, spaceId){
+  return instance.get('spaceOne/reviews', {
+    params:{
+      spaceId,
+      pageNum,
+    },
+  })
 }
 
 // 마이페이지에서 후기 리스트
