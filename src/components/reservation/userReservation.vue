@@ -34,7 +34,7 @@
         <span class="reserveStatus" :class="item.reserveStatus">{{ reserveStatusRename(item.reserveStatus) }}</span>
         <span class="reserveTime">{{ reserveTime(item.bookDate.reserveDate) }}</span>
         <span class="amount">{{ item.reserveAmount }}</span>
-        <span v-if="cancelPossible(item)" class="reservationCancelBtn" @click="boxOpen('cancel', index)">예약취소</span>
+        <span v-if="cancelPossible(item)" class="reservationCancelBtn" @click="boxOpen('cancel', index, item)">예약취소</span>
         <template v-if="cancelIndex == index">
           <div class="reservationCancelBox">
             <p :class="(cancelReason.length >= 100)?'warning':''">
@@ -64,7 +64,7 @@
           <span class="reviewBtn" @click="boxOpen('review', index, item)">후기작성</span>
         </template>
         <template v-if="reviewIndex == index">
-          <form-review :reserve-id="reserveId" @box-close:box-close-click="boxClose" />
+          <form-review :reserve-id="reserveId" @box-close:box-close-click="boxClose" @reveiw-submit:submit-click="reviewSubmit" />
         </template>
       </div>
     </div>
@@ -77,10 +77,7 @@
 </template>
 
 <script>
-// import { reservation, reservationCancel } from '@/api/reservation.js'
 import { reservation, reservationCancel, reservationPrepaid } from '@/api/reservation.js'
-// import {nowYYmmDDhhMM} from '@/utils/common.js'
-// import {reservationDataDeskMeetingroom} from '@/utils/dummy/dummy.js'
 import FormReview from '@/components/Form/FormReviewCreate.vue'
 export default {
   components: {
@@ -295,9 +292,18 @@ export default {
       this.amountLeaveIndex = '잔금결제'
       this.background = false
     },
+    reviewSubmit(){
+      this.boxClose()
+      this.reservationDataCall(this.pageNowNum)
+    },
     // 예약취소
     async reservationCancel(item){
-      if (this.cancelReason.length >= 100){
+      if (this.dateCheck(item)){
+        let message = '30분전 예약은 취소할 수 없습니다.'
+        this.$store.dispatch('MODALVIEWCLICK', true)
+        this.$store.dispatch('MODALMESSAGE', message)
+        return false
+      } else if (this.cancelReason.length >= 100){
         let message = '취소사유가 100자를 초과했습니다.'
         this.$store.dispatch('MODALVIEWCLICK', true)
         this.$store.dispatch('MODALMESSAGE', message)
@@ -324,6 +330,27 @@ export default {
         this.reservationDataCall(this.pageNowNum)
       } catch (error){
         console.log(error)
+      }
+    },
+    dateCheck(item){
+      console.log(item.bookDate)
+      let reserveDate = item.bookDate.checkInDate
+      let reserveTime = item.bookDate.checkInTime
+      const today = new Date()
+      const todate = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate()
+      const toTime = today.getHours()
+      const toMinute = today.getMinutes()
+      // console.log(todate, reserveDate)
+      // console.log(todate < reserveDate)
+      // console.log(toTime, reserveTime+1)
+      if (todate == reserveDate){
+        if (reserveTime+1 == toTime){
+          if (toMinute >= 30){
+            return true
+          }
+        }
+      } else {
+        false
       }
     },
     // 잔금결제

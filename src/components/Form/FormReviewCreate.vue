@@ -24,7 +24,7 @@ export default {
       required: true,
     },
   },
-  emits: ['box-close:box-close-click'],
+  emits: ['box-close:box-close-click','reveiw-submit:submit-click'],
   data(){
     return {
       reviewContent:'',
@@ -76,7 +76,7 @@ export default {
       } catch (error){
         console.log(error)
       }
-      this.$emit('box-close:box-close-click')
+      this.$emit('reveiw-submit:submit-click')
     },
   },
 }

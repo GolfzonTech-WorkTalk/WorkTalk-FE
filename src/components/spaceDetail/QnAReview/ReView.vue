@@ -73,16 +73,8 @@ export default {
       }
     },
     dateCheck(value){
-      let date = value[0]+'-'+value[1]+'-'+value[2]
-      let hour = value[3]
-      let minute = value[3]
-      if (hour < 10){
-        hour = '0'+hour
-      }
-      if (minute < 10){
-        minute = '0'+minute
-      }
-      let time = hour+':'+minute
+      const date = value.slice(0,10)
+      const time = value.slice(11,16)
       return `${date} ${time}`
     },
   },

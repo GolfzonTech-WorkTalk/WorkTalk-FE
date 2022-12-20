@@ -31,8 +31,13 @@ function qnacommentDelete(qnaCommentId){
 }
 
 // 공간에서의 QnA 리스트
-function spaceQnAList(spaceId){
-  return instance.get('spaceOne/'+spaceId+'/qnas')
+function spaceQnAList(pageNum, spaceId){
+  return instance.get('spaceOne/'+spaceId+'/qnas', {
+    params:{
+      spaceId,
+      pageNum,
+    },
+  })
 }
 
 // 마이페이지에서 QnA 리스트

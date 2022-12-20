@@ -15,10 +15,10 @@
       <p>공간의 종류를 선택해주세요.</p>
     </div>
     <p class="spaceTile">
-      추천공간
+      {{ thisAddressFind }} 추천
     </p>
     <div class="spaceAll">
-      <recommend-space />
+      <recommend-space @address:find="addressFind" />
     </div>
     <p class="spaceTile">
       전체공간
@@ -44,11 +44,15 @@ export default {
         {'name':'데스크', 'img':'table.png', 'value':'2'},
         {'name':'회의실', 'img':'meeting.png', 'value':'3'},
       ],
+      thisAddressFind:'',
     }
   },
   methods: {
     searchSpacelink(spaceType){
       return '/searchSpace/'+spaceType+'/AllName/AllRegions/noDate/noDate/noTime/noTime'
+    },
+    addressFind(address){
+      this.thisAddressFind =address
     },
   },
 }

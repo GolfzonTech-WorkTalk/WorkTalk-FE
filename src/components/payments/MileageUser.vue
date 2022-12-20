@@ -6,6 +6,10 @@
           <span class="mileageOwnTitle">보유마일리지</span>
           <span class="mileageOwn">{{ mileageOwn }}</span>
         </div>
+        <div class="mileageOwnBox">
+          <span class="mileageOwnTitle">적립예정</span>
+          <span class="mileageOwn">{{ mileageScheduled }}</span>
+        </div>
       </div>
       <div class="mileageItems">
         <div class="mileageItemTitle">
@@ -33,6 +37,7 @@ export default {
     return {
       mileageSort:'기간',
       mileageOwn:'0',
+      mileageScheduled:'0',
       mileageData:'',
     }
   },
@@ -45,6 +50,7 @@ export default {
       let response = await mileageList()
       console.log(response)
       this.mileageOwn = response.data.count
+      this.mileageScheduled = response.data.sum
       this.mileageData = response.data.data
     },
     mileageStatusCheck(status){
@@ -53,6 +59,8 @@ export default {
         result = '적립'
       } else if (status == 'USED'){
         result = '사용'
+      } else if (status == 'TO_BE_SAVED'){
+        result = '적립예정'
       }
       return result
     },
@@ -62,6 +70,8 @@ export default {
         result = '+'+mileageAmount
       } else if (status == 'USED'){
         result = '-'+mileageAmount
+      } else if (status == 'TO_BE_SAVED'){
+        result = '+'+mileageAmount
       }
       return result
     },
@@ -126,5 +136,8 @@ export default {
 }
 .USED{
   color: rgb(212, 69, 69);
+}
+.TO_BE_SAVED{
+  color: forestgreen;
 }
 </style>

@@ -20,6 +20,11 @@
           {{ item.qnacomment }}
         </p>
       </div>
+      <div class="pageNumber">
+        <span><i class="fa-solid fa-chevron-left monthMoveBtn" @click="pageMove('pre')" /></span>
+        <span v-for="num in pageData" :key="num" :class="num.class" @click="spaceQnAListCall(num.value)">{{ num.value }}</span>
+        <span><i class="fa-solid fa-chevron-right" @click="pageMove('next')" /></span>
+      </div>
     </div>
   </div>
 </template>
@@ -32,20 +37,25 @@ export default {
   data(){
     return {
       QnAList: [],
+      // 페이지 관리데이터
+      pageStartNum: 1,
+      pageNowNum:1,
+      pageData:[],
+      pageTotal:'',
     }
   },
   created(){
     this.spaceQnAListCall()
   },
   methods: {
-    async spaceQnAListCall(){
-      console.log('1234')
+    async spaceQnAListCall(pageNowNum){
+      this.pageNowNum = pageNowNum
       const spaceId = this.$route.params.spaceId
-      console.log(spaceId)
       try {
-        const response = await spaceQnAList(spaceId)
-        // console.log(response)
-        this.QnAList = response.data
+        const response = await spaceQnAList(pageNowNum-1, spaceId)
+        this.QnAList = response.data.data
+        this.pageTotal =  response.data.count
+        this.paging(this.pageNowNum)
       } catch (error){
         console.log(error)
       }
@@ -60,17 +70,36 @@ export default {
       }
     },
     dateCheck(value){
-      let date = value[0]+'-'+value[1]+'-'+value[2]
-      let hour = value[3]
-      let minute = value[3]
-      if (hour < 10){
-        hour = '0'+hour
-      }
-      if (minute < 10){
-        minute = '0'+minute
-      }
-      let time = hour+':'+minute
+      const date = value.slice(0,10)
+      const time = value.slice(11,16)
       return `${date} ${time}`
+    },
+    // 페이징
+    paging(pageNowNum){
+      this.pageData = []
+      this.pageNowNum = pageNowNum
+      let total = this.pageTotal
+      if (total%5 != 0){
+        this.pageTotal = parseInt(total/5)+1
+      } else { 
+        this.pageTotal = total/5
+      }
+      let lastPage
+      if (this.pageTotal < 6){
+        lastPage = this.pageTotal+1
+      } else { 
+        lastPage = this.pageStartNum+5
+        if (lastPage >= this.pageTotal ){
+          lastPage = this.pageTotal+1
+        }
+      }
+      for (let i = this.pageStartNum; i < lastPage; i++){
+        if (pageNowNum == i){
+          this.pageData.push({'value':i,'class':'pageNowNum'})
+        } else {
+          this.pageData.push({'value':i,'class':''})
+        }
+      }
     },
     emitOpenCheck(){
       if (!this.$store.state.token){
