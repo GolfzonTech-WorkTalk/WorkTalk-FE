@@ -30,7 +30,7 @@
           <option value="" hidden>
             공간이름
           </option>
-          <option v-for="item in paymentRoomData" :key="item" :value="item.value">
+          <option v-for="item in paymentRoomDataView" :key="item" :value="item.value">
             {{ item.name }}
           </option>
         </select>
@@ -98,6 +98,7 @@ export default {
       paymentRoomData:[
         {'name':'전 체','value':''},
       ],
+      paymentRoomDataView:[],
       paymentRoom:'',
       // 페이지 관리데이터
       pageStartNum: 1,
@@ -117,9 +118,10 @@ export default {
       for (let i = 0; i < response.data.length; i++){
         this.paymentRoomData = [
           ...this.paymentRoomData,
-          {'name':response.data[i],'value':response.data[i]},
+          {'name':response.data[i].roomName,'value':response.data[i].spaceType},
         ]
       }
+      this.paymentRoomDataView = this.paymentRoomData
     },
     async paymentDataRequest(pageNowNum){
       this.paymentData = []
@@ -128,6 +130,21 @@ export default {
       let spaceType = this.spaceType
       let paymentRoom = this.paymentRoom
       this.pageNowNum = pageNowNum
+      if (this.spaceType == ''){
+        this.paymentRoomDataView = this.paymentRoomData
+        this.paymentRoom =''
+      } else {
+        this.paymentRoomDataView = {'name':'전 체','value':''}
+        this.paymentRoom =''
+        for (let i = 0; i < this.paymentRoomData.length; i++){
+          if (this.spaceType == this.paymentRoomData[i].value){
+            this.paymentRoomDataView = [
+              {'name':this.paymentRoomData[i].name,'value':this.paymentRoomData[i].name},
+            ]
+          }
+        }
+      }
+
       try {
         let response = await paymentHistoryHost(pageNowNum-1, payStatus, paymentSortData, spaceType, paymentRoom )
         // let response = await paymentHistory(pageNowNum-1, spaceType, paymentSortData)

@@ -32,7 +32,7 @@ function qnacommentDelete(qnaCommentId){
 
 // 공간에서의 QnA 리스트
 function spaceQnAList(pageNum, spaceId){
-  return instance.get('spaceOne/'+spaceId+'/qnas', {
+  return instance.get('spaceOne/qnas', {
     params:{
       spaceId,
       pageNum,

@@ -4,27 +4,32 @@
       <i class="fa-solid fa-pen-to-square" />
       <span @click="emitOpenCheck">문의작성</span>
     </div>
-    <div v-for="item in QnAList" :key="item" class="QnAitem">
-      <div>
-        <span class="QnAtype" :class="item.type">{{ typeCheck(item.type) }}</span>
-        <span class="date">{{ dateCheck(item.lastModifiedDate) }}</span>
-        <p class="QnAcontent">
-          {{ item.content }}
-        </p>
+    <template v-if="QnAList.length == 0">
+      <span class="noQnA">등록후기 없음</span>
+    </template>
+    <template v-else>
+      <div v-for="item in QnAList" :key="item" class="QnAitem">
+        <div>
+          <span class="QnAtype" :class="item.type">{{ typeCheck(item.type) }}</span>
+          <span class="date">{{ dateCheck(item.lastModifiedDate) }}</span>
+          <p class="QnAcontent">
+            {{ item.content }}
+          </p>
+        </div>
+        <div v-if="item.qnacomment != null" class="hostAnswer">
+          <img src="@/assets/down-right.png" class="answerArrow">
+          <span class="answerTitle">호스트의 답글</span>
+          <span class="date">{{ dateCheck(item.qclastModifiedDate) }}</span>
+          <p class="answerContent">
+            {{ item.qnacomment }}
+          </p>
+        </div>
       </div>
-      <div v-if="item.qnacomment != null" class="hostAnswer">
-        <img src="@/assets/down-right.png" class="answerArrow">
-        <span class="answerTitle">호스트의 답글</span>
-        <span class="date">{{ dateCheck(item.qclastModifiedDate) }}</span>
-        <p class="answerContent">
-          {{ item.qnacomment }}
-        </p>
-      </div>
-      <div class="pageNumber">
-        <span><i class="fa-solid fa-chevron-left monthMoveBtn" @click="pageMove('pre')" /></span>
-        <span v-for="num in pageData" :key="num" :class="num.class" @click="spaceQnAListCall(num.value)">{{ num.value }}</span>
-        <span><i class="fa-solid fa-chevron-right" @click="pageMove('next')" /></span>
-      </div>
+    </template>
+    <div class="pageNumber">
+      <span><i class="fa-solid fa-chevron-left monthMoveBtn" @click="pageMove('pre')" /></span>
+      <span v-for="num in pageData" :key="num" :class="num.class" @click="spaceQnAListCall(num.value)">{{ num.value }}</span>
+      <span><i class="fa-solid fa-chevron-right" @click="pageMove('next')" /></span>
     </div>
   </div>
 </template>
@@ -45,11 +50,15 @@ export default {
     }
   },
   created(){
-    this.spaceQnAListCall()
+    this.spaceQnAListCall(this.pageNowNum)
   },
   methods: {
     async spaceQnAListCall(pageNowNum){
-      this.pageNowNum = pageNowNum
+      if (!pageNowNum){
+        pageNowNum = this.pageNowNum
+      } else {
+        this.pageNowNum = pageNowNum
+      }
       const spaceId = this.$route.params.spaceId
       try {
         const response = await spaceQnAList(pageNowNum-1, spaceId)
@@ -100,6 +109,27 @@ export default {
           this.pageData.push({'value':i,'class':''})
         }
       }
+    },
+    // 페이지 번호 넘기기
+    pageMove(value){
+      if (this.pageTotal == 1){
+        return
+      } else if (value == 'next'){
+        if (this.pageStartNum == this.pageTotal-1){
+          this.paging(this.pageStartNum)
+        } else {
+          this.pageStartNum = this.pageStartNum + 5
+          this.paging(this.pageStartNum)
+        }
+      } else {
+        if (this.pageStartNum == 1){
+          this.paging(this.pageStartNum)
+        } else {
+          this.pageStartNum = this.pageStartNum - 5
+          this.paging(this.pageStartNum)
+        }
+      }
+      this.reservationDataCall(this.pageNowNum)
     },
     emitOpenCheck(){
       if (!this.$store.state.token){
@@ -190,5 +220,16 @@ export default {
 }
 .QnAcreate span {
   margin-left: 0.5vw;
+}
+.pageNumber{
+  text-align: center;
+  width: 34vw;
+}
+.pageNumber{
+  cursor: pointer;
+}
+.noQnA{
+  margin-left: 13.5vw;
+  font-weight: bold;
 }
 </style>

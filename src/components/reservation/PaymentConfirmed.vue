@@ -247,8 +247,14 @@ export default {
     // 결제방식 선택
     payStatusSelect(value){
       this.payStatus = value
-      if (this.payStatus != value){
-        this.mileageUsage = ''
+      this.mileageUsage = ''
+      if (value == 'DEPOSIT'){
+        if (this.dateCheck()){
+          let message = '예약 30분 전에는 선납,후납만 가능합니다.'
+          this.$store.dispatch('MODALVIEWCLICK', true)
+          this.$store.dispatch('MODALMESSAGE', message)
+          return false
+        }
       }
       if (value == 'PREPAID'){
         this.paymentAmount = this.amount
@@ -260,7 +266,25 @@ export default {
       } else {
         this.mileageSave = this.amount * 0.05
       }
-      // 결제계산
+    },
+    dateCheck(){
+      let reserveDate = this.tempReserve.bookDate.checkInDate
+      let reserveTime = this.tempReserve.bookDate.checkInTime
+      const today = new Date()
+      const todate = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate()
+      const toTime = today.getHours()
+      const toMinute = today.getMinutes()
+      console.log(todate == reserveDate)
+      console.log(reserveTime+1 == toTime)
+      if (todate == reserveDate){
+        if (reserveTime == toTime+1){
+          if (toMinute >= 30){
+            return true
+          }
+        }
+      } else {
+        false
+      }
     },
     // 마일리지 조회
     async mileageCheck(){

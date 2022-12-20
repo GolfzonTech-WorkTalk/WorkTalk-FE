@@ -17,7 +17,6 @@
 </template>
 
 <script>
-import {test} from '@/api/test.js'
 export default {
   data(){
     return {
@@ -39,8 +38,6 @@ export default {
   methods: {
     async click(){
       console.log(this.result)
-      const response = await test(this.result)
-      console.log(response)
     },
     getCurrentPosition(){
       if (!navigator.geolocation){
