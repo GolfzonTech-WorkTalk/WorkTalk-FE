@@ -175,7 +175,10 @@ export default {
       try {
         const code = this.$route.query.code
         await this.$store.dispatch('KAKAOLOGIN', code)
-        this.$router.push('/')
+        let message = '예약을 이용하시려면 전화번호를 입력해주세요.'
+        this.$store.dispatch('MODALVIEWCLICK', true)
+        this.$store.dispatch('MODALMESSAGE', message)
+        this.$router.push('/profile')
       } catch (error){
         console.log(error)
       }

@@ -5,7 +5,6 @@
       <router-link to="/">
         <img src="@/assets/worktalk.png" alt="logo" class="logo">
       </router-link>
-      <FormSearch />
     </div>
     <div>
       <i class="fa-solid fa-bars fa-2x" @click="menuTabBtn" />
@@ -23,13 +22,11 @@
 </template>
 
 <script>
-import FormSearch from '@/components/Form/FormSearch.vue'
 import UserMenuTab from '@/components/user/UserMenuTab.vue'
 import HostMenuTab from '@/components/host/HostMenuTab.vue'
 import MasterMenuTab from '../master/MasterMenuTab.vue'
 export default {
   components: {
-    FormSearch,
     UserMenuTab,
     HostMenuTab,
     MasterMenuTab,

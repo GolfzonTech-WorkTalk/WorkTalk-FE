@@ -28,7 +28,7 @@
       <input v-model="searchWord" :class="{'selectTerms':searchWord!=''}" type="text" placeholder="키워드검색" class="mapLocationSort">
       <div class="selectTermsClearBtn" @click="selectTermsClear">
         <i class="fa-solid fa-rotate-right fa-lg" />
-        <span>초기화</span>
+        <span>검색 초기화</span>
       </div>
       <div class="selectTermsClearBtn" @click="getCurrentPosition">
         <span>현재위치</span>
@@ -78,6 +78,9 @@ export default {
     await this.getCurrentPosition()
     this.kakao()
   },
+  mounted(){
+    this.kakao()
+  },
   methods: {
     // 지도
     kakao(){
@@ -103,7 +106,6 @@ export default {
       this.CoordinatesX = val.coords.latitude
       this.CoordinatesY = val.coords.longitude
       this.paramsCheck()
-      // alert('주소 확인 완료')
     },
     geolocationError(){
       this.paramsCheck()
@@ -269,7 +271,7 @@ export default {
     },
     // 카카오맵만들기
     async initMap(){
-      console.log(this.CoordinatesX, this.CoordinatesY)
+      // console.log(this.CoordinatesX, this.CoordinatesY)
       let mapContainer = document.getElementById('map'),
       mapOption = {
         center: new kakao.maps.LatLng(this.CoordinatesX, this.CoordinatesY), // 지도의 중심좌표
@@ -324,7 +326,7 @@ export default {
           if (status === kakao.maps.services.Status.OK){
             var coords = new kakao.maps.LatLng(result[0].y, result[0].x)
             resolve(coords)
-            console.log(coords)
+            // console.log(coords)
             return
           }
           reject(new Error("getCoordsByAddress Error: not Vaild Address"))
@@ -425,5 +427,8 @@ export default {
   cursor: pointer;
   color: gray;
   font-size: 1rem;
+  margin-right: 1vw;
+  padding: 0.5vh 0.5vw;
+  background: rgba(255, 255, 255, 0.432);
 }
 </style>

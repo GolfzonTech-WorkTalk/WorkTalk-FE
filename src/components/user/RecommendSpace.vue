@@ -10,13 +10,13 @@
 
 <script>
 import searchSpaceOne from '@/components/searchSpace/spaceModule.vue'
-// import { spaceAll } from '@/api/user.js'
-/* 더미 값 */
-import { recommendSpaceDumy } from '@/utils/dummy/dummy.js'
+import { spaceSearch } from '@/api/user.js'
+import axios from 'axios'
 export default {
   components:{
     searchSpaceOne,
   },
+  emits:['address:find'],
   data(){
     return {
       spaceItems: [],
@@ -26,22 +26,64 @@ export default {
       slideMiddleNum:'1',
       slideEmdNum:'2',
       resetNum:'0',
+      thisAddress:'',
     }
   },
   // async
-  created(){
-    this.reservationDataCall()
+  async created(){
+    await this.getCurrentPosition()
   },
   methods: {
+    // 공간불러오기
     // 데이터 API로 불러오기
     async reservationDataCall(){
-      const responce = recommendSpaceDumy
-      this.spaceItems = responce
-      this.recommendViewCheck()
-      /*
-      const responce = await spaceAll()
-      this.spaceItems = responce.data
-      */
+      try {
+        console.log(this.thisAddress)
+        const responce = await spaceSearch(0,'','',this.thisAddress,'','','','')
+        console.log(responce.data.data)
+        this.spaceItems = responce.data.data
+        this.recommendViewCheck()
+      } catch (error){
+        console.log(error)
+      }
+    },
+    // 현재위치 좌표로 불러오기
+    getCurrentPosition(){
+      if (!navigator.geolocation){
+        alert('위치 정보를 찾을 수 없습니다.1')
+      } else {
+        navigator.geolocation.getCurrentPosition(this.getPositionValue, this.geolocationError)
+      }
+    },
+    getPositionValue(val){
+      let CoordinatesX = val.coords.latitude
+      let CoordinatesY = val.coords.longitude
+      this.callAddress(CoordinatesX,CoordinatesY)
+    },
+    geolocationError(){
+      alert('위치 정보를 찾을 수 없습니다.2')
+    },
+    async callAddress(x, y){
+      console.log(x,y)
+      try {
+        await axios.get(
+          'https://dapi.kakao.com/v2/local/geo/coord2address.json?x=' + y +'&y=' + x,
+          {
+            headers : {
+              'Authorization' : `KakaoAK 79edba60f18097e8e335a7ca1b62de99`,
+            },
+          },
+        ).then(response => {
+          // console.log(response)
+          // console.log(response.data.documents[0].road_address.region_2depth_name)
+          let address = response.data.documents[0].road_address.region_2depth_name
+          this.thisAddress = address
+          this.reservationDataCall()
+          this.$emit('address:find', address)
+        })
+      } catch (error){
+        console.log(error)
+      }
     },
     recommendViewCheck(){
       this.spaceViewItems = []
@@ -95,7 +137,7 @@ export default {
   position: relative;
   display: flex;
   justify-content: center;
-  width: 78vw;
+  width: 75vw;
 }
 .recommendSpaceItems {
   position: relative;
@@ -103,6 +145,7 @@ export default {
   display: flex;
   align-content: center;
   height: 40vh;
+  width: 72vw;
   overflow: hidden;
 }
 .prevBtn, .nextBtn{
