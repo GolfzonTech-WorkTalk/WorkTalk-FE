@@ -71,6 +71,12 @@ export default {
         }
       } catch (error){
         console.log(error)
+        if (error.response.status == 500){
+          let message = '진행중인 예약이 있습니다. 예약을 처리해주세요.'
+          this.$store.dispatch('MODALVIEWCLICK', true)
+          this.$store.dispatch('MODALMESSAGE', message)
+          this.goodByeWorkTalkCancel()
+        }
       }
     },
   },

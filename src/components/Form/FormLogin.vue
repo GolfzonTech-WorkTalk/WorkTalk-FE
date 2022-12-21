@@ -37,7 +37,7 @@
         <span v-if="!userEmailValid && email" class="warning">이메일 형식이 아닙니다.</span>
       </div>
       <div class="loginFromItems">
-        <input id="pw" v-model="pw" type="password" placeholder="비밀번호">
+        <input id="pw" v-model="pw" type="password" placeholder="비밀번호" @keyup.enter="loginCkeck">
       </div>
       <div class="loginFromItems">
         <button id="submit">
@@ -84,7 +84,11 @@ export default {
   created(){
     console.log(this.$route.query.token)
     if (this.$route.query.token){
-      this.kakaoTokenCall()
+      if (this.$route.query.tel == 'true'){
+        this.kakaoTokenCall('tel')
+      } else {
+        this.kakaoTokenCall('notel')
+      }
     }
   },
   methods: {
@@ -173,14 +177,18 @@ export default {
         redirectUri:'http://15.165.247.125:8100/user/kakao/callback',
       })
     },
-    async kakaoTokenCall(){
+    async kakaoTokenCall(value){
       try {
-        const code = this.$route.query.code
-        await this.$store.dispatch('KAKAOLOGIN', code)
+        const token = this.$route.query.token
+        await this.$store.dispatch('KAKAOLOGIN', token)
         let message = '예약을 이용하시려면 전화번호를 입력해주세요.'
         this.$store.dispatch('MODALVIEWCLICK', true)
         this.$store.dispatch('MODALMESSAGE', message)
-        this.$router.push('/profile')
+        if (value == 'tel'){
+          this.$router.push('/')
+        } else {
+          this.$router.push('/profile')
+        }
       } catch (error){
         console.log(error)
       }

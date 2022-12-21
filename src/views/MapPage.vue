@@ -25,7 +25,7 @@
           {{ item.name }}
         </option>
       </select>
-      <input v-model="searchWord" :class="{'selectTerms':searchWord!=''}" type="text" placeholder="키워드검색" class="mapLocationSort">
+      <input v-model="searchWord" :class="{'selectTerms':searchWord!=''}" type="text" placeholder="키워드검색" class="mapLocationSort" @keyup.enter="spaceInfoSearch">
       <div class="selectTermsClearBtn" @click="selectTermsClear">
         <i class="fa-solid fa-rotate-right fa-lg" />
         <span>검색 초기화</span>

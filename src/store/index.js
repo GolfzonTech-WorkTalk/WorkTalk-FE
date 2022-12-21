@@ -97,14 +97,14 @@ export default createStore({
       }
     },
     // 로그인 처리
-    async KAKAOLOGIN(context, code){
+    async KAKAOLOGIN(context, token){
       try {
-        const decode = jwt_decode(code.token)
-        context.commit('setToken', code.token)
+        const decode = jwt_decode(token)
+        context.commit('setToken', token)
         context.commit('setNickName', decode.sub)
         context.commit('setRole', decode.auth)
-        saveTokenToCookie(code.token)
-        return code
+        saveTokenToCookie(token)
+        return token
       } catch (error){
         console.log(error)
       }

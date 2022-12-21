@@ -142,8 +142,8 @@ export default {
           let message = '변경된 비밀번호로 로그인해주세요.'
           this.$store.dispatch('MODALVIEWCLICK', true)
           this.$store.dispatch('MODALMESSAGE', message)
+          this.$router.push('/login')
         }
-        this.$router.push('/login')
       } catch (error){
         console.log(error)
       }

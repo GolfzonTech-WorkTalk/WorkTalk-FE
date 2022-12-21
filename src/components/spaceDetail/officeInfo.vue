@@ -121,7 +121,7 @@ export default {
       offeringOptionData: [
         {'name':'주차','class':'fa-solid fa-square-parking fa-lg', 'value':'PARKING'},
         {'name':'인터넷/와이파이','class':'fa-solid fa-wifi fa-lg', 'value':'INTERNET_WIFI'},
-        {'name':'화이트보드','class':'fa-solid fa-tv fa-lg', 'value':'WHITEBOARD'},
+        {'name':'화이트보드','class':'fa-solid fa-chalkboard fa-lg', 'value':'WHITEBOARD'},
         {'name':'TV/프로젝터','class':'fa-solid fa-utensils fa-lg', 'value':'TV_PROJECTOR'},
         {'name':'음식물반입가능','class':'fa-solid fa-utensils fa-lg', 'value':'FOOD'},
         {'name':'복사/인쇄기','class':'fa-solid fa-print fa-lg', 'value':'PRINTER'},
