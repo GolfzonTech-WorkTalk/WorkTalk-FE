@@ -13,7 +13,7 @@
     </div>
     <div v-for="item in ReviewList" :key="item" class="Reviewitem">
       <div>
-        <span class="spacetypelabel" :class="item.spacetype">{{ spacetypeCheck(item.spacetype) }}</span>
+        <span class="spacetypelabel" :class="item.roomType">{{ spacetypeCheck(item.roomType) }}</span>
         <span class="spaceName">{{ item.spaceName }}</span>
         <span class="roomName">{{ item.roomName }}</span>
         <div class="gradeBox">
@@ -29,12 +29,16 @@
         </div>
       </div>
     </div>
+    <div class="pageNumber">
+      <span><i class="fa-solid fa-chevron-left monthMoveBtn" @click="pageMove('pre')" /></span>
+      <span v-for="num in pageData" :key="num" :class="num.class" @click="reservationDataCall(num.value)">{{ num.value }}</span>
+      <span><i class="fa-solid fa-chevron-right" @click="pageMove('next')" /></span>
+    </div>
   </div>
 </template>
 
 <script>
 import {mypageReviewList} from '@/api/review.js'
-// import { ReviewDummy } from '@/utils/dummy/QnAReviewdummy.js'
 export default {
   data(){
     return {
@@ -51,16 +55,23 @@ export default {
       deleteReviewNum:'후기삭제',
       updateReviewNum:'후기수정',
       testRange:'',
+      // 페이지 관리데이터
+      pageStartNum: 1,
+      pageNowNum:1,
+      pageData:[],
+      pageTotal:'',
     }
   },
   created(){
-    this.reviewListCall()
+    this.reviewListCall(this.pageNowNum)
   },
   methods: {
-    async reviewListCall(){
-      // const response = await ReviewDummy
-      const response = await mypageReviewList()
-      this.ReviewList = response.data
+    async reviewListCall(pageNowNum){
+      const response = await mypageReviewList(pageNowNum)
+      console.log(response)
+      this.ReviewList = response.data.data
+      this.pageTotal =  response.data.count
+      this.paging(pageNowNum)
       this.$store.dispatch('SPINNERVIEW', false)
     },
     testRangeCheck(value){
@@ -110,14 +121,52 @@ export default {
       this.deleteReviewNum = '후기삭제'
       this.updateReviewNum = '후기수정'
     },
-    // async deleteReviewSubmit(item){
-    //   try {
-    //     let response = await reviewDelete(item.qnaId)
-    //     console.log(response)
-    //   } catch (error){
-    //     console.log(error)
-    //   }
-    // },
+    // 페이징
+    paging(pageNowNum){
+      this.pageData = []
+      this.pageNowNum = pageNowNum
+      let total = this.pageTotal
+      if (total%10 != 0){
+        this.pageTotal = parseInt(total/10)+1
+      } else { 
+        this.pageTotal = total/10
+      }
+      let lastPage
+      if (this.pageTotal < 6){
+        lastPage = this.pageTotal+1
+      } else { 
+        lastPage = this.pageStartNum+5
+        if (lastPage >= this.pageTotal ){
+          lastPage = this.pageTotal+1
+        }
+      }
+      for (let i = this.pageStartNum; i < lastPage; i++){
+        if (pageNowNum == i){
+          this.pageData.push({'value':i,'class':'pageNowNum'})
+        } else {
+          this.pageData.push({'value':i,'class':''})
+        }
+      }
+    },
+    // 페이지 번호 넘기기
+    pageMove(value){
+      if (value == 'next'){
+        if (this.pageStartNum == this.pageTotal-1){
+          this.paging(this.pageStartNum)
+        } else {
+          this.pageStartNum = this.pageStartNum + 5
+          this.paging(this.pageStartNum)
+        }
+      } else {
+        if (this.pageStartNum == 1){
+          this.paging(this.pageStartNum)
+        } else {
+          this.pageStartNum = this.pageStartNum - 5
+          this.paging(this.pageStartNum)
+        }
+      }
+      this.reservationDataCall(this.pageNowNum)
+    },
   },
 }
 </script>
@@ -217,5 +266,17 @@ export default {
 }
 .fullstar{
   color: rgba(248, 248, 27, 0.5);
+}
+.pageNumber{
+  width: 36vw;
+  text-align: center;
+}
+.pageNumber span{
+  margin: 1vw;
+  cursor: pointer;
+}
+.pageNowNum{
+  font-weight: bold;
+  color: blue;
 }
 </style>

@@ -6,7 +6,7 @@
     </template>
     <div class="SortCCBox">
       <span class="createBtn" @click="createCC()">문의하기</span>
-      <select v-model="CCtype" class="SortCCtype" @change="CCDataCall()">
+      <select v-model="CCtype" class="SortCCtype" @change="customerCenterCall(pageNowNum)">
         <option value="문의종류" hidden>
           문의종류
         </option>
@@ -15,39 +15,46 @@
         </option>
       </select>
     </div>
-    <div v-for="item in CCData" :key="item" class="CCitem">
-      <div class="typeLabelBox">
-        <span class="CCtypelabel" :class="item.type">{{ typeCheck(item.type) }}</span>
-        <p>{{ item.title }}</p>
+    <template v-if="CCData.length != 0">
+      <div v-for="item in CCData" :key="item" class="CCitem">
+        <div class="typeLabelBox">
+          <span class="CCtypelabel" :class="item.type">{{ typeCheck(item.type) }}</span>
+          <p>{{ item.title }}</p>
+        </div>
+        <div class="updateDeleteBox">
+          <i class="fa-solid fa-pen-to-square" @click="updateCC(item)" />
+          <i class="fa-solid fa-trash" @click="deleteCC(item)" />
+          <template v-if="deleteCCNum == item.ccId">
+            <div class="deleteBox">
+              <p>해당 문의를 삭제하시겠습니까?</p>
+              <span class="deleteBtn deleteCCDo" @click="deleteCCCancel(item)">삭 제</span>
+              <span class="deleteBtn deleteCCCancel" @click="deleteCCCancel">취 소</span>
+            </div>
+          </template>
+          <template v-if="(updateCCNum == item.ccId)">
+            <FormCCupdate :item="item" @c-c:close="deleteCCCancel" @c-cupdate:update="updateCCDone" />
+          </template>
+          <p class="CCdate">
+            {{ dateCheck(item.lastModifiedDate) }}
+          </p>
+        </div>
+        <div class="contentBox">
+          <p>{{ item.content }}</p>
+        </div>
+        <div v-if="item.ccContent" class="masterAnswer">
+          <img src="@/assets/down-right.png" class="answerArrow">
+          <span class="answerTitle">마스터의 답글</span>
+          <span class="CCdate">{{ dateCheck(item.ccLastModifiedDate) }}</span>
+          <p class="CCcontent">
+            {{ item.ccContent }}
+          </p>
+        </div>
       </div>
-      <div class="updateDeleteBox">
-        <i class="fa-solid fa-pen-to-square" @click="updateCC(item)" />
-        <i class="fa-solid fa-trash" @click="deleteCC(item)" />
-        <template v-if="deleteCCNum == item.ccId">
-          <div class="deleteBox">
-            <p>해당 문의를 삭제하시겠습니까?</p>
-            <span class="deleteBtn deleteCCDo" @click="deleteCCCancel(item)">삭 제</span>
-            <span class="deleteBtn deleteCCCancel" @click="deleteCCCancel">취 소</span>
-          </div>
-        </template>
-        <template v-if="(updateCCNum == item.ccId)">
-          <FormCCupdate :item="item" @c-c:close="deleteCCCancel" />
-        </template>
-        <p class="CCdate">
-          {{ dateCheck(item.cc_date) }}
-        </p>
-      </div>
-      <div class="contentBox">
-        <p>{{ item.content }}</p>
-      </div>
-      <div v-if="item.CCcomment != ''" class="masterAnswer">
-        <img src="@/assets/down-right.png" class="answerArrow">
-        <span class="answerTitle">마스터의 답글</span>
-        <span class="CCdate">{{ dateCheck(item.qclastModifiedDate) }}</span>
-        <p class="CCcontent">
-          {{ item.CCcomment }}
-        </p>
-      </div>
+    </template>
+    <div class="pageNumber">
+      <span><i class="fa-solid fa-chevron-left monthMoveBtn" @click="pageMove('pre')" /></span>
+      <span v-for="num in pageData" :key="num" :class="num.class" @click="reservationDataCall(num.value)">{{ num.value }}</span>
+      <span><i class="fa-solid fa-chevron-right" @click="pageMove('next')" /></span>
     </div>
   </div>
 </template>
@@ -66,6 +73,7 @@ export default {
     return {
       CCtype:'문의종류',
       CCtypeData: [
+        {'name':'전 체','value':'문의종류'},
         {'name':'계정','value':'ACCOUNT'},
         {'name':'예약','value':'RESERVATION'},
         {'name':'결제','value':'PAYMENT'},
@@ -75,18 +83,30 @@ export default {
       updateCCNum : '문의수정',
       createCCNum : '문의작성',
       content:'',
+      // 페이지 관리데이터
+      pageStartNum: 1,
+      pageNowNum:1,
+      pageData:[],
+      pageTotal:'',
     }
   },
   created(){
-    this.customerCenterCall()
+    this.customerCenterCall(this.pageNowNum)
   },
   methods: {
     // API 호출
-    async customerCenterCall(){
+    async customerCenterCall(pageNowNum){
+      let CCtype = this.CCtype
+      if (CCtype == '문의종류'){
+        CCtype = ''
+      }
       try {
-        const response = mypageCCList()
-        console.log(response)
-        this.CCData = response.data
+        // console.log(pageNowNum-1,CCtype)
+        const response = await mypageCCList(pageNowNum-1,CCtype)
+        // console.log(response)
+        this.CCData = response.data.data
+        this.pageTotal =  response.data.count
+        this.paging(this.pageNowNum)
       } catch (error){
         console.log(error)
       }
@@ -102,10 +122,9 @@ export default {
         return '결제'
       }
     },
-    dateCheck(value){
-      let date = value.slice(0,10)
-      let time = value.slice(11,16)
-      return `${date} ${time}`
+    dateCheck(dateData){
+      // console.log(dateData)
+      return dateData.slice(0,10)+' '+dateData.slice(11,16)
     },
     // 삭제수정작성
     deleteCC(item){
@@ -114,6 +133,10 @@ export default {
     updateCC(item){
       this.updateCCNum = item.ccId
       this.content = item.content
+    },
+    updateCCDone(){
+      this.deleteCCCancel()
+      this.customerCenterCall(this.pageNowNum)
     },
     createCC(){
       this.createCCNum = ''
@@ -130,6 +153,52 @@ export default {
       } catch (error){
         console.log(error)
       }
+    },
+    // 페이징
+    paging(pageNowNum){
+      this.pageData = []
+      this.pageNowNum = pageNowNum
+      let total = this.pageTotal
+      if (total%10 != 0){
+        this.pageTotal = parseInt(total/10)+1
+      } else { 
+        this.pageTotal = total/10
+      }
+      let lastPage
+      if (this.pageTotal < 6){
+        lastPage = this.pageTotal+1
+      } else { 
+        lastPage = this.pageStartNum+5
+        if (lastPage >= this.pageTotal ){
+          lastPage = this.pageTotal+1
+        }
+      }
+      for (let i = this.pageStartNum; i < lastPage; i++){
+        if (pageNowNum == i){
+          this.pageData.push({'value':i,'class':'pageNowNum'})
+        } else {
+          this.pageData.push({'value':i,'class':''})
+        }
+      }
+    },
+    // 페이지 번호 넘기기
+    pageMove(value){
+      if (value == 'next'){
+        if (this.pageStartNum == this.pageTotal-1){
+          this.paging(this.pageStartNum)
+        } else {
+          this.pageStartNum = this.pageStartNum + 5
+          this.paging(this.pageStartNum)
+        }
+      } else {
+        if (this.pageStartNum == 1){
+          this.paging(this.pageStartNum)
+        } else {
+          this.pageStartNum = this.pageStartNum - 5
+          this.paging(this.pageStartNum)
+        }
+      }
+      this.reservationDataCall(this.pageNowNum)
     },
   },
 }
@@ -297,5 +366,9 @@ export default {
 .CCcontent{
   margin-left: 1.5vw;
   font-size: 0.8rem;
+}
+.pageNumber{
+  width: 50vw;
+  text-align: center;
 }
 </style>

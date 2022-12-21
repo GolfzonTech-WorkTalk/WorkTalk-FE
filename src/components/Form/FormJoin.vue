@@ -122,7 +122,7 @@ export default {
     },
     // 이메일 인증
     async emailVeificaionSend(){
-      if (!this.email || !this.emailDomain || this.emailDomain === '기타' && !this.emailDomainETC){
+      if (this.email == '' || !this.email || !this.emailDomain || this.emailDomain === '기타' && !this.emailDomainETC){
         let message = '이메일을 입력해주세요'
         this.$store.dispatch('MODALVIEWCLICK', true)
         this.$store.dispatch('MODALMESSAGE', message)
@@ -172,17 +172,23 @@ export default {
     },
     // 닉네임체크
     async nicknameCheck(){
-      console.log(this.nickname)
-      let name = {
-        name: this.nickname,
-      }
-      try {
-        let responce = await nickCheck(name)
-        console.log(responce)
-        console.log(responce.status)
-        this.nicknameMessage = responce.status
-      } catch (error){
-        this.nicknameMessage = error.request.status
+      if (this.nickname == '' || !this.nickname){
+        let message = '닉네임을 입력해주세요'
+        this.$store.dispatch('MODALVIEWCLICK', true)
+        this.$store.dispatch('MODALMESSAGE', message)
+      } else {
+        console.log(this.nickname)
+        let name = {
+          name: this.nickname,
+        }
+        try {
+          let responce = await nickCheck(name)
+          console.log(responce)
+          console.log(responce.status)
+          this.nicknameMessage = responce.status
+        } catch (error){
+          this.nicknameMessage = error.request.status
+        }
       }
     },
     // 전화번호 '-' 자동 부여

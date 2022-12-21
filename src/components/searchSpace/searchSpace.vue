@@ -32,6 +32,7 @@ export default {
   methods: {
     // 데이터 API로 불러오기
     async reservationDataCall(){
+      this.pageNum = 0
       this.routerCheck()
       console.log(this.pageNum,this.spaceType,this.spaceName,this.address,this.startDate,this.endDate,this.startTime,this.endTime)
       try {
@@ -77,9 +78,9 @@ export default {
     // 스크롤체크
     listScroll(e){
       const { scrollHeight, scrollTop, clientHeight } = e.target
-      console.log(scrollHeight, scrollTop, clientHeight)
-      console.log(scrollHeight <= scrollTop + clientHeight + 50)
-      const isBottom = (scrollHeight <= scrollTop + clientHeight + 50)
+      // console.log(scrollHeight, scrollTop, clientHeight)
+      // console.log(scrollHeight <= scrollTop + clientHeight + 50)
+      const isBottom = (scrollHeight == scrollTop + clientHeight)
       // const isAtTheBottom = scrollHeight === scrollTop + clientHeight
       // // 일정 한도 밑으로 내려오면 함수 실행
       if (isBottom){
@@ -91,9 +92,10 @@ export default {
     async reservationDataADD(pageNum){
       console.log(pageNum)
       // const responce = await spaceDumy
-      const response = await spaceSearch(this.pageNum,this.spaceType,this.spaceName,this.address)
-      for (let i = 0; i < response.length; i++){
-        this.spaceItems.push(response[i])
+      const response = await spaceSearch(this.pageNum,this.spaceType,this.spaceName,this.address,this.startDate,this.endDate,this.startTime,this.endTime)
+      console.log(response.data.data)
+      for (let i = 0; i < response.data.data.length; i++){
+        this.spaceItems.push(response.data.data[i])
       }
       this.$store.dispatch('SPINNERVIEW', false)
     },

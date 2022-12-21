@@ -2,7 +2,7 @@
   <div class="QnAContainer">
     <div v-if="deleteQnANum != '문의삭제' || updateQnANum != '문의수정'" class="backgroundQnA" @click="deleteQnACancel" />
     <div class="SortQnAtypeBox">
-      <select v-model="QnAtype" class="SortQnAtype" @change="qnaListCall(QnAtype)">
+      <select v-model="QnAtype" class="SortQnAtype" @change="qnaListCall(pageNowNum,QnAtype)">
         <option value="문의종류" hidden>
           문의종류
         </option>
@@ -11,39 +11,46 @@
         </option>
       </select>
     </div>
-    <div v-for="item in QnAList" :key="item" class="QnAitem">
-      <div>
-        <span class="QnAtypelabel" :class="item.type">{{ typeCheck(item.type) }}</span>
-        <span class="spaceName">{{ item.spaceName }}</span>
-        <p class="QnAcontent">
-          {{ item.content }}
-        </p>
-        <div class="UpdateDeleteBtn">
-          <i class="fa-solid fa-pen-to-square" @click="updateQnA(item)" />
-          <i class="fa-solid fa-trash" @click="deleteQnA(item)" />
-          <template v-if="deleteQnANum == item.qnaId">
-            <div class="deleteBox">
-              <p>해당 문의를 삭제하시겠습니까?</p>
-              <span class="deleteBtn deleteQnADo" @click="deleteQnASubmit(item)">삭 제</span>
-              <span class="deleteBtn deleteQnACancel" @click="deleteQnACancel">취 소</span>
-            </div>
-          </template>
-          <template v-if="updateQnANum == item.qnaId">
-            <FormQnAupdate :item="item" @qnaupdate:close="deleteQnACancel" @qnaupdate-data:call="qnaListCall(QnAtype)" />
-          </template>
-          <p class="date">
-            {{ dateCheck(item.lastModifiedDate) }}
+    <template v-if="QnAList.length != 0">
+      <div v-for="item in QnAList" :key="item" class="QnAitem">
+        <div>
+          <span class="QnAtypelabel" :class="item.type">{{ typeCheck(item.type) }}</span>
+          <span class="spaceName">{{ item.spaceName }}</span>
+          <p class="QnAcontent">
+            {{ item.content }}
+          </p>
+          <div class="UpdateDeleteBtn">
+            <i class="fa-solid fa-pen-to-square" @click="updateQnA(item)" />
+            <i class="fa-solid fa-trash" @click="deleteQnA(item)" />
+            <template v-if="deleteQnANum == item.qnaId">
+              <div class="deleteBox">
+                <p>해당 문의를 삭제하시겠습니까?</p>
+                <span class="deleteBtn deleteQnADo" @click="deleteQnASubmit(item)">삭 제</span>
+                <span class="deleteBtn deleteQnACancel" @click="deleteQnACancel">취 소</span>
+              </div>
+            </template>
+            <template v-if="updateQnANum == item.qnaId">
+              <FormQnAupdate :item="item" @qnaupdate:close="deleteQnACancel" @qnaupdate-data:call="qnaListCall(QnAtype)" />
+            </template>
+            <p class="date">
+              {{ dateCheck(item.lastModifiedDate) }}
+            </p>
+          </div>
+        </div>
+        <div v-if="item.qnacomment" class="hostAnswer">
+          <img src="@/assets/down-right.png" class="answerArrow">
+          <span class="answerTitle">호스트의 답글</span>
+          <span class="date">{{ dateCheck(item.qclastModifiedDate) }}</span>
+          <p class="answerContent">
+            {{ item.qnacomment }}
           </p>
         </div>
       </div>
-      <div v-if="item.qnacomment" class="hostAnswer">
-        <img src="@/assets/down-right.png" class="answerArrow">
-        <span class="answerTitle">호스트의 답글</span>
-        <span class="date">{{ dateCheck(item.qclastModifiedDate) }}</span>
-        <p class="answerContent">
-          {{ item.qnacomment }}
-        </p>
-      </div>
+    </template>
+    <div class="pageNumber">
+      <span><i class="fa-solid fa-chevron-left monthMoveBtn" @click="pageMove('pre')" /></span>
+      <span v-for="num in pageData" :key="num" :class="num.class" @click="reservationDataCall(num.value)">{{ num.value }}</span>
+      <span><i class="fa-solid fa-chevron-right" @click="pageMove('next')" /></span>
     </div>
   </div>
 </template>
@@ -64,23 +71,30 @@ export default {
         {'name':'전체','value':'문의종류'},
         {'name':'예약','value':'RESERVE'},
         {'name':'결제','value':'PAY'},
-        {'name':'이용','value':'USING'},
+        {'name':'이용','value':'USE'},
       ],
       deleteQnANum:'문의삭제',
       updateQnANum:'문의수정',
+      // 페이지 관리데이터
+      pageStartNum: 1,
+      pageNowNum:1,
+      pageData:[],
+      pageTotal:'',
     }
   },
   created(){
-    this.qnaListCall(this.QnAtype)
+    this.qnaListCall(this.pageNowNum,this.QnAtype)
   },
   methods: {
-    async qnaListCall(QnAtype){
+    async qnaListCall(pageNowNum,QnAtype){
       if (QnAtype == '문의종류'){
         QnAtype = ''
       }
-      console.log(QnAtype)
-      const response = await mypageQnAList(QnAtype)
-      this.QnAList = response.data
+      // console.log(QnAtype)
+      const response = await mypageQnAList(pageNowNum-1,QnAtype)
+      this.QnAList = response.data.data
+      this.pageTotal =  response.data.count
+      this.paging(pageNowNum)
       this.$store.dispatch('SPINNERVIEW', false)
     },
     typeCheck(value){
@@ -88,24 +102,13 @@ export default {
         return '예약'
       } else if (value == 'PAY'){
         return '결제'
-      } else if (value == 'USING'){
+      } else if (value == 'USE'){
         return '이용'
       }
     },
     dateCheck(dateData){
+      // console.log(dateData)
       return dateData.slice(0,10)+' '+dateData.slice(11,16)
-      // let year = dateData[0]
-      // let month = dateData[1]
-      // let date = dateData[2]
-      // let hour = dateData[3]
-      // let minute = dateData[4]
-      // if (hour < 10){
-      //   hour = '0'+hour
-      // }
-      // if (minute < 10){
-      //   minute = '0'+minute
-      // }
-      // return year+'-'+month+'-'+date+' '+hour+':'+minute
     },
     deleteQnA(item){
       this.deleteQnANum = item.qnaId
@@ -126,6 +129,52 @@ export default {
       } catch (error){
         console.log(error)
       }
+    },
+    // 페이징
+    paging(pageNowNum){
+      this.pageData = []
+      this.pageNowNum = pageNowNum
+      let total = this.pageTotal
+      if (total%10 != 0){
+        this.pageTotal = parseInt(total/10)+1
+      } else { 
+        this.pageTotal = total/10
+      }
+      let lastPage
+      if (this.pageTotal < 6){
+        lastPage = this.pageTotal+1
+      } else { 
+        lastPage = this.pageStartNum+5
+        if (lastPage >= this.pageTotal ){
+          lastPage = this.pageTotal+1
+        }
+      }
+      for (let i = this.pageStartNum; i < lastPage; i++){
+        if (pageNowNum == i){
+          this.pageData.push({'value':i,'class':'pageNowNum'})
+        } else {
+          this.pageData.push({'value':i,'class':''})
+        }
+      }
+    },
+    // 페이지 번호 넘기기
+    pageMove(value){
+      if (value == 'next'){
+        if (this.pageStartNum == this.pageTotal-1){
+          this.paging(this.pageStartNum)
+        } else {
+          this.pageStartNum = this.pageStartNum + 5
+          this.paging(this.pageStartNum)
+        }
+      } else {
+        if (this.pageStartNum == 1){
+          this.paging(this.pageStartNum)
+        } else {
+          this.pageStartNum = this.pageStartNum - 5
+          this.paging(this.pageStartNum)
+        }
+      }
+      this.reservationDataCall(this.pageNowNum)
     },
   },
 }
@@ -183,7 +232,7 @@ export default {
 .PAY{
   background: rgb(131, 131, 226)
 }
-.USING{
+.USE{
   background: rgb(224, 182, 135);
 }
 .date{
@@ -275,5 +324,17 @@ export default {
 .deleteQnACancel:hover{
   background: rgb(165, 165, 165);
   color: white;
+}
+.pageNumber{
+  width: 36vw;
+  text-align: center;
+}
+.pageNumber span{
+  margin: 1vw;
+  cursor: pointer;
+}
+.pageNowNum{
+  font-weight: bold;
+  color: blue;
 }
 </style>

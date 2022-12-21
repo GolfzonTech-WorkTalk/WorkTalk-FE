@@ -40,9 +40,24 @@ function spaceQnAList(pageNum, spaceId){
   })
 }
 
-// 마이페이지에서 QnA 리스트
-function mypageQnAList(){
-  return posts.get('myqnas')
+// 유저 마이페이지에서 QnA 리스트
+function mypageQnAList(pageNum,searchQnaType){
+  return posts.get('myqnas',{
+    params:{
+      pageNum,
+      searchQnaType,
+    },
+  })
+}
+
+// 호스트 마이페이지에서 QnA 리스트
+function mypageQnAListHost(pageNum,searchQnaType){
+  return posts.get('manageHostQna',{
+    params:{
+      pageNum,
+      searchQnaType,
+    },
+  })
 }
 
 export {
@@ -54,4 +69,5 @@ export {
   qnacommentDelete,
   spaceQnAList,
   mypageQnAList,
+  mypageQnAListHost,
 }

@@ -31,7 +31,7 @@ export default {
       required: true,
     },
   },
-  emits: [ 'CC:close' ],
+  emits: [ 'CC:close', 'CCupdate:update' ],
   data(){
     return {
       typeData: [
@@ -106,7 +106,7 @@ export default {
         } catch (error){
           console.log(error)
         }
-        this.emitClose(false)
+        this.$emit('CCupdate:update')
       }
     },
   },

@@ -31,18 +31,20 @@ function cccommentDelete(ccCommentId){
 }
 
 // 마이페이지에서 cc 리스트
-function mypageCCList(searchccType){
+function mypageCCList(pageNum, searchccType){
   return posts.get('myCustomerCenter',{
     params:{
+      pageNum,
       searchccType,
     },
   })
 }
 
 // 마스터페이지 cc 리스트
-function masterCCList(searchMemberType, searchccType){
+function masterCCList(pageNum, searchMemberType, searchccType){
   return posts.get('customerCenter', {
     params:{
+      pageNum,
       searchMemberType,
       searchccType,
     },

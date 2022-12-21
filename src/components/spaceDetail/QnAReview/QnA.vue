@@ -222,11 +222,16 @@ export default {
   margin-left: 0.5vw;
 }
 .pageNumber{
-  text-align: center;
   width: 34vw;
+  text-align: center;
 }
-.pageNumber{
+.pageNumber span{
+  margin: 0.5vw;
   cursor: pointer;
+}
+.pageNowNum{
+  font-weight: bold;
+  color: blue;
 }
 .noQnA{
   margin-left: 13.5vw;

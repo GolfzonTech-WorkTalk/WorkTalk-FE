@@ -26,8 +26,12 @@ function spaceReviewList(pageNum, spaceId){
 }
 
 // 마이페이지에서 후기 리스트
-function mypageReviewList(){
-  return posts.get('myreviews')
+function mypageReviewList(pageNum){
+  return posts.get('myreviews',{
+    params:{
+      pageNum,
+    },
+  })
 }
 
 export {
