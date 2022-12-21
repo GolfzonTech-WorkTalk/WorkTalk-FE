@@ -1,16 +1,16 @@
 <template>
   <div>
-    <div v-if="findBoxType != ''" class="background" />
+    <div v-if="findBoxType != ''" class="loginBackground" />
     <div v-if="findBoxType == 'email'" class="findBoxEmail">
       <i class="fa-solid fa-xmark findBoxClose fa-lg" @click="findBoxClose" />
       <input v-model="findEmail" class="findEmail" type="text" placeholder="가입한 이메일을 입력해주세요.">
       <input class="findEmailBtn" type="button" value="조회" @click="emailVeificaionSend('email')">
-      <template v-if="(emailVerificationCodeCheck == 200)">
+      <template v-if="emailVerificationKakaoYn == 'N'">
         <p class="approve">
           가입된 이메일입니다.
         </p>
       </template>
-      <template v-if="(emailVerificationCodeCheck == 500)">
+      <template v-if="(!emailVerificationKakaoYn && emailVerificationCodeCheck == 200) || emailVerificationKakaoYn == 'Y'">
         <p class="warning">
           가입되지 않은 이메일입니다.
         </p>
@@ -72,6 +72,7 @@ export default {
       pw: '',
       findEmail:'',
       emailVerificationCodeCheck:'',
+      emailVerificationKakaoYn:'',
       findBoxType:'',
     }
   },
@@ -81,8 +82,8 @@ export default {
     },
   },
   created(){
-    console.log()
-    if (this.$route.query.code){
+    console.log(this.$route.params)
+    if (this.$route.params.token){
       this.kakaoTokenCall()
     }
   },
@@ -156,7 +157,8 @@ export default {
           responce = await mailFind(this.findEmail)
         }
         console.log(responce)
-        this.emailVerificationCodeCheck = responce.status
+        this.emailVerificationCodeCheck = responce.request.status
+        this.emailVerificationKakaoYn = responce.data.KakaoYn
       } catch (error){
         console.log(error)
         this.emailVerificationCodeCheck = error.request.status
@@ -188,11 +190,11 @@ export default {
 </script>
 
 <style scoped>
-.background{
+.loginBackground{
   position: absolute;
   background: rgba(0, 0, 0, 0.137);
   border-radius: 15px;
-  height: 43.5vh;
+  height: 47vh;
   width: 46vw;
 }
 .loginForm {

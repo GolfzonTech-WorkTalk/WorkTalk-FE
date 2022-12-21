@@ -5,17 +5,33 @@
         <span>1:1문의</span>
       </div>
       <div>
-        <customer-center />
+        <template v-if="type == 'userCustomerCenter'">
+          <user-customer-center />
+        </template>
+        <template v-if="type == 'hostCustomerCenter'">
+          <host-customer-center />
+        </template>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import CustomerCenter from '@/components/customerCenter/CustomerCenterUser.vue'
+import UserCustomerCenter from '@/components/customerCenter/CustomerCenterUser.vue'
+import HostCustomerCenter from '@/components/customerCenter/CustomerCenterHost.vue'
 export default {
   components: {
-    CustomerCenter,
+    UserCustomerCenter,
+    HostCustomerCenter,
+  },
+  data(){
+    return {
+      type:'',
+    }
+  },
+  created(){
+    console.log(this.$route.name)
+    this.type = this.$route.name
   },
 }
 </script>

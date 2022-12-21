@@ -2,12 +2,12 @@
   <div class="CCContainer">
     <div v-if="deleteCCNum != '답변삭제' || updateCCNum != '답변수정' || createCCNum != '답변작성'" class="backgroundCC" @click="deleteCCCancel" />
     <div class="SortCCBox">
-      <select v-model="memberType" class="SortCCtype" @change="memberTypeChenge()">
+      <select v-model="memberType" class="SortCCtype" @change="memberTypeChange(pageNowNum)">
         <option v-for="item in memberTypeData" :key="item" :value="item.value">
           {{ item.name }}
         </option>
       </select>
-      <select v-model="CCtype" class="SortCCtype" @change="customerCenterCall()">
+      <select v-model="CCtype" class="SortCCtype" @change="customerCenterCall(pageNowNum)">
         <template v-if="memberType == 'ROLE_USER'">
           <option v-for="item in userTypeData" :key="item" :value="item.value">
             {{ item.name }}
@@ -68,12 +68,16 @@
         </template>
       </div>
     </div>
+    <div class="pageNumber">
+      <span><i class="fa-solid fa-chevron-left monthMoveBtn" @click="pageMove('pre')" /></span>
+      <span v-for="num in pageData" :key="num" :class="num.class" @click="reservationDataCall(num.value)">{{ num.value }}</span>
+      <span><i class="fa-solid fa-chevron-right" @click="pageMove('next')" /></span>
+    </div>
   </div>
 </template>
 
 <script>
 import {cccommentCreate, cccommentDelete, masterCCList} from '@/api/customerCenter.js'
-// import {customerCenterDummy} from '@/utils/dummy/customerCenterDummy.js'
 import FormCCupdate from '../Form/FormCCupdate.vue'
 export default {
   components: {
@@ -105,27 +109,38 @@ export default {
       createCCNum : '답변작성',
       content:'',
       ccContent:'',
+      // 페이지 관리데이터
+      pageStartNum: 1,
+      pageNowNum:1,
+      pageData:[],
+      pageTotal:'',
     }
   },
   created(){
-    this.customerCenterCall()
+    this.customerCenterCall(this.pageNowNum)
   },
   methods: {
     // API 호출
-    async customerCenterCall(){
+    async customerCenterCall(pageNowNum){
+      let CCtype = this.CCtype
+      if (CCtype == '문의종류'){
+        CCtype = ''
+      }
       try {
-        console.log(this.memberType, this.CCtype)
-        const response = await masterCCList(this.memberType, this.CCtype)
+        console.log(pageNowNum-1,this.memberType, this.CCtype)
+        const response = await masterCCList(pageNowNum-1,this.memberType, CCtype)
         console.log(response.data)
-        this.CCData = response.data
+        this.CCData = response.data.data
+        this.pageTotal =  response.data.count
+        this.paging(this.pageNowNum)
       } catch (error){
         console.log(error)
       }
       this.$store.dispatch('SPINNERVIEW', false)
     },
-    memberTypeChenge(){
+    memberTypeChange(pageNowNum){
       this.CCtype = ''
-      this.customerCenterCall()
+      this.customerCenterCall(pageNowNum)
     },
     // 출력데이터 수정
     typeCheck(value){
@@ -139,17 +154,6 @@ export default {
     },
     dateCheck(value){
       return value.slice(0,10)+' '+value.slice(11,16)
-      // let date = value[0]+'-'+value[1]+'-'+value[2]
-      // let hour = value[3]
-      // let minute = value[3]
-      // if (hour < 10){
-      //   hour = '0'+hour
-      // }
-      // if (minute < 10){
-      //   minute = '0'+minute
-      // }
-      // let time = hour+':'+minute
-      // return `${date} ${time}`
     },
     // 삭제수정작성
     deleteCC(item){
@@ -202,6 +206,52 @@ export default {
           console.log(error)
         }
       }
+    },
+    // 페이징
+    paging(pageNowNum){
+      this.pageData = []
+      this.pageNowNum = pageNowNum
+      let total = this.pageTotal
+      if (total%10 != 0){
+        this.pageTotal = parseInt(total/10)+1
+      } else { 
+        this.pageTotal = total/10
+      }
+      let lastPage
+      if (this.pageTotal < 6){
+        lastPage = this.pageTotal+1
+      } else { 
+        lastPage = this.pageStartNum+5
+        if (lastPage >= this.pageTotal ){
+          lastPage = this.pageTotal+1
+        }
+      }
+      for (let i = this.pageStartNum; i < lastPage; i++){
+        if (pageNowNum == i){
+          this.pageData.push({'value':i,'class':'pageNowNum'})
+        } else {
+          this.pageData.push({'value':i,'class':''})
+        }
+      }
+    },
+    // 페이지 번호 넘기기
+    pageMove(value){
+      if (value == 'next'){
+        if (this.pageStartNum == this.pageTotal-1){
+          this.paging(this.pageStartNum)
+        } else {
+          this.pageStartNum = this.pageStartNum + 5
+          this.paging(this.pageStartNum)
+        }
+      } else {
+        if (this.pageStartNum == 1){
+          this.paging(this.pageStartNum)
+        } else {
+          this.pageStartNum = this.pageStartNum - 5
+          this.paging(this.pageStartNum)
+        }
+      }
+      this.reservationDataCall(this.pageNowNum)
     },
   },
 }
@@ -396,5 +446,9 @@ export default {
 }
 .warning{
   color: red;
+}
+.pageNumber{
+  width: 50vw;
+  text-align: center;
 }
 </style>
