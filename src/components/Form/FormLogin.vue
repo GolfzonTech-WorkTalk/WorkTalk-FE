@@ -82,8 +82,8 @@ export default {
     },
   },
   created(){
-    console.log(this.$route.params)
-    if (this.$route.params.token){
+    console.log(this.$route.query.token)
+    if (this.$route.query.token){
       this.kakaoTokenCall()
     }
   },
