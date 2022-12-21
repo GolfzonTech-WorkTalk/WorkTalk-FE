@@ -71,7 +71,7 @@ export default {
   },
   methods: {
     async reviewListCall(pageNowNum){
-      const response = await mypageReviewList(pageNowNum)
+      const response = await mypageReviewList(pageNowNum-1)
       console.log(response)
       this.ReviewList = response.data.data
       this.pageTotal =  response.data.count
@@ -102,18 +102,9 @@ export default {
       }
     },
     dateCheck(dateData){
-      let year = dateData[0]
-      let month = dateData[1]
-      let date = dateData[2]
-      let hour = dateData[3]
-      let minute = dateData[4]
-      if (hour < 10){
-        hour = '0'+hour
-      }
-      if (minute < 10){
-        minute = '0'+minute
-      }
-      return year+'-'+month+'-'+date+' '+hour+':'+minute
+      const date = dateData.slice(0,10)
+      const time = dateData.slice(11,16)
+      return `${date} ${time}`
     },
     deleteReview(item){
       this.deleteReviewNum = item.reviewId
