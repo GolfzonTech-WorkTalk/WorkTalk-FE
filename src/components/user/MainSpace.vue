@@ -14,8 +14,6 @@
 <script>
 import searchSpaceOne from '@/components/searchSpace/spaceModule.vue'
 import { spaceSearch } from '@/api/user.js'
-/* 더미 값 */
-// import { spaceDumy } from '@/utils/dummy/dummy.js'
 export default {
   components:{
     searchSpaceOne,
@@ -32,11 +30,8 @@ export default {
   methods: {
     // 데이터 API로 불러오기
     async reservationDataCall(){
-      // const responce = spaceDumy
-      // this.spaceItems = responce
       try {
         const responce = await spaceSearch(0,'','','','','','','')
-        // console.log(responce)
         this.spaceItems = responce.data.data
       } catch (error){
         console.log(error)
