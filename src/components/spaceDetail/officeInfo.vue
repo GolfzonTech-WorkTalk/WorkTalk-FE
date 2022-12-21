@@ -83,7 +83,7 @@
         </template>
         <template v-else>
           <p class="noShowNotelWarning">
-            * 로근인 후 예약이 가능합니다.
+            * 로그인 후 예약이 가능합니다.
           </p>
         </template>
       </template>

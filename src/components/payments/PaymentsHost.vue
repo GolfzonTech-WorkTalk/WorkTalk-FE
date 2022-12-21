@@ -114,11 +114,11 @@ export default {
   methods: {
     async paymentRoomCall(){
       const response = await paymentRoom()
-      console.log(response.data.length)
+      console.log(response.data)
       for (let i = 0; i < response.data.length; i++){
         this.paymentRoomData = [
           ...this.paymentRoomData,
-          {'name':response.data[i].roomName,'value':response.data[i].spaceType},
+          {'name':response.data[i].roomName,'value':response.data[i].roomName,'spaceType':response.data[i].spaceType},
         ]
       }
       this.paymentRoomDataView = this.paymentRoomData
@@ -126,27 +126,28 @@ export default {
     async paymentDataRequest(pageNowNum){
       this.paymentData = []
       let payStatus = this.payStatus
-      let paymentSortData = this.paymentSort
+      let paymentSortDate = this.paymentSort
       let spaceType = this.spaceType
       let paymentRoom = this.paymentRoom
       this.pageNowNum = pageNowNum
+      if (paymentSortDate != ''){
+        paymentSortDate = this.paymentSortChange(paymentSortDate)
+      }
       if (this.spaceType == ''){
         this.paymentRoomDataView = this.paymentRoomData
         this.paymentRoom =''
       } else {
-        this.paymentRoomDataView = {'name':'전 체','value':''}
+        this.paymentRoomDataView = [{'name':'전 체','value':''}]
         this.paymentRoom =''
         for (let i = 0; i < this.paymentRoomData.length; i++){
-          if (this.spaceType == this.paymentRoomData[i].value){
-            this.paymentRoomDataView = [
-              {'name':this.paymentRoomData[i].name,'value':this.paymentRoomData[i].name},
-            ]
+          if (this.spaceType == this.paymentRoomData[i].spaceType){
+            this.paymentRoomDataView.push({'name':this.paymentRoomData[i].name,'value':this.paymentRoomData[i].value,'spaceType':this.paymentRoomData[i].spaceType})
           }
         }
       }
 
       try {
-        let response = await paymentHistoryHost(pageNowNum-1, payStatus, paymentSortData, spaceType, paymentRoom )
+        let response = await paymentHistoryHost(pageNowNum-1, payStatus, paymentSortDate, spaceType, paymentRoom )
         // let response = await paymentHistory(pageNowNum-1, spaceType, paymentSortData)
         this.paymentData = response.data.data
         this.pageTotal =  response.data.count
@@ -155,6 +156,16 @@ export default {
         console.log(error)
       }
       this.$store.dispatch('SPINNERVIEW', false)
+    },
+    paymentSortChange(paymentSort){
+      const today = new Date()
+      let thisYear = today.getFullYear()
+      let thisMonth = today.getMonth()
+      let month = thisMonth - paymentSort
+      let findDate = new Date(thisYear, month).toISOString()
+      findDate = findDate.slice(0,-5)
+      console.log(findDate)
+      return findDate
     },
     roomTypeCheck(roomType){
       let result

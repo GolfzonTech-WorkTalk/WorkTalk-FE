@@ -16,7 +16,7 @@
           <span class="textContent">{{ userData.tel }}</span>
           <span class="updateBtn" @click="updateProfile('연락처수정')">연락처수정</span>
         </div>
-        <div>
+        <div v-if="!userData.kakao">
           <span class="updateBtn" @click="updateProfile('비밀번호수정')">비밀번호수정</span>
         </div>
       </div>

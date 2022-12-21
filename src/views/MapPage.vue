@@ -30,9 +30,6 @@
         <i class="fa-solid fa-rotate-right fa-lg" />
         <span>검색 초기화</span>
       </div>
-      <div class="selectTermsClearBtn" @click="getCurrentPosition">
-        <span>현재위치</span>
-      </div>
     </div>
     <div id="map" />
   </div>

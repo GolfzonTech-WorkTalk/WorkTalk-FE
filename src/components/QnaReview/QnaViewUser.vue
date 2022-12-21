@@ -30,7 +30,7 @@
               </div>
             </template>
             <template v-if="updateQnANum == item.qnaId">
-              <FormQnAupdate :item="item" @qnaupdate:close="deleteQnACancel" @qnaupdate-data:call="qnaListCall(QnAtype)" />
+              <FormQnAupdate :item="item" @qnaupdate:close="deleteQnACancel" @qnaupdate-data:call="qnaListCall(pageNowNum,QnAtype)" />
             </template>
             <p class="date">
               {{ dateCheck(item.lastModifiedDate) }}
@@ -49,7 +49,7 @@
     </template>
     <div class="pageNumber">
       <span><i class="fa-solid fa-chevron-left monthMoveBtn" @click="pageMove('pre')" /></span>
-      <span v-for="num in pageData" :key="num" :class="num.class" @click="reservationDataCall(num.value)">{{ num.value }}</span>
+      <span v-for="num in pageData" :key="num" :class="num.class" @click="qnaListCall(num.value)">{{ num.value }}</span>
       <span><i class="fa-solid fa-chevron-right" @click="pageMove('next')" /></span>
     </div>
   </div>
@@ -124,7 +124,7 @@ export default {
       try {
         let response = await qnaDelete(item.qnaId)
         console.log(response)
-        this.qnaListCall()
+        this.qnaListCall(this.pageNowNum,this.QnAtype)
         this.deleteQnACancel()
       } catch (error){
         console.log(error)
@@ -174,7 +174,7 @@ export default {
           this.paging(this.pageStartNum)
         }
       }
-      this.reservationDataCall(this.pageNowNum)
+      this.qnaListCall(this.pageNowNum,this.QnAtype)
     },
   },
 }

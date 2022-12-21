@@ -6,7 +6,7 @@
     <template v-else>
       <div v-for="item in ReviewList" :key="item" class="Reviewitem">
         <div>
-          <span class="spacetypelabel">{{ item.memberId }}</span>
+          <span class="roomName">{{ item.writer }}</span>
           <span class="roomName">{{ item.roomName }}</span>
           <div class="gradeBox">
             <i v-for="gradeitem in gradeCheck(item.grade)" :key="gradeitem" :class="gradeitem.star" />

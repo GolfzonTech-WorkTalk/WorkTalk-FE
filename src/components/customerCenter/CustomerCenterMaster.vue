@@ -24,6 +24,9 @@
       <div class="typeLabelBox">
         <span class="CCtypelabel" :class="item.type">{{ typeCheck(item.type) }}</span>
         <p>{{ item.title }}</p>
+        <p class="ccwriter">
+          {{ item.writer }}
+        </p>
       </div>
       <div class="updateDeleteBox">
         <p class="CCdate">
@@ -50,7 +53,7 @@
           </div>
         </template>
         <template v-if="(updateCCNum == item.ccId)">
-          <FormCCupdate :item="item" @c-c:close="deleteCCCancel" />
+          <FormCCupdate :item="item" @c-c:close="deleteCCCancel" @c-cupdate:update="customerCenterCall(pageNowNum)" />
         </template>
       </div>
       <div v-else>
@@ -70,7 +73,7 @@
     </div>
     <div class="pageNumber">
       <span><i class="fa-solid fa-chevron-left monthMoveBtn" @click="pageMove('pre')" /></span>
-      <span v-for="num in pageData" :key="num" :class="num.class" @click="reservationDataCall(num.value)">{{ num.value }}</span>
+      <span v-for="num in pageData" :key="num" :class="num.class" @click="customerCenterCall(num.value)">{{ num.value }}</span>
       <span><i class="fa-solid fa-chevron-right" @click="pageMove('next')" /></span>
     </div>
   </div>
@@ -170,14 +173,14 @@ export default {
       this.deleteCCNum = '답변삭제'
       this.updateCCNum = '답변수정'
       this.createCCNum = '답변작성'
-      this.customerCenterCall()
+      this.customerCenterCall(this.pageNowNum)
     },
     async deleteCCSubmit(item){
       try {
         let response = await cccommentDelete(item.ccCommentId)
         console.log(response)
         this.deleteCCCancel()
-        this.customerCenterCall()
+        this.customerCenterCall(this.pageNowNum)
       } catch (error){
         console.log(error)
       }
@@ -201,7 +204,7 @@ export default {
           let response = await cccommentCreate(ccContentData)
           console.log(response)
           this.deleteCCCancel()
-          this.customerCenterCall()
+          this.customerCenterCall(this.pageNowNum)
         } catch (error){
           console.log(error)
         }
@@ -251,7 +254,7 @@ export default {
           this.paging(this.pageStartNum)
         }
       }
-      this.reservationDataCall(this.pageNowNum)
+      this.customerCenterCall(this.pageNowNum)
     },
   },
 }
@@ -409,7 +412,6 @@ export default {
 }
 /* 답변작성 */
 .ccContentCreateBtn{
-  position: absolute;
   bottom: 1vh;
   right: 1vw;
   font-size: 0.8rem;
@@ -450,5 +452,11 @@ export default {
 .pageNumber{
   width: 50vw;
   text-align: center;
+}
+.ccwriter{
+  position: absolute;
+  right: 1vw;
+  top: 5vh;
+  font-size: 0.5rem;
 }
 </style>

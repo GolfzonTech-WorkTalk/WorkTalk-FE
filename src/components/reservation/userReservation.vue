@@ -22,17 +22,19 @@
     <div class="reservationItems">
       <div class="reservationItem">
         <span class="roomTypeTitle">방종류</span>
-        <span class="roomName itemTitle">방이름</span>
-        <span class="reservaStatusTitle">예약상태</span>
+        <span class="roomNameTitle itemTitle">방이름</span>
         <span class="reserveTimeTitle itemTitle">예약일</span>
+        <span class="reserveInOutTitle itemTitle">입/퇴실</span>
+        <span class="reservaStatusTitle">예약상태</span>
         <span class="amountTitle itemTitle">예약금</span>
         <span class="reservationCancel itemTitle">비 고</span>
       </div>
       <div v-for="(item, index) in reservationData" :key="item" class="reservationItem">
         <span class="roomType" :class="item.roomType">{{ roomTypeRename(item.roomType) }}</span>
         <span class="roomName">{{ item.roomName }}</span>
-        <span class="reserveStatus" :class="item.reserveStatus">{{ reserveStatusRename(item.reserveStatus) }}</span>
         <span class="reserveTime">{{ reserveTime(item.bookDate.reserveDate) }}</span>
+        <span class="reserveInOut">{{ InOutTime(item) }}</span>
+        <span class="reserveStatus" :class="item.reserveStatus">{{ reserveStatusRename(item.reserveStatus) }}</span>
         <span class="amount">{{ item.reserveAmount }}</span>
         <span v-if="cancelPossible(item)" class="reservationCancelBtn" @click="boxOpen('cancel', index, item)">예약취소</span>
         <template v-if="cancelIndex == index">
@@ -91,8 +93,8 @@ export default {
         {'name':'전 체','value':'예약상태'},
         {'name':'예약완료','value':'BOOKED'},
         {'name':'이용완료','value':'USED'},
-        {'name':'이용자취소','value':'CANCELED_BY_USER'},
-        {'name':'사용자취소','value':'CANCELED_BY_HOST'},
+        {'name':'사용자취소','value':'CANCELED_BY_USER'},
+        {'name':'호스트취소','value':'CANCELED_BY_HOST'},
         {'name':'노쇼','value':'NOSHOW'},
       ],
       sortSpaceTypeData: [
@@ -187,6 +189,21 @@ export default {
       const date = reserveDate.slice(0,10)
       const time = reserveDate.slice(11,16)
       return `${date} ${time}`
+    },
+    InOutTime(item){
+      if (item.roomType == 'OFFICE'){
+        return `${item.bookDate.checkInDate}~${item.bookDate.checkOutDate}`
+      } else {
+        let checkInTime = item.bookDate.checkInTime
+        let checkOutTime = item.bookDate.checkOutTime
+        if (checkInTime < 10){
+          checkInTime = '0'+checkInTime
+        }
+        if (checkOutTime < 10){
+          checkOutTime = '0'+checkOutTime
+        }
+        return `${item.bookDate.checkInDate} ${checkInTime}:00~${checkOutTime}:00`
+      }
     },
     // 버튼 출력 조건확인 함수
     cancelPossible(item){
@@ -316,13 +333,11 @@ export default {
       } 
       let cancelData = {
         reserveId : item.reserveId,
-        cencelReason : this.cancelReason,
+        cancelReason : this.cancelReason,
         // cancelDate : nowYYmmDDhhMM(),
         // reserveStatus: "CANCELED_BY_USER",
       }
       console.log(cancelData)
-      this.cancelIndex = '취소번호'
-      this.cancelReason = ''
       try {
         let response = await reservationCancel(cancelData)
         console.log(response)
@@ -331,6 +346,8 @@ export default {
       } catch (error){
         console.log(error)
       }
+      this.cancelIndex = '취소번호'
+      this.cancelReason = ''
     },
     dateCheck(item){
       console.log(item.bookDate)
@@ -470,17 +487,23 @@ export default {
   background: rgba(9, 44, 139, 0.527);
 }
 /* 방이름 */
+.roomNameTitle{
+  width: 9vw;
+  text-align: center;
+}
 .roomName{
-  width: 13vw;
+  font-weight: bold;
+  font-size: 0.8rem;
+  width: 9vw;
   text-align: center;
 }
 /* 예약상태 */
 .reservaStatusTitle{
-  width: 6vw;
+  width: 5vw;
   font-weight: bold;
 }
 .reserveStatus{
-  width: 6vw;
+  width: 5vw;
   font-size: 0.9rem;
   font-weight: bold;
 }
@@ -498,10 +521,19 @@ export default {
 }
 /* 예약시간 */
 .reserveTimeTitle{
-  width: 15vw;
+  width: 9vw;
 }
 .reserveTime{
-  width: 15vw;
+  width: 9vw;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+/* 입퇴실 */
+.reserveInOutTitle{
+  width: 11vw;
+}
+.reserveInOut{
+  width: 11vw;
   font-size: 0.8rem;
   font-weight: bold;
 }

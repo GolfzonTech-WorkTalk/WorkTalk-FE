@@ -37,7 +37,7 @@
         <span v-if="!userEmailValid && email" class="warning">이메일 형식이 아닙니다.</span>
       </div>
       <div class="loginFromItems">
-        <input id="pw" v-model="pw" type="password" placeholder="비밀번호" @keyup.enter="loginCkeck">
+        <input id="pw" v-model="pw" type="password" placeholder="비밀번호" @keyup.enter="loginEnterCkeck">
       </div>
       <div class="loginFromItems">
         <button id="submit">
@@ -83,6 +83,7 @@ export default {
   },
   created(){
     console.log(this.$route.query.token)
+    console.log(this.$route.query.tel)
     if (this.$route.query.token){
       if (this.$route.query.tel == 'true'){
         this.kakaoTokenCall('tel')
@@ -105,6 +106,20 @@ export default {
         this.$store.dispatch('MODALMESSAGE', message)
       } else if (!this.pw){
         message = '비밀번호를 입력해주세요.'
+        this.$store.dispatch('MODALVIEWCLICK', true)
+        this.$store.dispatch('MODALMESSAGE', message)
+      } else {
+        this.loginOk()
+      }
+    },
+    loginEnterCkeck(){
+      let message = ''
+      if (!this.email){
+        message = '이메일을 입력해주세요.'
+        this.$store.dispatch('MODALVIEWCLICK', true)
+        this.$store.dispatch('MODALMESSAGE', message)
+      } else if (!this.userEmailValid){
+        message = '이메일 형식으로 입력해주세요.'
         this.$store.dispatch('MODALVIEWCLICK', true)
         this.$store.dispatch('MODALMESSAGE', message)
       } else {
@@ -172,8 +187,6 @@ export default {
     // 카카오 로그인
     kakaoLogin(){
       window.Kakao.Auth.authorize({
-        // redirectUri:'http://localhost:8081/login',
-        // redirectUri:'http://localhost:8100/user/kakao/callback',
         redirectUri:'http://15.165.247.125:8100/user/kakao/callback',
       })
     },
@@ -181,12 +194,12 @@ export default {
       try {
         const token = this.$route.query.token
         await this.$store.dispatch('KAKAOLOGIN', token)
-        let message = '예약을 이용하시려면 전화번호를 입력해주세요.'
-        this.$store.dispatch('MODALVIEWCLICK', true)
-        this.$store.dispatch('MODALMESSAGE', message)
         if (value == 'tel'){
           this.$router.push('/')
         } else {
+          let message = '예약을 이용하시려면 전화번호를 입력해주세요.'
+          this.$store.dispatch('MODALVIEWCLICK', true)
+          this.$store.dispatch('MODALMESSAGE', message)
           this.$router.push('/profile')
         }
       } catch (error){
