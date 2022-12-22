@@ -25,3 +25,6 @@
 ##### 1. 서버운용 : 2022-12-27 까지
 ##### 2. 서버주소 : <https://worktalk.link/>
 ##### 3. 배포기술 : <img src="https://img.shields.io/badge/Amazon AWS-232F3E?style=flat-square&logo=Amazon%20AWS&logoColor=white"/> <img src="https://img.shields.io/badge/Amazon EC2-FF9900?style=flat-square&logo=amazonec2&logoColor=white"> <img src="https://img.shields.io/badge/Ubuntu-E95420?style=flat-square&logo=Ubuntu&logoColor=white">
+
+### 프로젝트 관리
+<img src="https://img.shields.io/badge/Notion-000000?style=flatsquare&logo=Notion&logoColor=white"> : <Strong>[워크토크](https://www.notion.so/GOLFZON-TECH-ACADEMY-d63410815e924d6eb6c4697e17d0e3cf)</Strong>
