@@ -44,6 +44,13 @@ function mypageReviewListHost(pageNum, spaceName){
   })
 }
 
+
+// 호스트 공간불러오기
+function reviewSpaceName(){
+  return posts.get('getHostSpaceNames')
+}
+
+
 export {
   reviewCreate,
   reviewUpdata,
@@ -51,4 +58,5 @@ export {
   spaceReviewList,
   mypageReviewList,
   mypageReviewListHost,
+  reviewSpaceName,
 }

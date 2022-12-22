@@ -134,11 +134,11 @@ export default {
         const response = await profileUpdate(updateData)
         console.log(response)
         this.updateCancel()
-        this.$store.commit('setlogoutUser')
-        deleteCookie('token')
-        deleteCookie('email')
-        deleteCookie('userType')
         if (title == '비밀번호수정'){
+          this.$store.commit('setlogoutUser')
+          deleteCookie('token')
+          deleteCookie('email')
+          deleteCookie('userType')
           let message = '변경된 비밀번호로 로그인해주세요.'
           this.$store.dispatch('MODALVIEWCLICK', true)
           this.$store.dispatch('MODALMESSAGE', message)

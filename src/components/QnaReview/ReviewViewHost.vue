@@ -2,7 +2,7 @@
   <div class="ReviewContainer">
     <div v-if="deleteReviewNum != '후기삭제' || updateReviewNum != '후기수정'" class="backgroundReview" @click="deleteReviewCancel" />
     <div class="ReviewTitle">
-      <select v-model="spaceName" class="sortBox" @change="reviewListCall()">
+      <select v-model="spaceName" class="sortBox" @change="reviewListCall('1')">
         <option value="" hidden>
           공간명
         </option>
@@ -41,7 +41,7 @@
 </template>
 
 <script>
-import {mypageReviewListHost} from '@/api/review.js'
+import {reviewSpaceName, mypageReviewListHost} from '@/api/review.js'
 export default {
   data(){
     return {
@@ -64,17 +64,33 @@ export default {
   },
   created(){
     this.reviewListCall(this.pageNowNum)
+    this.reviewSpaceNameCall()
   },
   methods: {
     async reviewListCall(pageNowNum){
       let spaceName = this.spaceName
-      console.log(pageNowNum, spaceName)
+      // console.log(pageNowNum, spaceName)
       const response = await mypageReviewListHost(pageNowNum-1,spaceName)
-      console.log(response)
+      // console.log(response)
       this.ReviewList = response.data.data
       this.pageTotal =  response.data.count
       this.paging(pageNowNum)
       this.$store.dispatch('SPINNERVIEW', false)
+    },
+    async reviewSpaceNameCall(){
+      try {
+        const response = await reviewSpaceName()
+        console.log(response)
+        for (let i = 0; i < response.data.length; i++){
+          this.spaceNameData = [
+            ...this.spaceNameData,
+            {'name':response.data[i].spaceName,'value':response.data[i].spaceName},
+          ]
+          console.log()
+        }
+      } catch (error){
+        console.log(error)
+      }
     },
     testRangeCheck(value){
       console.log(value)
