@@ -86,12 +86,11 @@ export default {
       // 정렬데이터
       sortReserveStatusData: [
         {'name':'전 체','value':''},
-        {'name':'예약완료','value':'DEPOSIT'},
+        {'name':'예약완료','value':'BOOKED'},
         {'name':'이용완료','value':'USED'},
-        {'name':'이용자취소','value':'CANCELED_BY_USER'},
-        {'name':'사용자취소','value':'CANCELED_BY_HOST'},
+        {'name':'사용자취소','value':'CANCELED_BY_USER'},
+        {'name':'호스트취소','value':'CANCELED_BY_HOST'},
         {'name':'노쇼','value':'NOSHOW'},
-        {'name':'취소/환불','value':'REFUND'},
       ],
       sortSpaceTypeData: [
         {'name':'전 체','value':''},
@@ -299,6 +298,8 @@ export default {
       } catch (error){
         console.log(error)
       }
+      this.cancelIndex = '취소번호'
+      this.cancelReason = ''
     },
     // 이용완료
     async reservationDoneOK(item){
@@ -380,14 +381,15 @@ export default {
 }
 /* 방이름 */
 .roomNameTitle{
-  width: 6vw;
+  width: 7vw;
   text-align: center;
 }
 .roomName{
   font-weight: bold;
   font-size: 0.8rem;
-  width: 6vw;
+  width: 7vw;
   text-align: center;
+  letter-spacing: -0.1rem;
 }
 /* 예약상태 */
 .reservaStatusTitle{

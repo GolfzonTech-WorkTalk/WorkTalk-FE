@@ -86,8 +86,8 @@ export default {
       try {
         this.officeUpdate = []
         const response = await roomOne(this.$route.params.spaceId)
-        console.log(response.data[0])
-        console.log(response.data[0].roomDetail.length)
+        // console.log(response.data[0])
+        // console.log(response.data[0].roomDetail.length)
         this.officeUpdate = response.data[0]
       } catch (error){
         console.log(error)
@@ -146,15 +146,15 @@ export default {
       }
     },
     textCount(roomDetail){
-      console.log(roomDetail)
+      // console.log(roomDetail)
       return roomDetail.length
     },
     // 업로드된 사진 삭제
     async roomImgDelete(file){
-      console.log(file)
+      // console.log(file)
       const response = await roomImgDelete(file.roomImgId)
       console.log(response)
-      this.spaceDataCall()
+      this.roomCall()
     },
     officeRoomSubmitCheck(){
       const officeUpdate = this.officeUpdate
@@ -171,7 +171,7 @@ export default {
         message = '오피스 설명이 100자를 초과했습니다.'
         this.$store.dispatch('MODALVIEWCLICK', true)
         this.$store.dispatch('MODALMESSAGE', message)
-      } else if (officeUpdate.roomImgDtoList.length == 0 && this.roomImg.length == 0){
+      } else if (!officeUpdate.roomImgDtoList && this.roomImg.length == 0){
         message = '오피스의 사진을 추가해주세요.'
         this.$store.dispatch('MODALVIEWCLICK', true)
         this.$store.dispatch('MODALMESSAGE', message)
@@ -190,17 +190,17 @@ export default {
         formData.append('workStart', officeUpdate.workStart)
         formData.append('workEnd', officeUpdate.workEnd)
         formData.append('roomType', officeUpdate.roomImgDtoList)
-        formData.append('offeringOption', officeUpdate.room)
+        formData.append('offeringOption', officeUpdate.offeringOption)
         if (officeUpdate.roomImg != null){
           for (let i = 0; i < this.roomImg.length; i++){
             formData.append('multipartFileList', this.roomImg[i].file)
           }
         }
-        for (let key of formData.keys()){
-          console.log(`${key}:${formData.get(key)}`)
-        }
+        // for (let key of formData.keys()){
+        //   console.log(`${key}:${formData.get(key)}`)
+        // }
         const responce = await roomUpdate(officeUpdate.roomId, formData)
-        console.log(responce)
+        // console.log(responce)
         if (responce.status == 200){
           alert('방의 정보가 수정되었습니다.')
           this.$router.push('/host')

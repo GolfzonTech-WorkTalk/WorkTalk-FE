@@ -79,7 +79,7 @@ export default {
     listScroll(e){
       const { scrollHeight, scrollTop, clientHeight } = e.target
       // console.log(scrollHeight, scrollTop, clientHeight)
-      // console.log(scrollHeight <= scrollTop + clientHeight + 50)
+      // console.log(scrollHeight == scrollTop + clientHeight)
       const isBottom = (scrollHeight == scrollTop + clientHeight)
       // const isAtTheBottom = scrollHeight === scrollTop + clientHeight
       // // 일정 한도 밑으로 내려오면 함수 실행
@@ -93,6 +93,7 @@ export default {
       console.log(pageNum)
       // const responce = await spaceDumy
       const response = await spaceSearch(this.pageNum,this.spaceType,this.spaceName,this.address,this.startDate,this.endDate,this.startTime,this.endTime)
+      console.log(response.data)
       console.log(response.data.data)
       for (let i = 0; i < response.data.data.length; i++){
         this.spaceItems.push(response.data.data[i])

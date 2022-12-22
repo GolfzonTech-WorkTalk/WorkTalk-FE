@@ -325,6 +325,15 @@ export default {
         message = '결제방법을 선택해주세요.'
         this.$store.dispatch('MODALVIEWCLICK', true)
         this.$store.dispatch('MODALMESSAGE', message)
+      } else if (this.payStatus == 'DEPOSIT'){
+        if (this.dateCheck()){
+          let message = '예약 30분 전에는 선납,후납만 가능합니다.'
+          this.$store.dispatch('MODALVIEWCLICK', true)
+          this.$store.dispatch('MODALMESSAGE', message)
+          return false
+        } else {
+          this.reservationPaymentSubmit()  
+        }
       } else {
         this.reservationPaymentSubmit()
       }

@@ -25,7 +25,7 @@ function spaceReviewList(pageNum, spaceId){
   })
 }
 
-// 마이페이지에서 후기 리스트
+// 유저 마이페이지에서 후기 리스트
 function mypageReviewList(pageNum){
   return posts.get('myreviews',{
     params:{
@@ -34,10 +34,29 @@ function mypageReviewList(pageNum){
   })
 }
 
+// 호스트 마이페이지에서 후기 리스트
+function mypageReviewListHost(pageNum, spaceName){
+  return posts.get('manageHostReview',{
+    params:{
+      pageNum,
+      spaceName,
+    },
+  })
+}
+
+
+// 호스트 공간불러오기
+function reviewSpaceName(){
+  return posts.get('getHostSpaceNames')
+}
+
+
 export {
   reviewCreate,
   reviewUpdata,
   reviewDelete,
   spaceReviewList,
   mypageReviewList,
+  mypageReviewListHost,
+  reviewSpaceName,
 }

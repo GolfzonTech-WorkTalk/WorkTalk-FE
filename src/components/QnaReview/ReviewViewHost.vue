@@ -2,11 +2,11 @@
   <div class="ReviewContainer">
     <div v-if="deleteReviewNum != '후기삭제' || updateReviewNum != '후기수정'" class="backgroundReview" @click="deleteReviewCancel" />
     <div class="ReviewTitle">
-      <select v-model="sortSpace" class="sortBox" @change="reviewListCall()">
+      <select v-model="spaceName" class="sortBox" @change="reviewListCall('1')">
         <option value="" hidden>
-          공간종류
+          공간명
         </option>
-        <option v-for="item in sortSpaceData" :key="item" :value="item.value">
+        <option v-for="item in spaceNameData" :key="item" :value="item.value">
           {{ item.name }}
         </option>
       </select>
@@ -16,6 +16,9 @@
         <span class="spacetypelabel" :class="item.roomType">{{ spacetypeCheck(item.roomType) }}</span>
         <span class="spaceName">{{ item.spaceName }}</span>
         <span class="roomName">{{ item.roomName }}</span>
+        <p class="Reviewcontent">
+          {{ item.writer }}
+        </p>
         <div class="gradeBox">
           <i v-for="gradeitem in gradeCheck(item.grade)" :key="gradeitem" :class="gradeitem.star" />
         </div>
@@ -31,25 +34,22 @@
     </div>
     <div class="pageNumber">
       <span><i class="fa-solid fa-chevron-left monthMoveBtn" @click="pageMove('pre')" /></span>
-      <span v-for="num in pageData" :key="num" :class="num.class" @click="reservationDataCall(num.value)">{{ num.value }}</span>
+      <span v-for="num in pageData" :key="num" :class="num.class" @click="reviewListCall(num.value)">{{ num.value }}</span>
       <span><i class="fa-solid fa-chevron-right" @click="pageMove('next')" /></span>
     </div>
   </div>
 </template>
 
 <script>
-import {mypageReviewList} from '@/api/review.js'
+import {reviewSpaceName, mypageReviewListHost} from '@/api/review.js'
 export default {
   data(){
     return {
       ReviewList: [],
-      sortSpace:'',
-      sortSpaceData:[
+      spaceName:'',
+      spaceNameData:[
         // api로 받아야 함...
         {'name':'전 체','value':''},
-        {'name':'오피스','value':'1'},
-        {'name':'데스크','value':'2'},
-        {'name':'회의실','value':'3'},
       ],
       Reviewtype:'문의종류',
       deleteReviewNum:'후기삭제',
@@ -64,15 +64,33 @@ export default {
   },
   created(){
     this.reviewListCall(this.pageNowNum)
+    this.reviewSpaceNameCall()
   },
   methods: {
     async reviewListCall(pageNowNum){
-      const response = await mypageReviewList(pageNowNum-1)
-      console.log(response)
+      let spaceName = this.spaceName
+      // console.log(pageNowNum, spaceName)
+      const response = await mypageReviewListHost(pageNowNum-1,spaceName)
+      // console.log(response)
       this.ReviewList = response.data.data
       this.pageTotal =  response.data.count
       this.paging(pageNowNum)
       this.$store.dispatch('SPINNERVIEW', false)
+    },
+    async reviewSpaceNameCall(){
+      try {
+        const response = await reviewSpaceName()
+        console.log(response)
+        for (let i = 0; i < response.data.length; i++){
+          this.spaceNameData = [
+            ...this.spaceNameData,
+            {'name':response.data[i].spaceName,'value':response.data[i].spaceName},
+          ]
+          console.log()
+        }
+      } catch (error){
+        console.log(error)
+      }
     },
     testRangeCheck(value){
       console.log(value)
@@ -156,7 +174,7 @@ export default {
           this.paging(this.pageStartNum)
         }
       }
-      this.reservationDataCall(this.pageNowNum)
+      this.reviewListCall(this.pageNowNum)
     },
   },
 }
@@ -269,5 +287,10 @@ export default {
 .pageNowNum{
   font-weight: bold;
   color: blue;
+}
+.gradeBox{
+  position: absolute;
+  right: 0;
+  top: 5vh;
 }
 </style>

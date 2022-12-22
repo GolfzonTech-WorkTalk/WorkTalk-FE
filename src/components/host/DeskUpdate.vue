@@ -84,8 +84,8 @@ export default {
       offeringOptionData: [
         {'name':'주차','class':'fa-solid fa-square-parking fa-2x', 'value':'PARKING'},
         {'name':'인터넷/와이파이','class':'fa-solid fa-wifi fa-2x', 'value':'INTERNET_WIFI'},
-        {'name':'화이트보드','class':'fa-solid fa-tv fa-2x', 'value':'WHITEBOARD'},
-        {'name':'TV/프로젝터','class':'fa-solid fa-utensils fa-2x', 'value':'TV_PROJECTOR'},
+        {'name':'화이트보드','class':'fa-solid fa-chalkboard fa-2x', 'value':'WHITEBOARD'},
+        {'name':'TV/프로젝터','class':'fa-solid fa-tv fa-2x', 'value':'TV_PROJECTOR'},
         {'name':'음식물반입가능','class':'fa-solid fa-utensils fa-2x', 'value':'FOOD'},
         {'name':'복사/인쇄기','class':'fa-solid fa-print fa-2x', 'value':'PRINTER'},
         {'name':'PC/노트북','class':'fa-solid fa-computer fa-2x', 'value':'PC_LAPTOP'},
@@ -206,7 +206,7 @@ export default {
       console.log(file)
       const response = await roomImgDelete(file.roomImgId)
       console.log(response)
-      this.spaceDataCall()
+      this.roomCall()()
     },
     // 방생성
     // async 

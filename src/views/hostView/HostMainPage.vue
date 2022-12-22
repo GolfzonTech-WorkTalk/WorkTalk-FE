@@ -78,6 +78,10 @@ export default {
   align-content: flex-start;
   margin: auto;
   width: 80vw;
-  height: 80vh;
+  height: 103vh;
+  overflow-y: scroll;
+}
+.spaceAllContainer::-webkit-scrollbar{
+  display: none;
 }
 </style>

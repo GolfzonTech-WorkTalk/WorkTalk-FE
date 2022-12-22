@@ -26,7 +26,7 @@
 <script>
 import {ccCreate} from '@/api/customerCenter.js'
 export default {
-  emits: [ 'CC:close' ],
+  emits: [ 'CC:close', 'CCcreate:create' ],
   data(){
     return {
       typeData: [
@@ -82,7 +82,7 @@ export default {
         let response = await ccCreate(CCData)
         console.log(response)
         if (response.status == 200){
-          this.emitClose(false)
+          this.$emit('CCcreate:create')
         }
       } catch (error){
         console.log(error)

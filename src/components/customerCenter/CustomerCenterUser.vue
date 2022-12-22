@@ -2,7 +2,7 @@
   <div class="CCContainer">
     <div v-if="deleteCCNum != '문의삭제' || updateCCNum != '문의수정' || createCCNum != '문의작성'" class="backgroundCC" @click="deleteCCCancel" />
     <template v-if="createCCNum != '문의작성'">
-      <FormCCcreate @c-c:close="deleteCCCancel" />
+      <FormCCcreate @c-c:close="deleteCCCancel" @c-ccreate:create="createCCDone" />
     </template>
     <div class="SortCCBox">
       <span class="createBtn" @click="createCC()">문의하기</span>
@@ -32,7 +32,7 @@
             </div>
           </template>
           <template v-if="(updateCCNum == item.ccId)">
-            <FormCCupdate :item="item" @c-c:close="deleteCCCancel" />
+            <FormCCupdate :item="item" @c-c:close="deleteCCCancel" @c-cupdate:update="updateCCDone" />
           </template>
           <p class="CCdate">
             {{ dateCheck(item.lastModifiedDate) }}
@@ -53,7 +53,7 @@
     </template>
     <div class="pageNumber">
       <span><i class="fa-solid fa-chevron-left monthMoveBtn" @click="pageMove('pre')" /></span>
-      <span v-for="num in pageData" :key="num" :class="num.class" @click="reservationDataCall(num.value)">{{ num.value }}</span>
+      <span v-for="num in pageData" :key="num" :class="num.class" @click="customerCenterCall(num.value)">{{ num.value }}</span>
       <span><i class="fa-solid fa-chevron-right" @click="pageMove('next')" /></span>
     </div>
   </div>
@@ -137,7 +137,7 @@ export default {
       this.deleteCCNum = '문의삭제'
       this.updateCCNum = '문의수정'
       this.createCCNum = '문의작성'
-      this.customerCenterCall()
+      this.customerCenterCall(this.pageNowNum)
     },
     async deleteCCSubmit(item){
       try {
@@ -175,6 +175,14 @@ export default {
         }
       }
     },
+    updateCCDone(){
+      this.deleteCCCancel()
+      this.customerCenterCall(this.pageNowNum)
+    },
+    createCCDone(){
+      this.deleteCCCancel()
+      this.customerCenterCall(this.pageNowNum)
+    },
     // 페이지 번호 넘기기
     pageMove(value){
       if (value == 'next'){
@@ -192,7 +200,7 @@ export default {
           this.paging(this.pageStartNum)
         }
       }
-      this.reservationDataCall(this.pageNowNum)
+      this.customerCenterCall(this.pageNowNum)
     },
   },
 }

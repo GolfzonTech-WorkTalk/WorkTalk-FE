@@ -2,7 +2,7 @@
   <div class="CCContainer">
     <div v-if="deleteCCNum != '문의삭제' || updateCCNum != '문의수정' || createCCNum != '문의작성'" class="backgroundCC" @click="deleteCCCancel" />
     <template v-if="createCCNum != '문의작성'">
-      <FormCCcreate @c-c:close="deleteCCCancel" />
+      <FormCCcreate @c-c:close="deleteCCCancel" @c-ccreate:create="createCCDone" />
     </template>
     <div class="SortCCBox">
       <span class="createBtn" @click="createCC()">문의하기</span>
@@ -27,7 +27,7 @@
           <template v-if="deleteCCNum == item.ccId">
             <div class="deleteBox">
               <p>해당 문의를 삭제하시겠습니까?</p>
-              <span class="deleteBtn deleteCCDo" @click="deleteCCCancel(item)">삭 제</span>
+              <span class="deleteBtn deleteCCDo" @click="deleteCCSubmit(item)">삭 제</span>
               <span class="deleteBtn deleteCCCancel" @click="deleteCCCancel">취 소</span>
             </div>
           </template>
@@ -53,7 +53,7 @@
     </template>
     <div class="pageNumber">
       <span><i class="fa-solid fa-chevron-left monthMoveBtn" @click="pageMove('pre')" /></span>
-      <span v-for="num in pageData" :key="num" :class="num.class" @click="reservationDataCall(num.value)">{{ num.value }}</span>
+      <span v-for="num in pageData" :key="num" :class="num.class" @click="customerCenterCall(num.value)">{{ num.value }}</span>
       <span><i class="fa-solid fa-chevron-right" @click="pageMove('next')" /></span>
     </div>
   </div>
@@ -141,15 +141,21 @@ export default {
     createCC(){
       this.createCCNum = ''
     },
+    createCCDone(){
+      this.deleteCCCancel()
+      this.customerCenterCall(this.pageNowNum)
+    },
     deleteCCCancel(){
       this.deleteCCNum = '문의삭제'
       this.updateCCNum = '문의수정'
       this.createCCNum = '문의작성'
+      this.customerCenterCall(this.pageNowNum)
     },
-    async deleteQnASubmit(item){
+    async deleteCCSubmit(item){
       try {
         let response = await ccDelete(item.ccId)
         console.log(response)
+        this.deleteCCCancel()
       } catch (error){
         console.log(error)
       }
@@ -198,7 +204,7 @@ export default {
           this.paging(this.pageStartNum)
         }
       }
-      this.reservationDataCall(this.pageNowNum)
+      this.customerCenterCall(this.pageNowNum)
     },
   },
 }

@@ -309,7 +309,9 @@ export default {
         this.endDay = ''
         weekItems.class = 'clickOk'
       } else if (this.initDay != '' && this.endDay != ''){
-        alert('날짜를 이미 두개 선택하였습니다.')
+        let message = '날짜를 이미 두개 선택하였습니다.'
+        this.$store.dispatch('MODALVIEWCLICK', true)
+        this.$store.dispatch('MODALMESSAGE', message)
         return false
       } else if (!this.initDay){
         this.initDay = weekItems.date
@@ -343,7 +345,9 @@ export default {
                 this.initDay = this.endDay
                 this.endDay = ''
               }
-              alert('예약이 중간에 있습니다. 다른 날을 선택해주세요.')
+              let message = '중간에 예약이 있습니다. 다시 선택해 주세요.'
+              this.$store.dispatch('MODALVIEWCLICK', true)
+              this.$store.dispatch('MODALMESSAGE', message)
             }
           }
         }

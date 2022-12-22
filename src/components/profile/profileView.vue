@@ -16,7 +16,7 @@
           <span class="textContent">{{ userData.tel }}</span>
           <span class="updateBtn" @click="updateProfile('연락처수정')">연락처수정</span>
         </div>
-        <div>
+        <div v-if="!userData.kakao">
           <span class="updateBtn" @click="updateProfile('비밀번호수정')">비밀번호수정</span>
         </div>
       </div>
@@ -134,16 +134,16 @@ export default {
         const response = await profileUpdate(updateData)
         console.log(response)
         this.updateCancel()
-        this.$store.commit('setlogoutUser')
-        deleteCookie('token')
-        deleteCookie('email')
-        deleteCookie('userType')
         if (title == '비밀번호수정'){
+          this.$store.commit('setlogoutUser')
+          deleteCookie('token')
+          deleteCookie('email')
+          deleteCookie('userType')
           let message = '변경된 비밀번호로 로그인해주세요.'
           this.$store.dispatch('MODALVIEWCLICK', true)
           this.$store.dispatch('MODALMESSAGE', message)
+          this.$router.push('/login')
         }
-        this.$router.push('/login')
       } catch (error){
         console.log(error)
       }

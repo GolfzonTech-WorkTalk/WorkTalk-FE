@@ -13,6 +13,9 @@
           <span class="QnAtype" :class="item.type">{{ typeCheck(item.type) }}</span>
           <span class="date">{{ dateCheck(item.lastModifiedDate) }}</span>
           <p class="QnAcontent">
+            {{ item.writer }}
+          </p>
+          <p class="QnAcontent">
             {{ item.content }}
           </p>
         </div>

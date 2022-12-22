@@ -23,7 +23,7 @@
             </div>
           </template>
           <template v-if="updateReviewNum == item.reviewId">
-            <form-review-update :item="item" @reviewupdate:close="deleteReviewCancel" @reviewupdate:submit="reviewListCall" />
+            <form-review-update :item="item" @reviewupdate:close="deleteReviewCancel" @reviewupdate:submit="reviewListCall(pageNowNum)" />
           </template>
           <p class="date">
             {{ dateCheck(item.lastModifiedDate) }}
@@ -33,7 +33,7 @@
     </div>
     <div class="pageNumber">
       <span><i class="fa-solid fa-chevron-left monthMoveBtn" @click="pageMove('pre')" /></span>
-      <span v-for="num in pageData" :key="num" :class="num.class" @click="reservationDataCall(num.value)">{{ num.value }}</span>
+      <span v-for="num in pageData" :key="num" :class="num.class" @click="reviewListCall(num.value)">{{ num.value }}</span>
       <span><i class="fa-solid fa-chevron-right" @click="pageMove('next')" /></span>
     </div>
   </div>
@@ -71,6 +71,7 @@ export default {
   },
   methods: {
     async reviewListCall(pageNowNum){
+      console.log(pageNowNum)
       const response = await mypageReviewList(pageNowNum-1)
       console.log(response)
       this.ReviewList = response.data.data
@@ -121,7 +122,7 @@ export default {
         let response = await reviewDelete(item.reviewId)
         console.log(response)
         this.deleteReviewCancel()
-        this.reviewListCall()
+        this.reviewListCall(this.pageNowNum)
       } catch (error){
         console.log(error)
       }
@@ -170,7 +171,7 @@ export default {
           this.paging(this.pageStartNum)
         }
       }
-      this.reservationDataCall(this.pageNowNum)
+      this.reviewListCall(this.pageNowNum)
     },
   },
 }
